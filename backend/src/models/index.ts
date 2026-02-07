@@ -2,6 +2,12 @@ import "dotenv/config";
 import { Sequelize } from "sequelize";
 import mysql2 from "mysql2";
 import { initUserModel, User } from "./user.js";
+import { initRoleModel, Role } from "./role.js";
+import { initServiceRequestModel } from "./ServiceRequest.js";
+import { initServiceModel } from "./Service.js";
+import { initJobAssignment } from "./JobAssignment.js";
+import { initStatusHistoryModel } from "./StatusHistory.js";
+import { initLocationModel } from "./location.js";
 
 const sequelize = new Sequelize( 
     process.env.DATABASE_NAME!,
@@ -16,10 +22,21 @@ const sequelize = new Sequelize(
 );
 
 initUserModel(sequelize);
+initRoleModel(sequelize);
+initServiceRequestModel(sequelize);
+initServiceModel(sequelize);
+initJobAssignment(sequelize);
+initStatusHistoryModel(sequelize);
+initLocationModel(sequelize);
+
+Role.associate({ User });
+User.associate({ Role });
+
 
 export const db = {
     sequelize,
-    User
+    User,
+    Role,
 };
 
 (async () => {

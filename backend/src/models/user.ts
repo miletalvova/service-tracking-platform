@@ -1,5 +1,8 @@
 import { Sequelize, Model, DataTypes } from "sequelize";
 import type { InferAttributes, InferCreationAttributes } from "sequelize";
+import type { Role } from "./role.js";
+import { ServiceRequest } from "./ServiceRequest.js";
+import type { Models } from "../types/model.types.js";
 
 export class User
 extends Model<InferAttributes<User>, InferCreationAttributes<User, { omit: "id" }>> {
@@ -9,9 +12,29 @@ extends Model<InferAttributes<User>, InferCreationAttributes<User, { omit: "id" 
     declare Email: string;
     declare Username: string;
     declare EncryptedPassword: string;
+
+    declare RoleId: number;
+
+    static associate(models: Models) {
+        User.belongsTo(models.Role, {
+            foreignKey: "RoleId",
+            as: "Role"
+        });
+
+        User.hasMany(models.ServiceRequest, {
+            foreignKey: "customerId",
+            as: "CustomerServiceRequests"
+        });
+
+        User.hasMany(models.ServiceRequest, {
+            foreignKey: "technicianId",
+            as: "TechnicianServiceRequests"
+        });
+    }
 }
 export function initUserModel(sequelize: Sequelize) {
-    User.init ({
+    User.init (
+        {
         id: {
             type: DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
@@ -42,10 +65,10 @@ export function initUserModel(sequelize: Sequelize) {
             type: DataTypes.STRING,
             allowNull: false
         },
-    /*     Salt: {
-            type: DataTypes.BLOB,
-            allowNull: false
-        } */
+        RoleId: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            allowNull: false,
+        }
     }, 
     {
             sequelize,

@@ -6,7 +6,7 @@ import userService from "../services/userService.js";
 import jwt from "jsonwebtoken";
 
 router.post("/register", async (req: Request, res: Response, next: NextFunction) => {
-    const { firstname, lastname, email, username, password } = req.body;
+    const { firstname, lastname, email, username, password, role } = req.body;
     if (firstname == null) {
         return res.status(401).json({ status: "error", statuscode: 401, message: "First name is required" });
     }
@@ -29,7 +29,7 @@ router.post("/register", async (req: Request, res: Response, next: NextFunction)
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
         await userService.create({
-            FirstName: firstname, LastName: lastname, Email: email, Username: username, EncryptedPassword: hashedPassword
+            FirstName: firstname, LastName: lastname, Email: email, Username: username, EncryptedPassword: hashedPassword, RoleId: role.id
         });
         res.json({ status: "success", statuscode: 201, message: "User registered successfully" });
     } catch (err) {

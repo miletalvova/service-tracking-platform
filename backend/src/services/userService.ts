@@ -12,7 +12,8 @@ class UserService {
 
     async getOne(email: string) {
         return this.User.findOne({
-            where: {Email: email}
+            where: {Email: email},
+            include: [{model: db.Role, as: "Role"}]
         });
     }
 
