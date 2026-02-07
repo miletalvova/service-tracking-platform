@@ -1,7 +1,5 @@
 import { Sequelize, Model, DataTypes } from "sequelize";
 import type { InferAttributes, InferCreationAttributes } from "sequelize";
-import type { Role } from "./role.js";
-import { ServiceRequest } from "./ServiceRequest.js";
 import type { Models } from "../types/model.types.js";
 
 export class User
