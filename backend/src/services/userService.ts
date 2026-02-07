@@ -1,0 +1,25 @@
+import db from "../models/index.js";
+import type { User } from "../models/user.js";
+import type { UserCreationAttributes } from "../types/user.types.js";
+
+class UserService {
+    client: any;
+    User: typeof User;
+    constructor(db: any) {
+        this.client = db.sequelize;
+        this.User = db.User;
+    }
+
+    async getOne(email: string) {
+        return this.User.findOne({
+            where: {Email: email}
+        });
+    }
+
+    async create(data: UserCreationAttributes) {
+        return this.User.create(data);
+    }
+
+}
+
+export default new UserService(db);
