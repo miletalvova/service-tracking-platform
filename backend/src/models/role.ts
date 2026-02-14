@@ -1,7 +1,6 @@
 import { Sequelize, DataTypes, Model } from "sequelize";
 import type { InferAttributes, InferCreationAttributes } from "sequelize";
 import type { User } from "./user.js";
-import { ServiceRequest } from "./ServiceRequest.js";
 
 export class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role, { omit: "id" }>> {
     declare id: number;
@@ -19,7 +18,7 @@ export class Role extends Model<InferAttributes<Role>, InferCreationAttributes<R
 export function initRoleModel(sequelize: Sequelize) {
     Role.init (
         {
-            id: {
+        id: {
             type: DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
             primaryKey: true

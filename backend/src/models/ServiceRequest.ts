@@ -1,26 +1,27 @@
 import { Sequelize, DataTypes, Model, type InferAttributes, type InferCreationAttributes } from "sequelize";
 import type { User } from "./user.js";
+import type { Models } from "../types/model.types.js";
+import type { JobAssignment } from "./JobAssignment.js";
 
 export class ServiceRequest extends Model<InferAttributes<ServiceRequest>, InferCreationAttributes<ServiceRequest, { omit: "id" }>> {
     declare id: number;
     declare customerId: number;
-    declare technicianId: number;
-    declare serviceType: string;
-    declare description?: string;
-    declare status: "pending" | "assigned" | "completed";
+    declare serviceId: string;
+    declare status: "created" | "assigned" | "in progress" | "completed" | "cancelled";
+    declare location: string;
 
     declare Customer?: User;
-    declare Technician?: User;
+    declare JobAssignments?: JobAssignment[];
 
-    static associate(models: {User: typeof User}) {
+    static associate(models: Models) {
         ServiceRequest.belongsTo(models.User, {
             foreignKey: "customerId",
             as: "Customer"
         });
 
-        ServiceRequest.belongsTo(models.User, {
-            foreignKey: "technicianId",
-            as: "Technician"
+        ServiceRequest.hasMany(models.JobAssignment, {
+            foreignKey: "serviceRequestId",
+            as: "JobAssignments"
         });
     }
 }
@@ -28,7 +29,7 @@ export class ServiceRequest extends Model<InferAttributes<ServiceRequest>, Infer
 export function initServiceRequestModel(sequelize: Sequelize) {
     ServiceRequest.init (
         {
-            id: {
+        id: {
             type: DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
             primaryKey: true,
@@ -37,25 +38,22 @@ export function initServiceRequestModel(sequelize: Sequelize) {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
         },
-        technicianId: {
-            type: DataTypes.INTEGER.UNSIGNED,
-            allowNull: false,
-        },
-        serviceType: {
+        serviceId: {
             type: DataTypes.STRING,
             allowNull: false,
-        },
-        description: {
-            type: DataTypes.TEXT,
-            allowNull: true,
         },
         status: {
             type: DataTypes.STRING,
             allowNull: false,
-            defaultValue: "pending",
+            defaultValue: "created",
+        },
+        location: {
+            type: DataTypes.STRING,
+            allowNull: false,
         }
     },
     {   sequelize,
         timestamps: true,
-    });
+    }
+    );
 }  

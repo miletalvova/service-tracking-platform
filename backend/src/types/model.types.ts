@@ -2,7 +2,7 @@ import { Sequelize } from "sequelize";
 import { User } from "../models/user.js";
 import { ServiceRequest } from "../models/ServiceRequest.js";
 import { Role } from "../models/role.js";
-import { Service } from "../models/Service.js";
+import { Service } from "../models/service.js";
 import { JobAssignment } from "../models/JobAssignment.js";
 import { StatusHistory } from "../models/StatusHistory.js";
 import { Location } from "../models/location.js";

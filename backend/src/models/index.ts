@@ -4,7 +4,7 @@ import mysql2 from "mysql2";
 import { initUserModel, User } from "./user.js";
 import { initRoleModel, Role } from "./role.js";
 import { initServiceRequestModel, ServiceRequest } from "./ServiceRequest.js";
-import { initServiceModel, Service } from "./Service.js";
+import { initServiceModel, Service } from "./service.js";
 import { initJobAssignment, JobAssignment } from "./JobAssignment.js";
 import { initStatusHistoryModel, StatusHistory } from "./StatusHistory.js";
 import { initLocationModel, Location } from "./location.js";
