@@ -24,9 +24,9 @@ extends Model<InferAttributes<User>, InferCreationAttributes<User, { omit: "id" 
             as: "CustomerServiceRequests"
         });
 
-        User.hasMany(models.ServiceRequest, {
+        User.hasMany(models.JobAssignment, {
             foreignKey: "technicianId",
-            as: "TechnicianServiceRequests"
+            as: "TechnicianAssignments"
         });
     }
 }
@@ -69,8 +69,8 @@ export function initUserModel(sequelize: Sequelize) {
         }
     }, 
     {
-            sequelize,
-            timestamps: false
+        sequelize,
+        timestamps: false
         }
     );
 };

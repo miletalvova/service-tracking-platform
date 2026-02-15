@@ -1,4 +1,5 @@
-import { Sequelize, DataTypes, Model, type InferAttributes, type InferCreationAttributes } from "sequelize"
+import { Sequelize, DataTypes, Model, type InferAttributes, type InferCreationAttributes } from "sequelize";
+import type { Models } from "../types/model.types.js";
 
 export class StatusHistory extends Model<InferAttributes<StatusHistory>, InferCreationAttributes<StatusHistory, { omit: "id" }>> {
     declare id: number;
@@ -6,17 +7,25 @@ export class StatusHistory extends Model<InferAttributes<StatusHistory>, InferCr
     declare oldStatus: string;
     declare newStatus: string;
     declare changedAt: Date;
+
+    static associate(models: Models) {
+        StatusHistory.belongsTo(models.ServiceRequest, {
+            foreignKey: "serviceRequestId",
+            as: "ServiceRequest"
+        });
+    }
 }
 
 export function initStatusHistoryModel(sequelize: Sequelize) {
-    const StatusHistory = sequelize.define("StatusHistory", {
+    StatusHistory.init(
+        {
         id: {
-            type: DataTypes.INTEGER, 
+            type: DataTypes.INTEGER.UNSIGNED, 
             autoIncrement: true,
             primaryKey: true
         },
         serviceRequestId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false
         },
         oldStatus: {
@@ -33,8 +42,7 @@ export function initStatusHistoryModel(sequelize: Sequelize) {
             defaultValue: DataTypes.NOW
         }
     }, {
+        sequelize,
         timestamps: false
-    }); 
-
-    return StatusHistory;
+    });
 }

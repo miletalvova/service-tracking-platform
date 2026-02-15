@@ -8,6 +8,7 @@ import { initServiceModel, Service } from "./service.js";
 import { initJobAssignment, JobAssignment } from "./JobAssignment.js";
 import { initStatusHistoryModel, StatusHistory } from "./StatusHistory.js";
 import { initLocationModel, Location } from "./location.js";
+import { initStatusModel, Status } from "./status.js";
 import type { Models, SequelizeModel } from "../types/model.types.js";
 
 const sequelize = new Sequelize( 
@@ -29,6 +30,7 @@ initServiceModel(sequelize);
 initJobAssignment(sequelize);
 initStatusHistoryModel(sequelize);
 initLocationModel(sequelize);
+initStatusModel(sequelize);
 
 export const models: Omit<Models, "sequelize"> = {
     User,
@@ -37,7 +39,8 @@ export const models: Omit<Models, "sequelize"> = {
     Service,
     JobAssignment,
     StatusHistory,
-    Location
+    Location,
+    Status
 };
 
 Object.values(models).forEach(model => {

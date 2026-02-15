@@ -4,7 +4,7 @@ import type { User } from "./user.js";
 
 export class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role, { omit: "id" }>> {
     declare id: number;
-    declare Name: "Customer" |"Staff" |"Technician";
+    declare name: "Customer" |"Staff" |"Technician";
     declare Users?: User[];
 
     static associate(models: {User: typeof User}) {
@@ -23,7 +23,7 @@ export function initRoleModel(sequelize: Sequelize) {
             autoIncrement: true,
             primaryKey: true
         },
-        Name: {
+        name: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true,

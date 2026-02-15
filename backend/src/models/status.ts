@@ -1,37 +1,32 @@
 import { Sequelize, DataTypes, Model, type InferAttributes, type InferCreationAttributes } from "sequelize";
 import type { Models } from "../types/model.types.js";
 
-export class Service extends Model<InferAttributes<Service>, InferCreationAttributes<Service, { omit: "id" }>> {
+export class Status extends Model<InferAttributes<Status>, InferCreationAttributes<Status, { omit: "id" }>> {
     declare id: number;
-    declare serviceType: "Plumbing" | "Electrical" | "IT";
-    declare description?: string;
+    declare status: "created" | "assigned" | "in progress" | "completed" | "cancelled";
 
     static associate (models: Models) {
-        Service.hasMany(models.ServiceRequest, {
-            foreignKey: "serviceId",
+        Status.hasMany(models.ServiceRequest, {
+            foreignKey: "statusId",
             as: "ServiceRequest"
         })
     }
 }
 
-export function initServiceModel(sequelize: Sequelize) {
-    Service.init(
+export function initStatusModel(sequelize: Sequelize) {
+    Status.init(
         {
         id: {
             type: DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
             primaryKey: true,
         },
-        serviceType: {
+        status: {
             type: DataTypes.STRING,
             allowNull: false,
-        },
-        description: {
-            type: DataTypes.TEXT,
-            allowNull: true,
         }
     }, {
         sequelize,
-        timestamps: true,
+        timestamps: false,
     });
 } 

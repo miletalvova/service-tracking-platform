@@ -1,4 +1,5 @@
 import { Sequelize, DataTypes, Model, type InferAttributes, type InferCreationAttributes } from "sequelize";
+import type { Models } from "../types/model.types.js";
 
 export class Location extends Model<InferAttributes<Location>, InferCreationAttributes<Location, { omit: "id" }>> {
     declare id: number;
@@ -6,12 +7,20 @@ export class Location extends Model<InferAttributes<Location>, InferCreationAttr
     declare city: string;
     declare state: string;
     declare zipCode: string;
+
+    static associate(models: Models) {
+        Location.hasMany(models.ServiceRequest, {
+            foreignKey: "locationId",
+            as: "ServiceRequest"
+        }) 
+    }
 }
 
 export function initLocationModel(sequelize: Sequelize) {
-    const Location = sequelize.define("Location", {
+    Location.init(
+        {
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
             primaryKey: true
         },
@@ -32,8 +41,7 @@ export function initLocationModel(sequelize: Sequelize) {
             allowNull: false
         }
     }, {
+        sequelize,
         timestamps: false
     });
-
-    return Location;
 }
