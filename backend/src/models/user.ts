@@ -1,6 +1,7 @@
 import { Sequelize, Model, DataTypes } from "sequelize";
 import type { InferAttributes, InferCreationAttributes } from "sequelize";
 import type { Models } from "../types/model.types.js";
+import type { Role } from "./role.js";
 
 export class User
 extends Model<InferAttributes<User>, InferCreationAttributes<User, { omit: "id" }>> {
@@ -10,8 +11,8 @@ extends Model<InferAttributes<User>, InferCreationAttributes<User, { omit: "id" 
     declare Email: string;
     declare Username: string;
     declare EncryptedPassword: string;
-
     declare RoleId: number;
+    declare Role?: Role;
 
     static associate(models: Models) {
         User.belongsTo(models.Role, {

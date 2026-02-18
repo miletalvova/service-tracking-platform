@@ -4,7 +4,7 @@ import createError from 'http-errors';
 import type { Request, Response, NextFunction } from 'express';
 
 import authRouter from './routes/auth.js';
-import serviceRequestRouter from './routes/serviceRequest.js';
+import serviceRouter from './routes/services.js';
 import assignmentRouter from './routes/assignments.js';
 import technicianRouter from './routes/technicians.js';
 import { errorHandler } from './middleware/error.js';
@@ -20,13 +20,13 @@ app.use(cors({
 }));
 
 app.use('/api/auth', authRouter);
-app.use('/api/service-requests', serviceRequestRouter);
+app.use('/api/services', serviceRouter);
 app.use('/api/assignments', assignmentRouter);
 app.use('/api/technicians', technicianRouter);
 
 
 // catch 404 and forward to error handler
-app.use((_req: Request, res: Response, next: NextFunction) => {  
+app.use((_req: Request, _res: Response, next: NextFunction) => {  
   next(createError(404));
 });
 

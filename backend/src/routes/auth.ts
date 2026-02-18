@@ -29,15 +29,15 @@ router.post("/register", async (req: Request, res: Response, next: NextFunction)
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
         await userService.create({
-            FirstName: firstname, LastName: lastname, Email: email, Username: username, EncryptedPassword: hashedPassword, RoleId: role.id
-        });
+            FirstName: firstname, LastName: lastname, Email: email, Username: username, EncryptedPassword: hashedPassword, RoleId: role
+});
         res.json({ status: "success", statuscode: 201, message: "User registered successfully" });
     } catch (err) {
         next(err);
     }
 });
 
-router.post("/login", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
   if (!email) {
       return res.status(400).json({ status: "error", statuscode: 401, message: "Email is required" });
@@ -58,11 +58,11 @@ router.post("/login", async (req: Request, res: Response, next: NextFunction) =>
         }
         let token;
         try {
-            token = jwt.sign({ id: data.id, email: data.Email }, process.env.JWT_SECRET!, { expiresIn: "1h" });
+            token = jwt.sign({ id: data.id, email: data.Email, role: data.Role?.name }, process.env.JWT_SECRET!, { expiresIn: "1h" });
         } catch (err) {
             return res.status(500).json({ status: "error", statuscode: 500, message: "Internal server error" });
         }
-        res.json({ status: "success", statuscode: 200, message: "Login successful", token });
+        res.json({ status: "success", statuscode: 200, message: "Login successful", token, role: data.Role?.name});
     });
   } catch (err) {
     res.status(500).json({ status: "error", statuscode: 500, message: "Internal server error" });

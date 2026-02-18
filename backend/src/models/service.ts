@@ -32,6 +32,6 @@ export function initServiceModel(sequelize: Sequelize) {
         }
     }, {
         sequelize,
-        timestamps: true,
+        timestamps: false,
     });
 } 
