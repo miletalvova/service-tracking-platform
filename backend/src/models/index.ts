@@ -11,13 +11,19 @@ import { initLocationModel, Location } from "./location.js";
 import { initStatusModel, Status } from "./status.js";
 import type { Models, SequelizeModel } from "../types/model.types.js";
 
+const { DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, HOST, DIALECT } = process.env;
+
+if (!DATABASE_NAME || !ADMIN_USERNAME || !ADMIN_PASSWORD || !HOST) {
+    throw new Error("Missing required environment variables: DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, HOST");
+}
+
 const sequelize = new Sequelize( 
-    process.env.DATABASE_NAME!,
-    process.env.ADMIN_USERNAME!,
-    process.env.ADMIN_PASSWORD!,
+    DATABASE_NAME,
+    ADMIN_USERNAME,
+    ADMIN_PASSWORD,
     {
-        host: process.env.HOST || "localhost",
-        dialect: "mysql",
+        host: HOST,
+        dialect: DIALECT as any,
         dialectModule: mysql2,
         logging: false
     }
