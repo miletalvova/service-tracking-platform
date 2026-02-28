@@ -24,7 +24,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t leta373/service-tracking-backend:latest .
+        run: docker build -t leta373/service-tracking-backend:latest -f backend/Dockerfile backend
 
       - name: Push Docker image
         run: docker push leta373/service-tracking-backend:latest
