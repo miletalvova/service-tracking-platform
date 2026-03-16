@@ -4,8 +4,8 @@ import type { Models } from "../types/model.types.js";
 export class StatusHistory extends Model<InferAttributes<StatusHistory>, InferCreationAttributes<StatusHistory, { omit: "id" }>> {
     declare id: number;
     declare serviceRequestId: number;
-    declare oldStatus: string;
-    declare newStatus: string;
+    declare oldStatusId: number;
+    declare newStatusId: number;
     declare changedAt: Date;
 
     static associate(models: Models) {
@@ -13,6 +13,15 @@ export class StatusHistory extends Model<InferAttributes<StatusHistory>, InferCr
             foreignKey: "serviceRequestId",
             as: "ServiceRequest"
         });
+        StatusHistory.belongsTo(models.Status, {
+            foreignKey: "oldStatusId",
+            as: "OldStatus"
+        });
+        StatusHistory.belongsTo(models.Status, {
+            foreignKey: "newStatusId",
+            as: "NewStatus"
+        });
+
     }
 }
 
@@ -28,12 +37,12 @@ export function initStatusHistoryModel(sequelize: Sequelize) {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false
         },
-        oldStatus: {
-            type: DataTypes.STRING,
+        oldStatusId: {
+            type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false
         },
-        newStatus: {
-            type: DataTypes.STRING,
+        newStatusId: {
+            type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false
         },
         changedAt: {

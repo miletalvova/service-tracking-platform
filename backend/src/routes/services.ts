@@ -1,36 +1,36 @@
 import { Router } from "express";
 const router = Router();
-import type { Request, Response, NextFunction } from "express";
-import ServiceRequestService from "../services/serviceRequestService.js";
+import type { Request, Response } from "express";
+import ServiceService from "../services/serviceService.js";
 
 
 router.get("/", async (req: Request, res: Response) => {
-    const services = await ServiceRequestService.getAll();
-    res.json({ message: "List of service requests", data: services });
+    const services = await ServiceService.getAll();
+    res.json({ message: "List of services", data: services });
 });
 
 router.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
     const idNum = Number(req.params.id);
 
     if (Number.isNaN(idNum)) {
-        return res.status(400).json({ status: "error", statuscode: 400, message: "Service request ID must be a number" });
+        return res.status(400).json({ status: "error", statuscode: 400, message: "Service ID must be a number" });
     }
 
-    const service = await ServiceRequestService.getOneById(idNum);
+    const service = await ServiceService.getOneById(idNum);
     if (!service) {
-        return res.status(404).json({ status: "error", statuscode: 404, message: "Service request not found" });
+        return res.status(404).json({ status: "error", statuscode: 404, message: "Service not found" });
     }
-    res.json({ message: "Service request details", data: service });
+    res.json({ message: "Service details", data: service });
 });
 
 router.post("/", async (req: Request, res: Response) => {
-    const { customerId, serviceId, statusId, locationId } = req.body;
-    if (!customerId || !serviceId || !statusId || !locationId) {
+    const { serviceType, description } = req.body;
+    if (!serviceType || !description) {
         return res.status(400).json({ status: "error", statuscode: 400, message: "Missing required fields" });
     }
     try {
-    const service = await ServiceRequestService.create({ customerId, serviceId, statusId, locationId });
-    res.status(201).json({ message: "Service request created successfully", data: service });
+    const service = await ServiceService.create({ serviceType, description });
+    res.status(201).json({ message: "Service created successfully", data: service });
     } catch (error) {
        res.status(500).json({ status: "error", statuscode: 500, message: "Internal server error" });
     }

@@ -23,7 +23,7 @@ export function initServiceModel(sequelize: Sequelize) {
             primaryKey: true,
         },
         serviceType: {
-            type: DataTypes.STRING,
+            type: DataTypes.ENUM("Plumbing", "Electrical", "IT"),
             allowNull: false,
         },
         description: {

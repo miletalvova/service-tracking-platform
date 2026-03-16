@@ -10,6 +10,9 @@ import { initStatusHistoryModel, StatusHistory } from "./StatusHistory.js";
 import { initLocationModel, Location } from "./location.js";
 import { initStatusModel, Status } from "./status.js";
 import type { Models, SequelizeModel } from "../types/model.types.js";
+import { seedRoles } from "../seeders/roles.js";
+import { seedStatuses } from "../seeders/statuses.js";
+import { seedServices } from "../seeders/services.js";
 
 const { DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, HOST, DIALECT } = process.env;
 
@@ -65,6 +68,9 @@ export const db: Models = {
 
         await sequelize.sync({ force: false });
         console.log("All models were synchronized successfully.");
+        await seedRoles();
+        await seedStatuses();
+        await seedServices();
     } catch (error) {
         console.error("Unable to connect to the database:", error);
     }
