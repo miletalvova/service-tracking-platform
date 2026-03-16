@@ -1,6 +1,13 @@
+import dotenv from "dotenv";
+console.log("NODE_ENV:", process.env.NODE_ENV);
+
+if (process.env.NODE_ENV !== "production") {
+    dotenv.config({ path: ".env.local" });
+} 
+
 import app from "./app.js";
 import db from "./models/index.js";
-import type {Request, Response} from "express";
+import type { Request, Response } from "express";
 
 const PORT: number | string = process.env.PORT || 3000;
 

@@ -1,4 +1,4 @@
-import "dotenv/config";
+/* import "dotenv/config"; */
 import { Sequelize } from "sequelize";
 import mysql2 from "mysql2";
 import { initUserModel, User } from "./user.js";
