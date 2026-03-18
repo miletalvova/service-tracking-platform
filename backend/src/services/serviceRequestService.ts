@@ -31,6 +31,22 @@ class ServiceRequestService {
                 include: [{ model: this.User, as: "Customer" }]
             });
         }
+
+        async update(id: number, data: ServiceRequestCreationAttributes) {
+            const serviceRequest = await this.ServiceRequest.findByPk(id);
+            if (!serviceRequest) {
+                throw new Error("Service request not found");
+            }
+            return serviceRequest.update(data);
+        }
+
+        async delete(id: number) {
+            const serviceRequest = await this.ServiceRequest.findByPk(id);
+            if (!serviceRequest) {
+                throw new Error("Service request not found");
+            }
+            return serviceRequest.destroy();
+        }
 }
 
 export default new ServiceRequestService(db);

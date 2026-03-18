@@ -9,7 +9,7 @@ export class Service extends Model<InferAttributes<Service>, InferCreationAttrib
     static associate (models: Models) {
         Service.hasMany(models.ServiceRequest, {
             foreignKey: "serviceId",
-            as: "ServiceRequest"
+            as: "ServiceRequests"
         })
     }
 }

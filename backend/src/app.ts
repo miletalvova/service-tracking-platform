@@ -5,6 +5,7 @@ import type { Request, Response, NextFunction } from 'express';
 
 import authRouter from './routes/auth.js';
 import serviceRouter from './routes/services.js';
+import serviceRequestRouter from './routes/serviceRequests.js';
 import assignmentRouter from './routes/assignments.js';
 import technicianRouter from './routes/technicians.js';
 import { errorHandler } from './middleware/error.js';
@@ -21,6 +22,7 @@ app.use(cors({
 
 app.use('/api/auth', authRouter);
 app.use('/api/services', serviceRouter);
+app.use('/api/requests', serviceRequestRouter);
 app.use('/api/assignments', assignmentRouter);
 app.use('/api/technicians', technicianRouter);
 
