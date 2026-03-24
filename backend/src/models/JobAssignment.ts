@@ -2,7 +2,7 @@ import { Sequelize, DataTypes, Model, type InferAttributes, type InferCreationAt
 import type { ServiceRequest } from "./ServiceRequest.js";
 import type { Models } from "../types/model.types.js";
 
-export class JobAssignment extends Model<InferAttributes<JobAssignment>, InferCreationAttributes<JobAssignment, { omit: "id" }>> {
+export class JobAssignment extends Model<InferAttributes<JobAssignment>, InferCreationAttributes<JobAssignment, { omit: "id" | "assignedAt" | "unassignedAt" }>> {
     declare id: number;
     declare serviceRequestId: number;
     declare technicianId: number;
