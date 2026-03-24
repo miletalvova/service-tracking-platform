@@ -1,6 +1,6 @@
 export interface ServiceAttributes {
     id: number;
-    serviceType: "Plumbing" | "Electrical" | "IT";
+    serviceType: string;
     description: string;
 }
 

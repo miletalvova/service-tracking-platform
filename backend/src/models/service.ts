@@ -3,7 +3,7 @@ import type { Models } from "../types/model.types.js";
 
 export class Service extends Model<InferAttributes<Service>, InferCreationAttributes<Service, { omit: "id" }>> {
     declare id: number;
-    declare serviceType: "Plumbing" | "Electrical" | "IT";
+    declare serviceType: string;
     declare description?: string;
 
     static associate (models: Models) {
@@ -23,7 +23,7 @@ export function initServiceModel(sequelize: Sequelize) {
             primaryKey: true,
         },
         serviceType: {
-            type: DataTypes.ENUM("Plumbing", "Electrical", "IT"),
+            type: DataTypes.STRING,
             allowNull: false,
         },
         description: {

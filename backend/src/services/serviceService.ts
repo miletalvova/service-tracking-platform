@@ -20,6 +20,23 @@ class ServiceService {
     async create(data: ServiceCreationAttributes) {
         return this.Service.create(data);
     }
+
+    async update(id: number, data: Partial<ServiceCreationAttributes>) {
+        const service = await this.Service.findByPk(id);
+        if (!service) {
+            throw new Error("Service not found");
+        }
+        return service.update(data);
+    }
+
+    async delete(id: number) {
+        const service = await this.Service.findByPk(id);
+        if (!service) {
+            throw new Error("Service not found");
+        }
+        return service.destroy();
+    }
+
 }
 
 export default new ServiceService(db);
