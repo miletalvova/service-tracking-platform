@@ -25,12 +25,12 @@ router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response) =
 });
 
 router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
-    const { customerId, serviceId, statusId, locationId } = req.body;
-    if (!customerId || !serviceId || !statusId || !locationId) {
+    try {
+    const { customerId, serviceId, locationId } = req.body;
+    if (!customerId || !serviceId || !locationId) {
         return res.status(400).json({ status: "error", statuscode: 400, message: "Missing required fields" });
     }
-    try {
-    const service = await ServiceRequestService.create({ customerId, serviceId, statusId, locationId });
+    const service = await ServiceRequestService.create({ customerId, serviceId, locationId });
     res.status(201).json({ message: "Service request created successfully", data: service });
     } catch (err) {
        next(err);
@@ -43,15 +43,21 @@ router.put("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, n
         return res.status(400).json({ status: "error", statuscode: 400, message: "Service request ID must be a number" });
     }
     const { customerId, serviceId, statusId, locationId } = req.body;
-    if (!customerId || !serviceId || !statusId || !locationId) {
-        return res.status(400).json({ status: "error", statuscode: 400, message: "Missing required fields" });
+
+    if (customerId == null && serviceId == null && statusId == null && locationId == null) {
+        return res.status(400).json({ status: "error", statuscode: 400, message: "At least one field must be provided" });
     }
     try {
         const service = await ServiceRequestService.getOneById(idNum);
         if (!service) {
             return res.status(404).json({ status: "error", statuscode: 404, message: "Service request not found" });
         }
-        const updatedService = await ServiceRequestService.update(idNum, { customerId, serviceId, statusId, locationId });
+        const updatedService = await ServiceRequestService.update(idNum, {
+            customerId, 
+            serviceId, 
+            statusId, 
+            locationId 
+        });
         res.json({ message: "Service request updated successfully", data: updatedService });
     } catch (err) {
         next(err);

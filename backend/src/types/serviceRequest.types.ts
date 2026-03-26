@@ -5,4 +5,4 @@ export interface ServiceRequestAttributes {
     statusId: number;
     locationId: number;
 }
-export interface ServiceRequestCreationAttributes extends Omit<ServiceRequestAttributes, "id"> {}
+export interface ServiceRequestCreationAttributes extends Omit<ServiceRequestAttributes, "id" | "statusId"> {}

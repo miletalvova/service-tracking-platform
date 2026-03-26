@@ -1,7 +1,7 @@
 import { Sequelize, DataTypes, Model, type InferAttributes, type InferCreationAttributes } from "sequelize";
 import type { Models } from "../types/model.types.js";
 
-export class StatusHistory extends Model<InferAttributes<StatusHistory>, InferCreationAttributes<StatusHistory, { omit: "id" }>> {
+export class StatusHistory extends Model<InferAttributes<StatusHistory>, InferCreationAttributes<StatusHistory, { omit: "id" | "changedAt"}>> {
     declare id: number;
     declare serviceRequestId: number;
     declare oldStatusId: number;
