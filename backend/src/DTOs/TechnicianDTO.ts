@@ -18,6 +18,7 @@ export class TechnicianDTO {
         this.technicianId = job.Technician.id;
         this.FullName = job.Technician.FirstName + " " + job.Technician.LastName;
         this.Email = job.Technician.Email;
-        this.Customer = job.Customer.FirstName + " " + job.Customer.LastName;
+        this.Customer = job.Customer.FirstName + " " + job.Customer
+        .LastName;
     }
 }
