@@ -1,16 +1,13 @@
 import db from "../models/index.js";
 import { JobAssignment } from "../models/JobAssignment.js";
-import type { User } from "../models/user.js";
 import type { JobAssignmentCreationAttributes } from "../types/jobAssignment.types.js";
 
 class JobAssignmentService {
     client: any;
     JobAssignment: typeof JobAssignment;
-    User: typeof User;
     constructor(db: any) {
         this.client = db.sequelize;
         this.JobAssignment = db.JobAssignment;
-        this.User = db.User;
     }
     async create(data: JobAssignmentCreationAttributes) {
         return this.JobAssignment.create(data);

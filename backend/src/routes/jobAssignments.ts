@@ -1,7 +1,7 @@
 import { Router } from "express";
 const router = Router();
 import type { Request, Response, NextFunction } from "express";
-import { isAuth, isStaff, isCustomer, isTechnician } from "../middleware/auth.js";
+import { isAuth, isStaff } from "../middleware/auth.js";
 import jobAssignmentService from "../services/jobAssignmentService.js";
 
 router.get("/", isAuth, async (req: Request, res: Response) => {
@@ -18,12 +18,12 @@ router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response) =
 
     const jobAssignment = await jobAssignmentService.getOneById(idNum);
     if(!jobAssignment){
-        return res.status(404).json({ status: "erroe", statuscode: 404, message: "Job Assignment not found"})
+        return res.status(404).json({ status: "error", statuscode: 404, message: "Job Assignment not found"})
     }
     res.json({ message: "Job Assignment details", data: jobAssignment});
 });
 
-router.post("/", isAuth, isStaff, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { serviceRequestId, technicianId } = req.body;
 

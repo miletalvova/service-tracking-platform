@@ -4,14 +4,15 @@ import type { Request, Response, NextFunction } from "express";
 import TechnicianService from "../services/technicianService.js";
 import { isAuth, isTechnician } from "../middleware/auth.js";
 
-router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/assigned-requests", isAuth, isTechnician, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { technicianId } = req.body;
-        const assignedRequests = await TechnicianService.getAssignedRequests(technicianId);
-        res.json({ assignedRequests });
+        const { technicianId } = req.query;
+        const assignedRequests = await TechnicianService.getAssignedRequests(Number(technicianId));
+        res.json({ assignedRequests});
     } catch (error) {
         next(error);
     }
 });
+
 
 export default router;
