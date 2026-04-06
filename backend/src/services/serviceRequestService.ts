@@ -1,8 +1,9 @@
 import db from "../models/index.js";
 import type { ServiceRequest } from "../models/ServiceRequest.js";
 import type { User } from "../models/user.js";
-import type { ServiceRequestCreationAttributes, ServiceRequestAttributes } from "../types/serviceRequest.types.js";
+import { type ServiceRequestCreationAttributes, type ServiceRequestAttributes, StatusEnum } from "../types/serviceRequest.types.js";
 import type { StatusHistory } from "../models/StatusHistory.js";
+import jobAssignmentService from "./jobAssignmentService.js";
 
 class ServiceRequestService {
         client: any;
@@ -49,9 +50,11 @@ class ServiceRequestService {
 
         async update(id: number, data: Partial<ServiceRequestAttributes>) {
             const serviceRequest = await this.ServiceRequest.findByPk(id);
+
             if (!serviceRequest) {
                 throw new Error("Service request not found");
             }
+
             const oldStatusId = serviceRequest.statusId;
         
             await serviceRequest.update(data);
@@ -62,6 +65,10 @@ class ServiceRequestService {
                 oldStatusId,
                 newStatusId: data.statusId
             })
+        }
+        
+        if (data.statusId === StatusEnum.Completed || data.statusId === StatusEnum.Cancelled) {
+            await jobAssignmentService.unassign(id);
         }
 
             return serviceRequest;

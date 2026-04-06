@@ -3,6 +3,8 @@ import type { User } from "../models/user.js";
 import type { ServiceRequest } from "../models/ServiceRequest.js";
 import type { JobAssignment } from "../models/JobAssignment.js";
 import type { Service } from "../models/service.js";
+import type { Location } from "../models/location.js";
+import type { Status } from "../models/status.js";
 import { TechnicianDTO } from "../DTOs/TechnicianDTO.js";
 
 class TechnicianService {
@@ -11,12 +13,16 @@ class TechnicianService {
     ServiceRequest: typeof ServiceRequest;
     JobAssignment: typeof JobAssignment;
     Service: typeof Service;
+    Location: typeof Location;
+    Status: typeof Status;
     constructor(db: any) {
         this.client = db.sequelize;
         this.User = db.User;
         this.ServiceRequest = db.ServiceRequest;
         this.JobAssignment = db.JobAssignment;
         this.Service = db.Service;
+        this.Location = db.Location;
+        this.Status = db.Status;
     }
 
     async getAssignedRequests(technicianId: number) {
@@ -30,6 +36,21 @@ class TechnicianService {
                         {
                             model: this.Service,
                             as: "Service"
+                        },
+                        {
+                            model: this.User,
+                            as: "Customer",
+                            attributes: ["id", "FirstName", "LastName", "Email"]
+                        },
+                        {
+                            model: this.Location,
+                            as: "Location",
+                            attributes: ["address", "city", "state", "zipCode"]
+                        },
+                        {
+                            model: this.Status,
+                            as: "Status",
+                            attributes: ["status"]
                         }
                     ]
 

@@ -2,7 +2,7 @@ export interface JobAssignmentAttributes {
     id: number;
     serviceRequestId: number;
     technicianId: number;
-    assignedAt?: Date;
+    assignedAt: Date;
     unassignedAt?: Date;
 }
 

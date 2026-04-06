@@ -7,7 +7,7 @@ export class JobAssignment extends Model<InferAttributes<JobAssignment>, InferCr
     declare serviceRequestId: number;
     declare technicianId: number;
     declare assignedAt: Date;
-    declare unassignedAt?: Date;
+    declare unassignedAt?: Date | null;
 
     declare ServiceRequest?: ServiceRequest;
 
