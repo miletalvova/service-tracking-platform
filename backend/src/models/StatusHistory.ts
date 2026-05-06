@@ -4,7 +4,7 @@ import type { Models } from "../types/model.types.js";
 export class StatusHistory extends Model<InferAttributes<StatusHistory>, InferCreationAttributes<StatusHistory, { omit: "id" | "changedAt"}>> {
     declare id: number;
     declare serviceRequestId: number;
-    declare oldStatusId: number;
+    declare oldStatusId: number | null;
     declare newStatusId: number;
     declare changedAt: Date;
 

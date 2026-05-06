@@ -26,12 +26,40 @@ router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response) =
 
 router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
-    const { customerId, serviceId, locationId } = req.body;
-    if (!customerId || !serviceId || !locationId) {
+    const { customerId, serviceId, locationId, description } = req.body;
+    if (!customerId || !serviceId || !locationId || !description) {
         return res.status(400).json({ status: "error", statuscode: 400, message: "Missing required fields" });
     }
-    const service = await ServiceRequestService.create({ customerId, serviceId, locationId });
+    const service = await ServiceRequestService.create({ customerId, serviceId, locationId, description});
     res.status(201).json({ message: "Service request created successfully", data: service });
+    } catch (err) {
+       next(err);
+    }
+});
+
+router.post("/smart", isAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { description, locationId } = req.body;
+        const customerId = (req as any).user.id;
+
+        if (!description || !locationId) {
+            return res.status(400).json({
+                status: "error", 
+                statuscode: 400, 
+                message: "Missing required fields" 
+            });
+        }
+
+        const service = await ServiceRequestService.createSmart({
+            customerId,
+            description, 
+            locationId 
+        });
+
+        res.status(201).json({
+            message: "Service request created successfully", 
+            data: service 
+        });
     } catch (err) {
        next(err);
     }

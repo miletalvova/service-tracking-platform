@@ -9,6 +9,12 @@ router.get("/", isAuth, async (req: Request, res: Response) => {
     res.json({ message: "List of assignments", data: assignments})
 });
 
+router.get("/recommend/:serviceRequestId", isAuth, async (req: Request<{ serviceRequestId: string }>, res: Response) => {
+    const serviceRequestId = Number(req.params.serviceRequestId);
+    const recommendedAssignment = await jobAssignmentService.recommendTechnician(serviceRequestId);
+    res.json({ message: "Recommended assignment", data: recommendedAssignment });
+});
+
 router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response) => {
     const idNum = Number(req.params.id);
 

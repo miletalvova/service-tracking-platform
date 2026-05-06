@@ -1,6 +1,6 @@
 export interface ServiceAttributes {
     id: number;
-    serviceType: string;
+    specialization: string;
     description: string;
 }
 

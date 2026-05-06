@@ -3,7 +3,7 @@ import type { Models } from "../types/model.types.js";
 
 export class Service extends Model<InferAttributes<Service>, InferCreationAttributes<Service, { omit: "id" }>> {
     declare id: number;
-    declare serviceType: string;
+    declare specialization: string;
     declare description?: string;
 
     static associate (models: Models) {
@@ -22,7 +22,7 @@ export function initServiceModel(sequelize: Sequelize) {
             autoIncrement: true,
             primaryKey: true,
         },
-        serviceType: {
+        specialization: {
             type: DataTypes.STRING,
             allowNull: false,
         },

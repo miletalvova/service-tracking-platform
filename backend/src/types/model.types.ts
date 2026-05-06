@@ -6,7 +6,8 @@ import { Service } from "../models/service.js";
 import { JobAssignment } from "../models/JobAssignment.js";
 import { StatusHistory } from "../models/StatusHistory.js";
 import { Location } from "../models/location.js";
-import { Status } from "../models/status.js"
+import { Status } from "../models/status.js";
+import { TechnicianProfile } from "../models/TechnicianProfile.js";
 import type { ModelStatic, Model } from "sequelize";
 
 export interface Models {
@@ -19,6 +20,8 @@ export interface Models {
     StatusHistory: typeof StatusHistory;
     Location: typeof Location;
     Status: typeof Status;
+    TechnicianProfile: typeof TechnicianProfile;
+
 }
 
 export type SequelizeModel = ModelStatic<Model> & { associate?: (models: Omit <Models, "sequelize">) => void };

@@ -2,6 +2,8 @@ import db from "../models/index.js";
 import { JobAssignment } from "../models/JobAssignment.js";
 import type { JobAssignmentCreationAttributes } from "../types/jobAssignment.types.js";
 import { StatusEnum } from "../types/serviceRequest.types.js";
+import aiService from "./aiService.js";
+import statusService from "./statusService.js";
 
 class JobAssignmentService {
     client: any;
@@ -44,16 +46,26 @@ class JobAssignmentService {
                 technicianId
             }, { transaction });
 
-            await serviceRequest.update(
+            /* await serviceRequest.update(
                 { statusId: StatusEnum.Assigned },
                 { transaction }
-            );
+            ); */
 
-            await db.StatusHistory.create({
+            /* await db.StatusHistory.create({
                 serviceRequestId,
                 oldStatusId: StatusEnum.Created,
                 newStatusId: StatusEnum.Assigned
-            }, { transaction });
+            }, { transaction }); */
+            
+            await statusService.updateStatus(serviceRequestId, StatusEnum.Assigned, transaction);
+
+            await db.TechnicianProfile.update(
+                {
+                    currentLocationId: serviceRequest.locationId,
+                    isAvailable: false
+                },
+                { where: { userId: technicianId }, transaction }
+            );
 
             await transaction.commit();
 
@@ -101,6 +113,27 @@ class JobAssignmentService {
             throw new Error("Job Assignmengt not found")
         }
         return jobAssignment.destroy();
+    }
+
+    async recommendTechnician(serviceRequestId: number) {
+        const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId);
+
+        const technicians = await db.User.findAll({
+            include: [
+                {
+                    model: db.Role,
+                    as: "Role",
+                    where: { name: "Technician" },
+                },
+            ],
+        });
+
+        const aiResult = await aiService.recommendTechnician(serviceRequest, technicians);
+        return this.create({
+            serviceRequestId,
+            technicianId: aiResult.technicianId
+        });
+        ///add status history changes
     }
 }
 

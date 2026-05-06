@@ -6,6 +6,7 @@ import type { Service } from "../models/service.js";
 import type { Location } from "../models/location.js";
 import type { Status } from "../models/status.js";
 import { TechnicianDTO } from "../DTOs/TechnicianDTO.js";
+import statusService from "./statusService.js";
 
 class TechnicianService {
     client: any;
@@ -63,6 +64,28 @@ class TechnicianService {
             ]
         });
         return assignments.map(job => new TechnicianDTO(job));
+    }
+
+    async updateStatus(serviceRequestId: number, statusId: number, technicianId: number) {
+        const transaction = await this.client.transaction();
+        try {
+            const assignment = await this.JobAssignment.findOne({
+                where: {
+                    serviceRequestId, technicianId, unassignedAt: null
+                },
+                transaction
+            });
+
+            if (!assignment) {
+                throw new Error("No active assignment found for this service request and technician");
+            }
+            
+            await statusService.updateStatus(serviceRequestId, statusId, transaction);
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
+        }
     }
 }
 

@@ -29,6 +29,10 @@ extends Model<InferAttributes<User>, InferCreationAttributes<User, { omit: "id" 
             foreignKey: "technicianId",
             as: "TechnicianAssignments"
         });
+        User.hasOne(models.TechnicianProfile, {
+            foreignKey: "userId",
+            as: "TechnicianProfile"
+        });
     }
 }
 export function initUserModel(sequelize: Sequelize) {

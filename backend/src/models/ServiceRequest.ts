@@ -13,7 +13,9 @@ export class ServiceRequest extends Model<InferAttributes<ServiceRequest>, Infer
     declare serviceId: number;
     declare statusId: number;
     declare locationId: number;
-
+    declare description: string;
+    declare priority: "Low" | "Medium" | "High";
+    
     declare Customer?: User;
     declare JobAssignments?: JobAssignment[];
     declare StatusHistory?: StatusHistory[];
@@ -72,11 +74,19 @@ export function initServiceRequestModel(sequelize: Sequelize) {
         },
         statusId: {
             type: DataTypes.INTEGER.UNSIGNED,
-            allowNull: false
+            allowNull: false,
         },
         locationId: {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
+        },
+        description: {
+            type: DataTypes.STRING(255),
+            allowNull: false
+        },
+        priority: {
+            type: DataTypes.ENUM("Low", "Medium", "High"),
+            allowNull: false
         }
     },
     {   sequelize,

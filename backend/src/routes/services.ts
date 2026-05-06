@@ -26,12 +26,12 @@ router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response) =
 
 router.post("/", isAuth, isStaff, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { serviceType, description } = req.body;
+        const { specialization, description } = req.body;
     
-    if (!serviceType || !description ) {
-        return res.status(400).json({ status: "error", statuscode: 400, message: "Missing required fields: serviceType, description" });
+    if (!specialization || !description ) {
+        return res.status(400).json({ status: "error", statuscode: 400, message: "Missing required fields: specialization, description" });
     }
-    const newService = await ServiceService.create({ serviceType, description });
+    const newService = await ServiceService.create({ specialization, description });
 
     res.status(201).json({ message: "Service created", data: newService });
     } catch (err) {
@@ -45,11 +45,11 @@ router.put("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res: Re
         if (Number.isNaN(idNum)) {
             return res.status(400).json({ status: "error", statuscode: 400, message: "Service ID must be a number" });
         }
-        const { serviceType, description } = req.body;
-        if (!serviceType && !description) {
-            return res.status(400).json({ status: "error", statuscode: 400, message: "At least one field (serviceType or description) must be provided for update" });
+        const { specialization, description } = req.body;
+        if (!specialization && !description) {
+            return res.status(400).json({ status: "error", statuscode: 400, message: "At least one field (specialization or description) must be provided for update" });
         }
-        const updatedService = await ServiceService.update(idNum, { serviceType, description });
+        const updatedService = await ServiceService.update(idNum, { specialization, description });
         res.json({ message: "Service updated", data: updatedService });
     } catch (err) {
         next(err);
