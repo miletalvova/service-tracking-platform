@@ -16,10 +16,10 @@ import { seedStatuses } from "../seeders/statuses.js";
 import { seedServices } from "../seeders/services.js";
 import { seedLocations } from "../seeders/locations.js";
 
-const { DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, HOST, DIALECT } = process.env;
+const { DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, DATABASE_HOST, DIALECT } = process.env;
 
-if (!DATABASE_NAME || !ADMIN_USERNAME || !ADMIN_PASSWORD || !HOST) {
-    throw new Error("Missing required environment variables: DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, HOST");
+if (!DATABASE_NAME || !ADMIN_USERNAME || !ADMIN_PASSWORD || !DATABASE_HOST) {
+    throw new Error("Missing required environment variables: DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, DATABASE_HOST");
 }
 
 const sequelize = new Sequelize( 
@@ -27,7 +27,7 @@ const sequelize = new Sequelize(
     ADMIN_USERNAME,
     ADMIN_PASSWORD,
     {
-        host: HOST,
+        host: DATABASE_HOST,
         dialect: DIALECT as any,
         dialectModule: mysql2,
         logging: false

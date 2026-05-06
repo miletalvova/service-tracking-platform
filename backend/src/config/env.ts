@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
 
-console.log("NODE_ENV:", process.env.NODE_ENV);
+const env = process.env.NODE_ENV;
+console.log("NODE_ENV:", env);
 
-if (process.env.NODE_ENV !== "production") {
+if (env === "local") {
     dotenv.config({ path: ".env.local" });
 }
