@@ -1,5 +1,6 @@
 import db from "../models/index.js";
 import { JobAssignment } from "../models/JobAssignment.js";
+import { TechnicianProfile } from "../models/TechnicianProfile.js";
 import type { JobAssignmentCreationAttributes } from "../types/jobAssignment.types.js";
 import { StatusEnum } from "../types/serviceRequest.types.js";
 import aiService from "./aiService.js";
@@ -8,9 +9,11 @@ import statusService from "./statusService.js";
 class JobAssignmentService {
     client: any;
     JobAssignment: typeof JobAssignment;
+    TechnicianProfile: typeof TechnicianProfile;
     constructor(db: any) {
         this.client = db.sequelize;
         this.JobAssignment = db.JobAssignment;
+        this.TechnicianProfile = db.TechnicianProfile;
     }
 
     async create({ serviceRequestId, technicianId }: JobAssignmentCreationAttributes) {
@@ -118,6 +121,10 @@ class JobAssignmentService {
     async recommendTechnician(serviceRequestId: number) {
         const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId);
 
+        if(!serviceRequest) {
+            throw new Error("Service request not found");
+        }
+
         const technicians = await db.User.findAll({
             include: [
                 {
@@ -125,10 +132,58 @@ class JobAssignmentService {
                     as: "Role",
                     where: { name: "Technician" },
                 },
+                {
+                    model: db.TechnicianProfile,
+                    as: "TechnicianProfile",
+                    include: [
+                        {
+                            model: db.Location,
+                            as: "CurrentLocation"
+                        }
+                    ]
+                }
             ],
         });
 
-        const aiResult = await aiService.recommendTechnician(serviceRequest, technicians);
+        const techniciansWithWorkload = await Promise.all(technicians.map(async (tech) => {
+            const activeJobsCount = await db.JobAssignment.count({
+                where: {
+                    technicianId: tech.id,
+                    unassignedAt: null
+                }
+            });
+            return {
+                id: tech.id,
+                name: `${tech.FirstName} ${tech.LastName}`,
+                skills: tech.TechnicianProfile?.skills ?? "",
+                isAvailable: tech.TechnicianProfile?.isAvailable ?? false,
+                activeJobs: activeJobsCount,
+                maxActiveJobs: tech.TechnicianProfile?.maxActiveJobs ?? 3,
+                currentLocation: tech.TechnicianProfile?.CurrentLocation ?? null,
+             };
+        }));
+
+        const availableTechnicians = techniciansWithWorkload.filter(
+            tech => tech.isAvailable && tech.activeJobs < tech.maxActiveJobs
+        );
+
+        if (availableTechnicians.length === 0) {
+            throw new Error("No available technicians at the moment");
+        }
+
+        const aiResult = await aiService.recommendTechnician(serviceRequest, availableTechnicians);
+        console.log("AI Recommendation Result:", aiResult);
+        console.log("All Available Technicians:", JSON.stringify(availableTechnicians, null, 2));
+
+        if (!aiResult.technicianId) {
+            throw new Error(aiResult?.reason ?? "No suitable technician found for this request");
+        }
+
+        const technicianExists = availableTechnicians.find(tech => tech.id === aiResult.technicianId);
+        if (!technicianExists) {
+            throw new Error(`AI recommended technicianId ${aiResult.technicianId} which is not in the available list`);
+        }
+
         return this.create({
             serviceRequestId,
             technicianId: aiResult.technicianId

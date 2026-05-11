@@ -7,10 +7,12 @@ import type { Location } from "../models/location.js";
 import type { Status } from "../models/status.js";
 import { TechnicianDTO } from "../DTOs/TechnicianDTO.js";
 import statusService from "./statusService.js";
+import type { TechnicianProfile } from "../models/TechnicianProfile.js";
 
 class TechnicianService {
     client: any;
     User: typeof User;
+    TechnicianProfile: typeof TechnicianProfile;
     ServiceRequest: typeof ServiceRequest;
     JobAssignment: typeof JobAssignment;
     Service: typeof Service;
@@ -19,11 +21,16 @@ class TechnicianService {
     constructor(db: any) {
         this.client = db.sequelize;
         this.User = db.User;
+        this.TechnicianProfile = db.TechnicianProfile;
         this.ServiceRequest = db.ServiceRequest;
         this.JobAssignment = db.JobAssignment;
         this.Service = db.Service;
         this.Location = db.Location;
         this.Status = db.Status;
+    }
+
+    async getOneByUserId(userId: number) {
+        return this.TechnicianProfile.findOne({ where: { userId } });
     }
 
     async getAssignedRequests(technicianId: number) {
@@ -87,6 +94,7 @@ class TechnicianService {
             throw error;
         }
     }
+
 }
 
 export default new TechnicianService(db);

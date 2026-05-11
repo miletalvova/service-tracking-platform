@@ -38,64 +38,64 @@ class ServiceRequestService {
             return serviceRequest;
         }
 
-            async createSmart({ customerId, description, locationId }: SmartServiceRequestCreationAttributes) {
-                const transaction = await this.client.transaction();
+        async createSmart({ customerId, description, locationId }: SmartServiceRequestCreationAttributes) {
+            const transaction = await this.client.transaction();
+            try {
+                let aiResult;
+                let urgencyResult;
+                let finalPriority: "Low" | "Medium" | "High" = "Medium";
+
                 try {
-                    let aiResult;
-                    let urgencyResult;
-                    let finalPriority: "Low" | "Medium" | "High" = "Medium";
+                    [aiResult, urgencyResult] = await Promise.all([
+                        AIService.classifyRequest(description),
+                        AIService.detectUrgency(description)
+                    ]);
 
-                    try {
-                        [aiResult, urgencyResult] = await Promise.all([
-                            AIService.classifyRequest(description),
-                            AIService.detectUrgency(description)
-                        ]);
-
-                        finalPriority = urgencyResult.isUrgent ? "High" : aiResult.priority;
-                    }
-                    catch (error) {
-                        console.error("AI classification failed, falling back to default values. Error:", error);
-                        aiResult = {
-                            service: "IT Support",
-                            cleanDescription: description,
-                            priority: "Medium"
-                        };
-                    }
-
-                let service = await this.Service.findOne({ where: { specialization: aiResult.service }, transaction });
-                
-               if (!service) {
-                    service = await this.Service.create({ 
-                        specialization: aiResult.service, 
-                        description: `All ${aiResult.service.toLowerCase()} related services` }, { transaction });
+                    finalPriority = urgencyResult.isUrgent ? "High" : aiResult.priority;
+                }
+                catch (error) {
+                    console.error("AI classification failed, falling back to default values. Error:", error);
+                    aiResult = {
+                        service: "IT Support",
+                        cleanDescription: description,
+                        priority: "Medium"
+                    };
                 }
 
-                const serviceRequest = await this.ServiceRequest.create({
-                    customerId,
-                    serviceId: service.id,
-                    statusId: StatusEnum.Created,
-                    locationId,
-                    description: aiResult.cleanDescription,
-                    priority: finalPriority
-                }, { transaction });
+            let service = await this.Service.findOne({ where: { specialization: aiResult.service }, transaction });
+            
+            if (!service) {
+                service = await this.Service.create({ 
+                    specialization: aiResult.service, 
+                    description: `All ${aiResult.service.toLowerCase()} related services` }, { transaction });
+            }
 
-                console.log({
-                    event: "ai_classification",
-                    input: description.slice(0, 100),
-                    output: aiResult,
-                    urgency: urgencyResult,
-                    timestamp: new Date().toISOString()
-                })
-
-            await this.StatusHistory.create({
-                serviceRequestId: serviceRequest.id,
-                oldStatusId: 1,
-                newStatusId: 1
+            const serviceRequest = await this.ServiceRequest.create({
+                customerId,
+                serviceId: service.id,
+                statusId: StatusEnum.Created,
+                locationId,
+                description: aiResult.cleanDescription,
+                priority: finalPriority
             }, { transaction });
 
-            await transaction.commit();
+            console.log({
+                event: "ai_classification",
+                input: description.slice(0, 100),
+                output: aiResult,
+                urgency: urgencyResult,
+                timestamp: new Date().toISOString()
+            })
 
-            return serviceRequest;
+        await this.StatusHistory.create({
+            serviceRequestId: serviceRequest.id,
+            oldStatusId: 1,
+            newStatusId: 1
+        }, { transaction });
+
+        await transaction.commit();
+
+        return serviceRequest;
         } catch (error) {
             await transaction.rollback();
             throw error;
