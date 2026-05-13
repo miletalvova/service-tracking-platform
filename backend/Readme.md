@@ -2,22 +2,7 @@
 
 ## About The Project
 
-This backend application is a part of an AI-Powered Service Tracking Platform.
-It provides RESTful API endpoints for managing customers, technicians, service requests, job assignments, locations, services, statuses, and AI-powered workflow automation.
-
-The system allows customers to create service requests manually or through AI-assisted request classification.
-Technicians can be automatically recommended and assigned to requests using AI-based matching.
-
-The backend also includes:
-
-- AI-powered service request classification
-- AI urgency detection
-- AI technician recommendation
-- Status transition workflow engine
-- Technician assignment tracking
-- Location autocomplete integration (in progress)
-- Dockerized backend and database setup
-- JWT authentication and role-based authorization
+The backend for the Service Tracking Platform. A REST API built with Node.js, Express.js, and TypeScript, backed by MySQL via Sequelize ORM. Includes JWT authentication, role-based access control, AI-powered workflows, and a controlled status transition engine.
 
 For demonstration purposes, the backend includes automatic seed data for:
 
@@ -38,86 +23,194 @@ await seedLocations();
 
 ```
 
-# AI Features
+---
 
-## AI Smart Request Creation
 
-Customers can create service requests using natural language descriptions.
+## AI Features
 
-Example:
+### AI Smart Request Creation
+
+Customers describe their issue in plain language. Claude automatically classifies the request:
+ 
+- Detects service type (Plumbing, Electrical, IT Support, Cleaning, etc.)
+- Cleans and normalizes the description
+- Detects urgency using tool use
+- Sets request priority (Low / Medium / High)
+
+Example input:
 
 ```
 "My internet connection stopped working and the router is blinking red."
 
 ```
 
-The AI automatically:
+Claude returns structured data that is saved directly to the database.
 
-- Classifies the service type
-- Cleans and normalizes the request description
-- Detects urgency
-- Assigns request priority
+### AI Technician Recommendation
 
-## AI Technician Recommendation
+The platform can automatically recommend the best technician for a service request based on:
 
-The platform can automatically recommend the best technician for a request based on:
+- Skill match with the service type
+- Current workload (active job count)
+- Availability status
+- Maximum active jobs capacity
 
-- Service specialization
-- Technician role
-- Request type
-- Availability
+
+Claude receives a filtered list of available technicians and returns the best match with a reason.
+
+
+---
 
 ## Tech Stack
 
-- Node.js
-- Express.js
+- Node.js 22
+- Express.js 5
 - TypeScript
 - Sequelize ORM
-- MySQL
-- Docker
-- Claude AI API
+- MySQL 8
+- Docker + Docker Compose
+- Anthropic Claude API
 - JWT Authentication
 
-## How To Run The Application
+---
 
-> [!NOTE]
-> During development, the backend runs on http://localhost:3000.
+
+## System Roles
+ 
+| Role | Description |
+|---|---|
+| Customer | Creates and tracks service requests |
+| Staff | Manages requests and assigns technicians |
+| Technician | Views assigned jobs and updates status |
+
+
+---
+
+## Database Schema
+ 
+Core tables:
+ 
+| Table | Description |
+|---|---|
+| Users | All users with role reference |
+| Roles | Customer, Staff, Technician |
+| ServiceRequests | Customer requests with AI-classified data |
+| Services | Service categories (Plumbing, Electrical, etc.) |
+| JobAssignments | Technician assignments per request |
+| StatusHistory | Full audit trail of status changes |
+| Locations | Address data for requests and technicians |
+| Statuses | Created, Assigned, InProgress, Completed, Cancelled |
+| TechnicianProfiles | Skills, availability, workload capacity per technician |
+ 
+All relationships are defined via Sequelize associations and follow 3NF.
+ 
+---
+ 
+## Authentication Flow
+ 
+1. User registers via `POST /api/auth/register`
+2. Password is hashed with bcrypt before storage
+3. User logs in via `POST /api/auth/login`
+4. Server returns a signed JWT token
+5. Client sends token in the `Authorization: Bearer <token>` header
+6. Middleware validates token and attaches user + role to the request
+
+
+---
+
+## API Endpoints
+ 
+Full documentation is available at `/doc` (Swagger) when the server is running.
+ 
+### Auth
+ 
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | /api/auth/register | Register a new user |
+| POST | /api/auth/login | Login and receive JWT token |
+ 
+### Service Requests
+ 
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | /api/requests | Get all service requests |
+| GET | /api/requests/:id | Get request by ID |
+| POST | /api/requests | Create request (AI-powered) |
+| POST | /api/requests/smart | Create request using AI — classifies service type, detects urgency, sets priority automatically
+| PUT | /api/requests/:id | Update request |
+| DELETE | /api/requests/:id | Delete request (Staff only) |
+| PATCH | /api/requests/:id/status | Update request status |
+
+### POST /api/requests
+Creates a service request manually. Requires `serviceId` to be provided by the client.
+
+### POST /api/requests/smart
+Creates an AI-powered service request. Only requires a plain text `description` and `locationId`.
+Claude automatically classifies the service type, cleans the description, detects urgency, and sets priority.
+
+Sample request:
+{
+  "description": "The router is blinking red and internet is down",
+  "locationId": 1
+}
+ 
+### Job Assignments
+ 
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | /api/assignments | Get all assignments |
+| GET | /api/assignments/:id | Get assignment by ID |
+| GET | /api/assignments/recommend/:serviceRequestId | AI technician recommendation |
+| POST | /api/assignments | Create manual assignment |
+| PUT | /api/assignments/:id | Update assignment (Staff only) |
+| DELETE | /api/assignments/:id | Delete assignment (Staff only) |
+ 
+### Technicians
+ 
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | /api/technicians/assigned-requests | Get assigned jobs (Technician only) |
+| PATCH | /api/technicians/:id/status | Update job status (Technician only) |
+| PATCH | /api/technicians/location | Update current location (Technician only) |
+ 
+### Services and Locations
+ 
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | /api/services | Get all services |
+| GET | /api/locations | Get all locations |
+ 
+---
+
 
 ## Local Development Setup
 
+### Requirements
+ 
+- Node.js 22+
+- MySQL 8
+- Anthropic API 
+
+### Steps
+
 1. Clone the repository
 
-```
-
+```bash
 git clone https://github.com/leta373/service-tracking-platform.git
-
+cd service-tracjing-platform/backend
 ```
 
+2. Install dependencies
 
-2. Navigate to backend folder
-
-```
-cd backend
-
-```
-
-
-3. Install dependencies
-
-```
-
+```bash
 npm install
-
 ```
 
-4. Configure environment variables
-
-Create .env.local
+3. Create .env.local
 
 Example:
 
 ```
-
 ADMIN_USERNAME=root
 ADMIN_PASSWORD=YOURPASSWORD
 DATABASE_NAME=service_tracking_db
@@ -126,55 +219,32 @@ PORT=3000
 HOST=localhost
 JWT_SECRET=YOUR_SECRET
 ANTHROPIC_API_KEY=YOUR_API_KEY
-
 ```
 
 > [!WARNING]
-> Replace all placeholder values with your actual credentials.
+> Replace all placeholder values with your actual credentials. Never commit .env.local to version control.
 
 
-53. Install dependencies
+The API will be available at `http://localhost:3000`.
 
-```
-npm run dev
+---
 
-```
 
-The backend will run on:
+## Docker Setup
 
-```
-http://localhost:3000
+### Run with Docker Compose
 
-```
-
-# Docker Setup
-
-The application includes a production-ready Docker setup.
-
-## Run with Docker Compose
-
-```
+```bash
 docker compose up --build
-
 ```
 
-The backend will run on:
+| Service | URL |
+|---|---|
+| Backend API | http://localhost:3000 |
+| MySQL | localhost:3307 |
 
-```
-http://localhost:3000
 
-```
-
-The MySQL container will run on:
-
-```
-localhost:3307
-
-```
-
-## Docker Environment Configuration
-
-Create .env.docker
+### Create `.env.docker`
 
 Example:
 
@@ -187,286 +257,89 @@ PORT=3000
 HOST=db
 JWT_SECRET=YOUR_SECRET
 ANTHROPIC_API_KEY=YOUR_API_KEY
-
 ```
 
-## Docker Commands
+> [!NOTE]
+> `HOST=db` refers to the MySQL container name in Docker Compose, not localhsot.
 
-### Build backend image
+### Useful Docker Commands
 
-```
-docker build -t service-tracking-backend .
-
-```
-
-### Run backend container
-
-```
-docker run -p 3000:3000 --env-file .env.docker service-tracking-backend
-
-```
-
-### Start all services
-
-```
+```bash
+# Start all services
 docker compose up
 
-```
-
-### Rebuild containers
-
-```
+# Rebuild and start
 docker compose up --build
 
-```
-
-### Stop containers
-
-```
+# Stop all servcies
 docker compose down
 
-```
-
-### Remove containers and database volumes
-
-```
+# Stop and remove database volumes
 docker compose down -v
 
+# Build backend image only
+docker build -t service-tracking-backend .
+
+# Run backend container only
+docker run -p 3000:3000 --env-file .env.docker service-tracking-backend
 ```
 
-## Connecting To Docker MySQL
+### Connect to MySQL inside Docker
 
-The Docker MySQL container is exposed on:
-
-```
-localhost:3307
-
-```
-
-You can connect using:
-
-- MySQL Workbench
-- DBeaver
-- TablePlus
-- CLI
-
-Connection settings:
-
-```
-Host: localhost
-Port: 3307
-Username: root
-Password: YOURPASSWORD
-
-```
-
-## Using MySQL Inside Docker Terminal
-
-Open MySQL shell inside container:
-
-```
+```bash
 docker exec -it backend-db-1 mysql -u root -p
-
 ```
 
-Then:
-
-```
+```sql
 SHOW DATABASES;
 USE service_tracking_db;
 SHOW TABLES;
 SELECT * FROM ServiceRequests;
-
 ```
 
-### Requirements
-- Node.js 22+
-- Docker Desktop
-- MySQL 8
-- TypeScript
-- Claude API Key
-
-
-## API Documentation
-
-### Authentication
-
-JWT authentication is required for protected routes.
-
-Authorization header:
-
+External connection settings:
+ 
 ```
-Authorization: Bearer YOUR_TOKEN
-
+Host: localhost
+Port: 3307
+Username: root
+Password: yourpassword
 ```
 
-# Main Endpoints
+---
 
-## Authentication
+## Seed Data
+ 
+On startup, the application automatically seeds:
+ 
+- Roles (Customer, Staff, Technician)
+- Statuses (Created, Assigned, InProgress, Completed, Cancelled)
+- Services (Plumbing, Electrical, IT Support, Cleaning, etc.)
+- Locations (sample addresses)
 
-### POST /auth/register
-
-Registers a new user.
-
-### POST /auth/login
-
-Authenticates a user and returns JWT token.
-
-## Service Requests
-### GET /serviceRequests
-
-Returns all service requests.
-
-### GET /serviceRequests/{id}
-
-Returns a service request by ID.
-
-### POST /serviceRequests
-
-Creates a standard service request manually.
-
-Sample Request
-
+To disable seeding, comment out the seed calls:
+ 
+```typescript
+// await seedRoles();
+// await seedStatuses();
+// await seedServices();
+// await seedLocations();
 ```
-{
-  "customerId": 1,
-  "serviceId": 2,
-  "locationId": 1,
-  "description": "Internet connection issue"
-}
-
-```
-
-### POST /serviceRequests/smart
-
-Creates an AI-powered service request.
-
-The AI automatically:
-
-- Detects service type
-- Detects urgency
-- Sets priority
-- Cleans description
-
-Sample Request
-
-```
-{
-  "description": "The router is blinking red and internet is down",
-  "locationId": 1
-}
-
-```
-
-Sample Response
-
-```
-{
-  "id": 1,
-  "serviceId": 3,
-  "priority": "High",
-  "description": "Internet connection issue with router blinking red"
-}
-
-```
-
-### PUT /serviceRequests/{id}
-
-Updates a service request.
-
-### DELETE /serviceRequests/{id}
-
-Deletes a service request.
-
-## Job Assignments
-
-### POST /jobAssignments
-
-Assigns a technician to a service request.
-
-Only one active technician assignment is allowed per request.
-
-### GET /jobAssignments/recommend/{serviceRequestId}
-
-Uses AI to recommend the best technician for a request.
-
-## Locations
-
-### GET /locations
-
-Returns all locations.
-
-### GET /locations/autocomplete?q=value
-
-Returns AI-powered address suggestions using external geolocation APIs.
-
-Example:
-
-```
-/locations/autocomplete?q=Oslo
-
-```
-
-## Status Workflow
-
-The platform includes a controlled status transition system.
-
-Valid transitions:
-
-```
-Created → Assigned
-Assigned → InProgress
-InProgress → Completed
-Any → Cancelled
-
-```
-
-Invalid transitions are automatically rejected.
-
-## Database Relationships
-
-Main relationships:
-
-- User → ServiceRequests
-- ServiceRequest → JobAssignments
-- ServiceRequest → StatusHistory
-- ServiceRequest → Location
-- ServiceRequest → Service
-- Technician → Assignments
-
-## Security Features
-
-- JWT authentication
-- Role-based authorization
-- Protected routes
-- Input validation
-- Transaction support
-- Controlled workflow transitions
-
-## Deployment
-
-The backend is containerized and ready for deployment using:
-
-- Docker
-- Docker Compose
-- Railway
-- Render
-- VPS deployments
-- Cloud container services
-
-Docker Hub repository:
-
-[https://hub.docker.com/r/leta373/service-tracking-backend?utm_source=chatgpt.com](#service-tracking-backend Docker Hub Image)
-
-## Future Improvements
-
-Planned features:
-
-- Real-time notifications
-- WebSocket updates
-- AI predictive maintenance
-- Technician workload balancing
-- AI analytics dashboard
-- Frontend integration
-- Kubernetes deployment
-- CI/CD pipeline
+ 
+---
+ 
+## Security
+ 
+- JWT authentication on all protected routes
+- Role-based middleware (isAuth, isStaff, isTechnician)
+- Password hashing with bcrypt
+- Input validation on all request bodies
+- Transaction support for all multi-step database operations
+- Controlled status transition engine — invalid transitions are rejected
+---
+ 
+## Docker Hub
+ 
+Pre-built image available at:
+ 
+[hub.docker.com/r/leta373/service-tracking-backend](https://hub.docker.com/repository/docker/leta373/service-tracking-backend/general)
