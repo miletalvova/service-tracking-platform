@@ -2,6 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import createError from 'http-errors';
 import type { Request, Response, NextFunction } from 'express';
+import swaggerUi from 'swagger-ui-express';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const swaggerFile = require('../swagger-output.json');
 
 import authRouter from './routes/auth.js';
 import serviceRouter from './routes/services.js';
@@ -21,6 +25,7 @@ app.use(cors({
   credentials: true
 }));
 
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use('/api/auth', authRouter);
 app.use('/api/services', serviceRouter);
 app.use('/api/requests', serviceRequestRouter);

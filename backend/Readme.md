@@ -4,25 +4,6 @@
 
 The backend for the Service Tracking Platform. A REST API built with Node.js, Express.js, and TypeScript, backed by MySQL via Sequelize ORM. Includes JWT authentication, role-based access control, AI-powered workflows, and a controlled status transition engine.
 
-For demonstration purposes, the backend includes automatic seed data for:
-
-- Roles
-- Statuses
-- Services
-- Locations
-
-If you don't want to use the seed data, comment out the seed functions in your startup/bootstrap logic before running the application.
-
-Example:
-
-```
-await seedRoles();
-await seedStatuses();
-await seedServices();
-await seedLocations();
-
-```
-
 ---
 
 
