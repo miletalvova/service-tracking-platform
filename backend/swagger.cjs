@@ -71,7 +71,35 @@ const doc = {
                     serviceRequestId: { type: "integer", example: 101 },
                     technicianId: { type: "integer", example: 202 }
                 }
-            }
+            },
+            Location: {
+                type: "object",
+                properties: {
+                    id: { type: "integer", example: 1 },
+                    address: { type: "string", example: "123 Main St" },
+                    city: { type: "string", example: "New York" },
+                    state: { type: "string", example: "NY" },
+                    zipCode: { type: "string", example: "10001" },
+                }
+            },
+            LocationInput: {
+                type: "object",
+                properties: {
+                    address: { type: "string", example: "123 Main St" },
+                    city: { type: "string", example: "New York" },
+                    state: { type: "string", example: "NY" },
+                    zipCode: { type: "string", example: "10001" },
+                }
+            },
+            LocationUpdateInput: {
+                type: "object",
+                properties: {
+                    address: { type: "string", example: "123 Main St" },
+                    city: { type: "string", example: "New York" },
+                    state: { type: "string", example: "NY" },
+                    zipCode: { type: "string", example: "10001" },
+                }
+            },
         },
         responses: {
             BadRequest: {

@@ -30,7 +30,7 @@ router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) 
             }
         }
     }*/
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unathorized' } */
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
     try {
@@ -71,7 +71,7 @@ router.get("/recommend/:serviceRequestId", isAuth, async (req: Request<{ service
         }
     } */
     /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unathorized' } */
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
     /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
@@ -124,7 +124,7 @@ router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, n
         }
     } */
     /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unathorized' } */
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
     /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
@@ -142,9 +142,9 @@ router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, n
         }
 
         return res.status(200).json({ status: "success", statusCode:200, message: "Job Assignment details", data: jobAssignment});
-        } catch (err) {
-            return next(err);
-        }
+    } catch (err) {
+        return next(err);
+    }
 });
 
 router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
@@ -178,7 +178,7 @@ router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction)
         }
     } */
     /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unathorized' } */
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
     
 
@@ -235,8 +235,9 @@ router.put("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res: Re
         }
     } */
     /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unathorized' } */
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
     /* #swagger.responses[403] = { $ref: '#/components/responses/Forbidden' } */
+    /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
     try {
@@ -281,29 +282,23 @@ router.delete("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res:
                     properties: {
                         status: { type: 'string', example: 'success' },
                         statusCode: { type: 'number', example: 200 },
-                        message: { type: 'string', example: 'Job Assignment updated' }
+                        message: { type: 'string', example: 'Job Assignment deleted' }
                     }
                 }
             }
         }
     } */
     /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unathorized' } */
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
     /* #swagger.responses[403] = { $ref: '#/components/responses/Forbidden' } */
     /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+
     try {
         const idNum = Number(req.params.id);
 
         if (Number.isNaN(idNum)) {
             return res.status(400).json({ status: "error", statusCode: 400, message: "Job Assignment ID must be a number" });
-        }
-
-        const existingAssignment = await jobAssignmentService.getOneById(idNum);
-
-        if(!existingAssignment) {
-            return res.status(404).json({ status: "error", statusCode: 404, message: "Job Assignment not found"
-            })
         }
 
         await jobAssignmentService.delete(idNum);

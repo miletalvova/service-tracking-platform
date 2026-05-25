@@ -5,6 +5,7 @@ import type { JobAssignmentCreationAttributes } from "../types/jobAssignment.typ
 import { StatusEnum } from "../types/serviceRequest.types.js";
 import aiService from "./aiService.js";
 import statusService from "./statusService.js";
+import createError from "http-errors";
 
 class JobAssignmentService {
     client: any;
@@ -19,18 +20,19 @@ class JobAssignmentService {
     async create({ serviceRequestId, technicianId }: JobAssignmentCreationAttributes) {
         const transaction = await this.client.transaction();
         try {
-            const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId);
+            const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId, { transaction });
+            
             if (!serviceRequest) {
-            throw new Error("Service request not found");
+            throw createError(404, "Service request not found");
         }
             if (serviceRequest.statusId === StatusEnum.Completed || 
                 serviceRequest.statusId === StatusEnum.Cancelled
             ) {
-                throw new Error("Cannot assign technician to a completed or cancelled service request");
+                throw createError(400, "Cannot assign technician to a completed or cancelled service request");
             }
 
             if (serviceRequest.statusId !== StatusEnum.Created) {
-                throw new Error("Technician can only be assigned when request is in 'Created' state");
+                throw createError(400, "Technician can only be assigned when request is in 'Created' state");
             }
 
             const existingAssignment = await this.JobAssignment.findOne({
@@ -41,7 +43,7 @@ class JobAssignmentService {
             });
 
             if (existingAssignment) {
-                throw new Error("Service request already has an assigned technician");
+                throw createError(409, "Service request already has an assigned technician");
             }
 
             const newAssignment = await this.JobAssignment.create({
@@ -105,24 +107,27 @@ class JobAssignmentService {
     async update(id: number, data: JobAssignmentCreationAttributes) {
         const jobAssignment = await this.JobAssignment.findByPk(id);
         if(!jobAssignment) {
-            throw new Error("Job Assignmengt not found");
+            throw createError(404, "Job Assignment not found");
         }
         return jobAssignment.update(data);
     }
 
     async delete(id: number) {
         const jobAssignment = await this.JobAssignment.findByPk(id);
+
         if(!jobAssignment) {
-            throw new Error("Job Assignmengt not found")
+            throw createError(404, "Job Assignment not found")
         }
+        
         return jobAssignment.destroy();
     }
 
     async recommendTechnician(serviceRequestId: number) {
-        const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId);
+        const transaction = await this.client.transaction();
+        const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId, { transaction});
 
         if(!serviceRequest) {
-            throw new Error("Service request not found");
+            throw createError(404, "Service request not found");
         }
 
         const technicians = await db.User.findAll({
@@ -168,7 +173,7 @@ class JobAssignmentService {
         );
 
         if (availableTechnicians.length === 0) {
-            throw new Error("No available technicians at the moment");
+            throw createError(409, "No available technicians at the moment");
         }
 
         const aiResult = await aiService.recommendTechnician(serviceRequest, availableTechnicians);
@@ -176,12 +181,12 @@ class JobAssignmentService {
         console.log("All Available Technicians:", JSON.stringify(availableTechnicians, null, 2));
 
         if (!aiResult.technicianId) {
-            throw new Error(aiResult?.reason ?? "No suitable technician found for this request");
+            throw createError(409, aiResult?.reason ?? "No suitable technician found for this request");
         }
 
         const technicianExists = availableTechnicians.find(tech => tech.id === aiResult.technicianId);
         if (!technicianExists) {
-            throw new Error(`AI recommended technicianId ${aiResult.technicianId} which is not in the available list`);
+            throw createError(500, `AI recommended technicianId ${aiResult.technicianId} which is not in the available list`);
         }
 
         return this.create({
