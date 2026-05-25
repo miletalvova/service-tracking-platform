@@ -11,7 +11,8 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000/"
+      "url": "http://localhost:3000",
+      "description": "Local development server"
     }
   ],
   "paths": {
@@ -434,42 +435,115 @@
     },
     "/api/assignments/": {
       "get": {
-        "description": "",
+        "tags": [
+          "Job Assignments"
+        ],
+        "summary": "Get all job assignments",
+        "description": "Endpoint to get all job assignments",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of job assignments retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "statusCode": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "List of assignments"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/JobAssignment"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
-          }
-        }
-      },
-      "post": {
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
+            "description": "Unauthorized",
+            "$ref": "#/components/responses/Unathorized"
           },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "Internal Server Error"
           }
         },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Job Assignments"
+        ],
+        "summary": "Creates a new job assignment",
+        "description": "Endpoint to create a new job assignment",
+        "responses": {
+          "201": {
+            "description": "JobAssignnment created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "statusCode": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Job Assignment created"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/JobAssignment"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "$ref": "#/components/responses/Unathorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "serviceRequestId": {
-                    "example": "any"
-                  },
-                  "technicianId": {
-                    "example": "any"
-                  }
-                }
+                "$ref": "#/components/schemas/JobAssignmentInput"
               }
             }
           }
@@ -478,125 +552,329 @@
     },
     "/api/assignments/recommend/{serviceRequestId}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Job Assignments"
+        ],
+        "summary": "Recommend a technician for a service request",
+        "description": "Endpoint to recommend the best available technician for a given service request ID",
         "parameters": [
           {
             "name": "serviceRequestId",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
-            }
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 101
+                }
+              }
+            },
+            "description": "ID of the service request to get a technician recommendation for"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Recommended technician retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "statusCode": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Recommended assignment"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/JobAssignment"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized",
+            "$ref": "#/components/responses/Unathorized"
+          },
+          "404": {
+            "description": "Not Found",
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/assignments/{id}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Job Assignments"
+        ],
+        "summary": "Get job assignment by ID",
+        "description": "Endpoint to get details of a specific job assignment by its ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
-            }
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            },
+            "description": "Job Assignment ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Details of a job assignment retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "statusCode": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Job Assignment details"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/JobAssignment"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request",
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized",
+            "$ref": "#/components/responses/Unathorized"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Not Found",
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "put": {
-        "description": "",
+        "tags": [
+          "Job Assignments"
+        ],
+        "summary": "Updates a job assignment",
+        "description": "Endpoint to update a job assignment",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
-            }
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            },
+            "description": "JobAssignment ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Job Assignment updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "statusCode": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Job Assignment updated"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/JobAssignment"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request",
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized",
+            "$ref": "#/components/responses/Unathorized"
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "Internal Server Error"
           }
         },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "serviceRequestId": {
-                    "example": "any"
-                  },
-                  "technicianId": {
-                    "example": "any"
-                  }
-                }
+                "$ref": "#/components/schemas/JobAssignmentUpdateInput"
               }
             }
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Job Assignments"
+        ],
+        "summary": "Delete a job assignment",
+        "description": "Endpoint to delete a job assignment",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
-            }
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            },
+            "description": "Job assignment ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Job Assignment deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "statusCode": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Job Assignment updated"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request",
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized",
+            "$ref": "#/components/responses/Unathorized"
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not Found",
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/technicians/assigned-requests": {
@@ -870,21 +1148,349 @@
     }
   },
   "components": {
-    "securitySchemes": {
-      "bearerAuth": {
+    "securitySchemas": {
+      "JWT": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "JWT Authorization header using the Bearer scheme. \n            Enter ONLY your JWT token in the input below (without 'Bearer ' prefix).\n            \n            Example: \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\""
+        "description": "JWT Authorization header using the Bearer scheme. \n                Enter ONLY your JWT token in the input below (without 'Bearer ' prefix).\n                \n                Example: \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\""
+      }
+    },
+    "schemas": {
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "example": {
+                    "type": "string",
+                    "example": "error"
+                  }
+                }
+              },
+              "statusCode": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "example": {
+                    "type": "number",
+                    "example": 400
+                  }
+                }
+              },
+              "message": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "example": {
+                    "type": "string",
+                    "example": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "JobAssignment": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "example": {
+                    "type": "number",
+                    "example": 1
+                  }
+                }
+              },
+              "serviceRequestId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "example": {
+                    "type": "number",
+                    "example": 101
+                  }
+                }
+              },
+              "technicianId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "example": {
+                    "type": "number",
+                    "example": 202
+                  }
+                }
+              },
+              "assignedAt": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date-time"
+                  },
+                  "nullable": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "example": {
+                    "type": "string",
+                    "example": "2024-06-01T12:00:00Z"
+                  }
+                }
+              },
+              "unassignedAt": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date-time"
+                  },
+                  "nullable": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "example": {}
+                }
+              },
+              "createdAt": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date-time"
+                  },
+                  "nullable": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "example": {
+                    "type": "string",
+                    "example": "2024-06-01T12:00:00Z"
+                  }
+                }
+              },
+              "updatedAt": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date-time"
+                  },
+                  "nullable": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "example": {
+                    "type": "string",
+                    "example": "2024-06-01T12:00:00Z"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "JobAssignmentInput": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "required": {
+            "type": "array",
+            "example": [
+              "serviceRequestId",
+              "technicianId"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "serviceRequestId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "example": {
+                    "type": "number",
+                    "example": 101
+                  }
+                }
+              },
+              "technicianId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "example": {
+                    "type": "number",
+                    "example": 202
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "JobAssignmentUpdateInput": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "serviceRequestId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "example": {
+                    "type": "number",
+                    "example": 101
+                  }
+                }
+              },
+              "technicianId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "example": {
+                    "type": "number",
+                    "example": 202
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized - Authentication required",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Forbidden - Staff access required",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
       }
     }
   },
   "security": [
     {
-      "bearerAuth": []
+      "JWT": []
     }
-  ],
-  "schemas": [
-    "http"
   ]
 }

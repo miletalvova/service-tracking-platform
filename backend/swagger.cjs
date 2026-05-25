@@ -18,26 +18,107 @@ const doc = {
                 email: 'mileta279@gmail.com'
             }
     },
-    host: 'localhost:3000',
-    basePath: '/',
-    securityDefinitions: {
-        bearerAuth: {
-            type: 'http',
-            scheme: 'bearer',
-            bearerFormat: 'JWT',
-            description: `JWT Authorization header using the Bearer scheme. 
-            Enter ONLY your JWT token in the input below (without 'Bearer ' prefix).
-            
-            Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
-        }
-    },
-    security: [
+    servers: [
         {
-            bearerAuth: []
+            url: 'http://localhost:3000',
+            description: 'Local development server'
         }
     ],
-    schemas: ['http']
+    components: {
+        securitySchemas: {
+            JWT: {
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT',
+                description: `JWT Authorization header using the Bearer scheme. 
+                Enter ONLY your JWT token in the input below (without 'Bearer ' prefix).
+                
+                Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
+            }
+        },
+        schemas: {
+            ApiError: {
+                type: "object",
+                properties: {
+                    status: { type: "string", example: "error" },
+                    statusCode: { type: "integer", example: 400 },
+                    message: { type: "string", example: "Bad Request" },
+                }
+            },
+            JobAssignment: {
+                type: "object",
+                properties: {
+                    id: { type: "integer", example: 1 },
+                    serviceRequestId: { type: "integer", example: 101 },
+                    technicianId: { type: "integer", example: 202 },
+                    assignedAt : { type: "string",format: "date-time", nullable: true, example: "2024-06-01T12:00:00Z" },
+                    unassignedAt : { type: "string",format: "date-time", nullable: true, example: null },
+                    createdAt : { type: "string",format: "date-time", nullable: true, example: "2024-06-01T12:00:00Z" },
+                    updatedAt : { type: "string",format: "date-time", nullable: true, example: "2024-06-01T12:00:00Z" },
+                }
+            },
+            JobAssignmentInput: {
+                type: "object",
+                required: ['serviceRequestId', 'technicianId'],
+                properties: {
+                    serviceRequestId: { type: "integer", example: 101 },
+                    technicianId: { type: "integer", example: 202 }
+                }
+            },
+            JobAssignmentUpdateInput: {
+                type: "object",
+                properties: {
+                    serviceRequestId: { type: "integer", example: 101 },
+                    technicianId: { type: "integer", example: 202 }
+                }
+            }
+        },
+        responses: {
+            BadRequest: {
+                description: "Bad Request",
+                content: {
+                    "application/json": {
+                        schema: { $ref: '#/components/schemas/ApiError'}
+                    }
+                }
+            },
+            Unauthorized: {
+                description: "Unauthorized - Authentication required",
+                content: {
+                    "application/json": {
+                        schema: { $ref: '#/components/schemas/ApiError'}
+                    }
+                }
+            },
+            Forbidden: {
+                description: "Forbidden - Staff access required",
+                content: {
+                    "application/json": {
+                        schema: { $ref: '#/components/schemas/ApiError'}
+                    }
+                }
+            },
+            NotFound: {
+                description: "Not found",
+                content: {
+                    "application/json": {
+                        schema: { $ref: '#/components/schemas/ApiError'}
+                    }
+                }
+            },
+            InternalServerError: {
+                description: "Internal Server Error",
+                content: {
+                    "application/json": {
+                        schema: { $ref: '#/components/schemas/ApiError'}
+                    }
+                }
+            }
+        }
+    },
+    security: [{ JWT: []}],
 };
+
 const outputFile = './swagger-output.json';
 const endpointsFiles = ['./src/app.ts'];
 
