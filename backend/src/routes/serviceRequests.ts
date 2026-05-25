@@ -5,39 +5,175 @@ import ServiceRequestService from "../services/serviceRequestService.js";
 import { isAuth, isStaff, isTechnician } from "../middleware/auth.js";
 
 
-router.get("/", isAuth, async (req: Request, res: Response) => {
-    const services = await ServiceRequestService.getAll();
-    res.json({ message: "List of service requests", data: services });
+router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Service Requests']
+    // #swagger.summary = 'Get all service requests'
+    // #swagger.description = 'Endpoint to get all service requests'
+    // #swagger.produces = ['application/json']
+    /* #swagger.security = [{"JWT": [] }] */
+    /* #swagger.responses[200] = {
+        description: 'List of service requests retrieved successfully',
+        content: {
+            'application/json': {
+                schema: {
+                    type: 'object',
+                    properties: {
+                        status: { type: 'string', example: 'success' },
+                        statusCode: { type: 'number', example: 200 },
+                        message: { type: 'string', example: 'List of service requests' },
+                        data: {
+                            type: 'array',
+                            items: { $ref: '#/components/schemas/ServiceRequest' } 
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }*/
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+    try {
+        const services = await ServiceRequestService.getAll();
+    return res.status(200).json({ status: "success", statusCode: 200, message: "List of service requests", data: services });
+    } catch (err) {
+        return next(err);
+    }
 });
 
-router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response) => {
-    const idNum = Number(req.params.id);
+router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Service Requests']
+    // #swagger.summary = 'Get service request by ID'
+    // #swagger.description = 'Endpoint to get details of a specific service request by its ID'
+    // #swagger.produces = ['application/json']
+    /* #swagger.security = [{ "JWT": [] }] */
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'Service Request ID',
+        required: true,
+        schema: { type: 'integer', example: 1 }
+    } */
+    /* #swagger.responses[200] = {
+        description: 'Details of a service request retrieved successfully',
+        content: {
+            'application/json': {
+                schema: {
+                    type: 'object',
+                    properties: {
+                        status: { type: 'string', example: 'success' },
+                        statusCode: { type: 'number', example: 200 },
+                        message: { type: 'string', example: 'Service Request details' },
+                        data: { $ref: '#/components/schemas/ServiceRequest' }
+                        }
+                    }
+                }
+            }
+        }
+    } */
+    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+    /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
+    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
-    if (Number.isNaN(idNum)) {
-        return res.status(400).json({ status: "error", statuscode: 400, message: "Service request ID must be a number" });
-    }
+    try {
+        const idNum = Number(req.params.id);
 
-    const service = await ServiceRequestService.getOneById(idNum);
-    if (!service) {
-        return res.status(404).json({ status: "error", statuscode: 404, message: "Service request not found" });
+        if (Number.isNaN(idNum)) {
+            return res.status(400).json({ status: "error", statusCode: 400, message: "Service request ID must be a number" });
+        }
+
+        const service = await ServiceRequestService.getOneById(idNum);
+        if (!service) {
+            return res.status(404).json({ status: "error", statusCode: 404, message: "Service request not found" });
+        }
+        return res.json({ status: "success", statusCode:200, message: "Service request details", data: service });
+    } catch (err) {
+        return next(err);
     }
-    res.json({ message: "Service request details", data: service });
 });
 
 router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
+     // #swagger.tags = ['Service Requests']
+    // #swagger.summary = 'Creates a new service request'
+    // #swagger.description = 'Endpoint to create a new service request'
+    // #swagger.produces = ['application/json']
+    /* #swagger.security = [{ "JWT": [] }] */
+    /* #swagger.requestBody = {
+        required: true,
+        content: {
+            "application/json": {
+                schema: { $ref: '#/components/schemas/ServiceRequestInput' }
+            }
+        }
+    } */
+    /* #swagger.responses[201] = {
+        description: 'Service Request created successfully',
+        content: {
+            'application/json': {
+                schema: {
+                    type: 'object',
+                    properties: {
+                        status: { type: 'string', example: 'success' },
+                        statusCode: { type: 'number', example: 200 },
+                        message: { type: 'string', example: 'Service Request created' },
+                        data: { $ref: '#/components/schemas/ServiceRequest' }
+                    }
+                }
+            }
+        }
+    } */
+    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+
     try {
     const { customerId, serviceId, locationId, description } = req.body;
+
     if (!customerId || !serviceId || !locationId || !description) {
-        return res.status(400).json({ status: "error", statuscode: 400, message: "Missing required fields" });
+        return res.status(400).json({ status: "error", statusCode: 400, message: "Missing required fields" });
     }
+
     const service = await ServiceRequestService.create({ customerId, serviceId, locationId, description});
-    res.status(201).json({ message: "Service request created successfully", data: service });
+    return res.status(201).json({ status: "success", statusCode: 201, message: "Service request created successfully", data: service });
     } catch (err) {
-       next(err);
+       return next(err);
     }
 });
 
 router.post("/smart", isAuth, async (req: Request, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Service Requests']
+    // #swagger.summary = 'Creates a new service request'
+    // #swagger.description = 'Endpoint to create a new service request'
+    // #swagger.produces = ['application/json']
+    /* #swagger.security = [{ "JWT": [] }] */
+    /* #swagger.requestBody = {
+        required: true,
+        content: {
+            "application/json": {
+                schema: { $ref: '#/components/schemas/ServiceRequestInput' }
+            }
+        }
+    } */
+    /* #swagger.responses[201] = {
+        description: 'Service Request created successfully',
+        content: {
+            'application/json': {
+                schema: {
+                    type: 'object',
+                    properties: {
+                        status: { type: 'string', example: 'success' },
+                        statusCode: { type: 'number', example: 200 },
+                        message: { type: 'string', example: 'Service Request created' },
+                        data: { $ref: '#/components/schemas/ServiceRequest' }
+                    }
+                }
+            }
+        }
+    } */
+    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+
     try {
         const { description, locationId } = req.body;
         const customerId = (req as any).user.id;
@@ -45,7 +181,7 @@ router.post("/smart", isAuth, async (req: Request, res: Response, next: NextFunc
         if (!description || !locationId) {
             return res.status(400).json({
                 status: "error", 
-                statuscode: 400, 
+                statusCode: 400, 
                 message: "Missing required fields" 
             });
         }
@@ -56,29 +192,74 @@ router.post("/smart", isAuth, async (req: Request, res: Response, next: NextFunc
             locationId 
         });
 
-        res.status(201).json({
+        return res.status(201).json({
+            status: "success", 
+            statusCode: 201,
             message: "Service request created successfully", 
             data: service 
         });
     } catch (err) {
-       next(err);
+       return next(err);
     }
 });
 
 router.put("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Service Requests']
+    // #swagger.summary = 'Updates a service request'
+    // #swagger.description = 'Endpoint to update a service request'
+    // #swagger.produces = ['application/json']
+    // #swagger.consumes = ['application/json']
+    /* #swagger.security = [{"JWT": [] }] */
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'ServiceRequest ID',
+        required: true,
+        schema: { type: 'integer', example: 1 }
+    } */
+    /* #swagger.requestBody = {
+        required: true,
+        content: {
+            "application/json": {
+                schema: { $ref: '#/components/schemas/ServiceRequestUpdateInput' }
+            }
+        }
+    } */
+    /* #swagger.responses[200] = {
+        description: 'Service Request updated successfully',
+        content: {
+            'application/json': {
+                schema: {
+                    type: 'object',
+                    properties: {
+                        status: { type: 'string', example: 'success' },
+                        statusCode: { type: 'number', example: 200 },
+                        message: { type: 'string', example: 'Service Request updated' },
+                        data: { $ref: '#/components/schemas/ServiceRequest' }
+                    }
+                }
+            }
+        }
+    } */
+    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+    /* #swagger.responses[403] = { $ref: '#/components/responses/Forbidden' } */
+    /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
+    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+
     const idNum = Number(req.params.id);
+    
     if (Number.isNaN(idNum)) {
-        return res.status(400).json({ status: "error", statuscode: 400, message: "Service request ID must be a number" });
+        return res.status(400).json({ status: "error", statusCode: 400, message: "Service request ID must be a number" });
     }
     const { customerId, serviceId, statusId, locationId } = req.body;
 
     if (customerId == null && serviceId == null && statusId == null && locationId == null) {
-        return res.status(400).json({ status: "error", statuscode: 400, message: "At least one field must be provided" });
+        return res.status(400).json({ status: "error", statusCode: 400, message: "At least one field must be provided" });
     }
     try {
         const service = await ServiceRequestService.getOneById(idNum);
         if (!service) {
-            return res.status(404).json({ status: "error", statuscode: 404, message: "Service request not found" });
+            return res.status(404).json({ status: "error", statusCode: 404, message: "Service request not found" });
         }
         const updatedService = await ServiceRequestService.update(idNum, {
             customerId, 
@@ -86,26 +267,63 @@ router.put("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, n
             statusId, 
             locationId 
         });
-        res.json({ message: "Service request updated successfully", data: updatedService });
+        return res.status(200).json({ status: "success", statusCode: 200, message: "Service request updated successfully", data: updatedService });
     } catch (err) {
-        next(err);
+        return next(err);
     }
 });
 
 router.delete("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Service Requests']
+    // #swagger.summary = 'Delete a service request'
+    // #swagger.description = 'Endpoint to delete a service request'
+    // #swagger.produces = ['application/json']
+    /* #swagger.security = [{"JWT": [] }] */
+    /* #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'Service Request ID',
+        required: true,
+        schema: { type: 'integer', example: 1 }
+    } */
+    /* #swagger.responses[200] = {
+        description: 'Service request deleted successfully',
+        content: {
+            'application/json': {
+                schema: {
+                    type: 'object',
+                    properties: {
+                        status: { type: 'string', example: 'success' },
+                        statusCode: { type: 'number', example: 200 },
+                        message: { type: 'string', example: 'Service Request deleted' }
+                    }
+                }
+            }
+        }
+    } */
+    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+    /* #swagger.responses[403] = { $ref: '#/components/responses/Forbidden' } */
+    /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
+    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+
     try {
         const idNum = Number(req.params.id);
+
         if (Number.isNaN(idNum)) {
-            return res.status(400).json({ status: "error", statuscode: 400, message: "Service request ID must be a number" });
+            return res.status(400).json({ status: "error", statusCode: 400, message: "Service request ID must be a number" });
         }
+
         const service = await ServiceRequestService.getOneById(idNum);
+
         if (!service) {
-            return res.status(404).json({ status: "error", statuscode: 404, message: "Service request not found" });
+            return res.status(404).json({ status: "error", statusCode: 404, message: "Service request not found" });
         }
+
         await ServiceRequestService.delete(idNum);
-        res.json({ message: "Service request deleted successfully" });
+
+        return res.status(200).json({ status: "success", statusCode: 200, message: "Service request deleted successfully" });
     } catch (err) {
-        next(err);
+        return next(err);
     }
 });
 

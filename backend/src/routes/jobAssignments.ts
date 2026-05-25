@@ -181,7 +181,6 @@ router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction)
     /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
     
-
     try {
         const { serviceRequestId, technicianId } = req.body;
 
@@ -255,7 +254,7 @@ router.put("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res: Re
 
         const updatedAssignment = await jobAssignmentService.update(idNum, { serviceRequestId, technicianId });
 
-        res.status(200).json({ status: "success", statusCode: 200, message: "Job Assignment updated", data: updatedAssignment });
+        return res.status(200).json({ status: "success", statusCode: 200, message: "Job Assignment updated", data: updatedAssignment });
     } catch (err) {
         return next(err);
     }
@@ -274,7 +273,7 @@ router.delete("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res:
         schema: { type: 'integer', example: 1 }
     } */
     /* #swagger.responses[200] = {
-        description: 'Job Assignment deleted successfully',
+        description: 'Job assignment deleted successfully',
         content: {
             'application/json': {
                 schema: {
@@ -303,7 +302,7 @@ router.delete("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res:
 
         await jobAssignmentService.delete(idNum);
 
-        return res.status(200).json({ status: "success", statusCode: 200, message: "Job Assignment deleted" });
+        return res.status(200).json({ status: "success", statusCode: 200, message: "Job assignment deleted" });
     } catch (err) {
         return next(err);
     }
