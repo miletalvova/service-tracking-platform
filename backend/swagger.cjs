@@ -25,7 +25,7 @@ const doc = {
         }
     ],
     components: {
-        securitySchemas: {
+        securitySchemes: {
             JWT: {
                 type: 'http',
                 scheme: 'bearer',
@@ -122,6 +122,51 @@ const doc = {
                     description: { type: "string", example: "All plumbing related services" },
                 }
             },
+            Technician: {
+                type: "object",
+                properties: {
+                    id: { type: "integer", example: 1 },
+                    assignmentId: { type: "integer", example: 1 },
+                    Assigned: { type: "string", example: "2026-05-29T12:30:00.000Z" },
+                    Created: { type: "string", example: "2026-05-29T12:30:00.000Z" },
+                    Updated: { type: "string", example: "2026-05-29T12:30:00.000Z" },
+                    technicianId: { type: "integer", example: 1 },
+                    FullName: { type: "string", example: "John Doe" },
+                    Email: { type: "string", example: "johndoe@example.com" },
+                    Customer: { type: "string", example: "Richard Miles" },
+                    CustomerEmail: { type: "string", example: "richardmiles@example.com" },
+                    Service: { type: "string", example: "Plumbing" },
+                    Address: { type: "string", example: "123 Main St, New York, NY, 10001" },
+                    Status: { type: "string", example: "Assigned" },
+                }
+            },
+            StatusUpdateInput: {
+                type: "object",
+                required: ["statusId"],
+                properties: {
+                    statusId: { type: "integer", example: 3 },
+                }
+            },
+            TechnicianUpdateInput: {
+                type: "object",
+                properties: {
+                    skills: { type: "string", example: "Plumbing, Electrical"},
+                    isAvailable: { type: "boolean", example: true },
+                    currentLocationId: { type: "integer", example: 1 },
+                    maxActiveJobs: { type: "integer", example: 3 },
+                }
+            },
+            TechnicianProfile: {
+                type: "object",
+                properties: {
+                    id: { type: "integer", example: 1 },
+                    userId: { type: "integer", example: 1 },
+                    skills: { type: "string", example: "Plumbing, Electrical"},
+                    isAvailable: { type: "boolean", example: true },
+                    currentLocationId: { type: "integer", example: 1 },
+                    maxActiveJobs: { type: "integer", example: 3 },
+                }
+            },
         },
         responses: {
             BadRequest: {
@@ -141,7 +186,7 @@ const doc = {
                 }
             },
             Forbidden: {
-                description: "Forbidden - Staff access required",
+                description: "Forbidden - Insufficient permissions",
                 content: {
                     "application/json": {
                         schema: { $ref: '#/components/schemas/ApiError'}

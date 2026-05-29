@@ -8,6 +8,7 @@ import type { Status } from "../models/status.js";
 import { TechnicianDTO } from "../DTOs/TechnicianDTO.js";
 import statusService from "./statusService.js";
 import type { TechnicianProfile } from "../models/TechnicianProfile.js";
+import createError from "http-errors";
 
 class TechnicianService {
     client: any;
@@ -84,14 +85,17 @@ class TechnicianService {
             });
 
             if (!assignment) {
-                throw new Error("No active assignment found for this service request and technician");
+                throw createError(404, "No active assignment found for this service request and technician");
             }
             
-            await statusService.updateStatus(serviceRequestId, statusId, transaction);
+            const updatedRequest = await statusService.updateStatus(serviceRequestId, statusId, transaction);
+            
             await transaction.commit();
-        } catch (error) {
+
+            return updatedRequest;
+        } catch (err) {
             await transaction.rollback();
-            throw error;
+            throw err;
         }
     }
 

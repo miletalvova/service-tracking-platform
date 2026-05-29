@@ -15,10 +15,10 @@ export class TechnicianDTO {
 
     constructor(job: any) {
         this.assignmentId = job.id;
-        this.Assigned = new Date(job.assignedAt).toString();
-        this.Unassigned = job.unassignedAt ? new Date(job.unassignedAt).toString() : null;
-        this.Created = new Date(job.createdAt).toString();
-        this.Updated = new Date(job.updatedAt).toString();
+        this.Assigned = new Date(job.assignedAt).toISOString();
+        this.Unassigned = job.unassignedAt ? new Date(job.unassignedAt).toISOString() : null;
+        this.Created = new Date(job.createdAt).toISOString();
+        this.Updated = new Date(job.updatedAt).toISOString();
         this.technicianId = job.Technician.id;
         this.FullName = job.Technician.FirstName + " " + job.Technician.LastName;
         this.Email = job.Technician.Email;
