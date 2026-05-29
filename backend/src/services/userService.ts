@@ -41,9 +41,9 @@ class UserService {
             }
             await transaction.commit();
             return user;
-        } catch (error) {
+        } catch (err) {
             await transaction.rollback();
-            throw error;
+            throw err;
         }
     }
 

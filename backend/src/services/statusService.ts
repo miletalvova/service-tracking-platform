@@ -1,5 +1,6 @@
 import db from "../models/index.js";
 import { StatusEnum } from "../types/serviceRequest.types.js";
+import createError from "http-errors";
 
 const validTransitions: Record<number, number[]> = {
     [StatusEnum.Created]: [StatusEnum.Assigned, StatusEnum.Cancelled],
@@ -13,13 +14,13 @@ class StatusService {
     async updateStatus(serviceRequestId: number, newStatusId: number, transaction?: any) {
         const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId, { transaction });
         if (!serviceRequest) {
-            throw new Error("Service request not found");
+            throw createError(404, "Service request not found");
         }
         const currentStatusId = serviceRequest.statusId;
         const allowed = validTransitions[currentStatusId] ?? [];
 
         if (!allowed.includes(newStatusId)) {
-            throw new Error(`Invalid status transition from ${StatusEnum[currentStatusId]} to ${StatusEnum[newStatusId]}`);
+            throw createError(400, `Invalid status transition from ${StatusEnum[currentStatusId]} to ${StatusEnum[newStatusId]}`);
         }
         await serviceRequest.update({ statusId: newStatusId }, { transaction });
 

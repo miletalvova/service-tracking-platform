@@ -75,9 +75,9 @@ class JobAssignmentService {
             await transaction.commit();
 
             return newAssignment;
-        } catch (error) {
+        } catch (err) {
             await transaction.rollback();
-            throw error;
+            throw err;
         }
     }
 

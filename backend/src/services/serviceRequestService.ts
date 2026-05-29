@@ -97,9 +97,9 @@ class ServiceRequestService {
         await transaction.commit();
 
         return serviceRequest;
-        } catch (error) {
+        } catch (err) {
             await transaction.rollback();
-            throw error;
+            throw err;
             }
         }
 

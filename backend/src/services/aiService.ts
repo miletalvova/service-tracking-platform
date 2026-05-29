@@ -1,5 +1,6 @@
 import { createClient } from "../config/anthropicClient.js";
 import type { TextBlock, Base64ImageSource, Tool, ToolUseBlock, ContentBlock, MessageParam } from "@anthropic-ai/sdk/resources";
+import createError from "http-errors";
 
 const client = createClient();
 
@@ -16,14 +17,15 @@ export interface AIRequestUrgency {
 
 class AIService {
     async classifyRequest(description: string): Promise<AIRequestClassification> {
+
         if (!description.trim()) {
-            throw new Error("Description cannot be empty");
+            throw createError(400, "Description cannot be empty");
         }
         if (description.length > 1000) {
-            throw new Error("Description is too long. Maximum length is 1000 characters.");
+            throw createError(400, "Description is too long. Maximum length is 1000 characters.");
         }
         if (description.length < 10) {
-            throw new Error("Description is too short. Please provide more details.");
+            throw createError(400, "Description is too short. Please provide more details.");
         }
 
         const systemPrompt = `You are a service request classifier. 
@@ -60,21 +62,24 @@ class AIService {
             return JSON.parse(text) as AIRequestClassification;
         } catch (error) {
             const match = text.match(/({[\s\S]*})/);
+
             if (match) return JSON.parse(match[0]) as AIRequestClassification;
+
             console.error("Failed to parse AI response as JSON:", text);
-            throw new Error("AI response was not valid JSON");
+
+            throw createError(502, "AI response was not valid JSON");
         }
     }
 
     async detectUrgency(description: string): Promise<AIRequestUrgency> {
         if (!description.trim()) {
-            throw new Error("Description cannot be empty");
+            throw createError(400, "Description cannot be empty");
         }
         if (description.length > 1000) {
-            throw new Error("Description is too long. Maximum length is 1000 characters.");
+            throw createError(400, "Description is too long. Maximum length is 1000 characters.");
         }
         if (description.length < 10) {
-            throw new Error("Description is too short. Please provide more details.");
+            throw createError(400, "Description is too short. Please provide more details.");
         }
 
         const urgencyTools: Tool = {
@@ -144,8 +149,14 @@ class AIService {
                     },
             ]
         });
+
         const text = "{" + (response.content[0] as TextBlock).text;
-        return JSON.parse(text);
+        
+        try {
+            return JSON.parse(text);
+        } catch (err) {
+            throw createError(502, "AI service returned an invalid response")
+        }
     }
 }
 
