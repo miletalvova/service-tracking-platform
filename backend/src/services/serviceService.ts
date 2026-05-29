@@ -1,6 +1,7 @@
 import db from "../models/index.js";
 import type { Service } from "../models/service.js";
 import type { ServiceCreationAttributes } from "../types/service.types.js";
+import createError from "http-errors";
 
 class ServiceService {
     client: any;
@@ -23,16 +24,18 @@ class ServiceService {
 
     async update(id: number, data: Partial<ServiceCreationAttributes>) {
         const service = await this.Service.findByPk(id);
+
         if (!service) {
-            throw new Error("Service not found");
+            throw createError(404, "Service not found");
         }
+
         return service.update(data);
     }
 
     async delete(id: number) {
         const service = await this.Service.findByPk(id);
         if (!service) {
-            throw new Error("Service not found");
+            throw createError(404, "Service not found");
         }
         return service.destroy();
     }

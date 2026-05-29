@@ -33,9 +33,10 @@ router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) 
     }*/
     /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+
     try {
         const services = await ServiceRequestService.getAll();
-    return res.status(200).json({ status: "success", statusCode: 200, message: "List of service requests", data: services });
+        return res.status(200).json({ status: "success", statusCode: 200, message: "List of service requests", data: services });
     } catch (err) {
         return next(err);
     }
@@ -86,14 +87,14 @@ router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, n
         if (!service) {
             return res.status(404).json({ status: "error", statusCode: 404, message: "Service request not found" });
         }
-        return res.json({ status: "success", statusCode:200, message: "Service request details", data: service });
+        return res.status(200).json({ status: "success", statusCode:200, message: "Service request details", data: service });
     } catch (err) {
         return next(err);
     }
 });
 
 router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
-     // #swagger.tags = ['Service Requests']
+    // #swagger.tags = ['Service Requests']
     // #swagger.summary = 'Creates a new service request'
     // #swagger.description = 'Endpoint to create a new service request'
     // #swagger.produces = ['application/json']
@@ -127,14 +128,14 @@ router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction)
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
     try {
-    const { customerId, serviceId, locationId, description } = req.body;
+        const { customerId, serviceId, locationId, description } = req.body;
 
-    if (!customerId || !serviceId || !locationId || !description) {
-        return res.status(400).json({ status: "error", statusCode: 400, message: "Missing required fields" });
-    }
+        if (!customerId || !serviceId || !locationId || !description) {
+            return res.status(400).json({ status: "error", statusCode: 400, message: "Missing required fields" });
+        }
 
-    const service = await ServiceRequestService.create({ customerId, serviceId, locationId, description});
-    return res.status(201).json({ status: "success", statusCode: 201, message: "Service request created successfully", data: service });
+        const service = await ServiceRequestService.create({ customerId, serviceId, locationId, description});
+        return res.status(201).json({ status: "success", statusCode: 201, message: "Service request created successfully", data: service });
     } catch (err) {
        return next(err);
     }
@@ -162,7 +163,7 @@ router.post("/smart", isAuth, async (req: Request, res: Response, next: NextFunc
                     type: 'object',
                     properties: {
                         status: { type: 'string', example: 'success' },
-                        statusCode: { type: 'number', example: 200 },
+                        statusCode: { type: 'number', example: 201 },
                         message: { type: 'string', example: 'Service Request created' },
                         data: { $ref: '#/components/schemas/ServiceRequest' }
                     }
@@ -246,21 +247,18 @@ router.put("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, n
     /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
-    const idNum = Number(req.params.id);
-    
-    if (Number.isNaN(idNum)) {
-        return res.status(400).json({ status: "error", statusCode: 400, message: "Service request ID must be a number" });
-    }
-    const { customerId, serviceId, statusId, locationId } = req.body;
-
-    if (customerId == null && serviceId == null && statusId == null && locationId == null) {
-        return res.status(400).json({ status: "error", statusCode: 400, message: "At least one field must be provided" });
-    }
     try {
-        const service = await ServiceRequestService.getOneById(idNum);
-        if (!service) {
-            return res.status(404).json({ status: "error", statusCode: 404, message: "Service request not found" });
+        const idNum = Number(req.params.id);
+        
+        if (Number.isNaN(idNum)) {
+            return res.status(400).json({ status: "error", statusCode: 400, message: "Service request ID must be a number" });
         }
+        const { customerId, serviceId, statusId, locationId } = req.body;
+
+        if (customerId == null && serviceId == null && statusId == null && locationId == null) {
+            return res.status(400).json({ status: "error", statusCode: 400, message: "At least one field must be provided" });
+        }
+        
         const updatedService = await ServiceRequestService.update(idNum, {
             customerId, 
             serviceId, 
@@ -311,12 +309,6 @@ router.delete("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res:
 
         if (Number.isNaN(idNum)) {
             return res.status(400).json({ status: "error", statusCode: 400, message: "Service request ID must be a number" });
-        }
-
-        const service = await ServiceRequestService.getOneById(idNum);
-
-        if (!service) {
-            return res.status(404).json({ status: "error", statusCode: 404, message: "Service request not found" });
         }
 
         await ServiceRequestService.delete(idNum);

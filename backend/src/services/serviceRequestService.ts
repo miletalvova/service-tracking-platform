@@ -5,6 +5,7 @@ import { type ServiceRequestCreationAttributes, type SmartServiceRequestCreation
 import type { StatusHistory } from "../models/StatusHistory.js";
 import jobAssignmentService from "./jobAssignmentService.js";
 import AIService from "./aiService.js";
+import createError from "http-errors";
 
 class ServiceRequestService {
         client: any;
@@ -121,7 +122,7 @@ class ServiceRequestService {
             const serviceRequest = await this.ServiceRequest.findByPk(id);
 
             if (!serviceRequest) {
-                throw new Error("Service request not found");
+                throw createError(404, "Service request not found");
             }
 
             const oldStatusId = serviceRequest.statusId;
@@ -145,9 +146,11 @@ class ServiceRequestService {
 
         async delete(id: number) {
             const serviceRequest = await this.ServiceRequest.findByPk(id);
+
             if (!serviceRequest) {
-                throw new Error("Service request not found");
+                throw createError(404, "Service request not found");
             }
+            
             return serviceRequest.destroy();
         }
 

@@ -100,6 +100,28 @@ const doc = {
                     zipCode: { type: "string", example: "10001" },
                 }
             },
+            Service: {
+                type: "object",
+                properties: {
+                    id: { type: "integer", example: 1 },
+                    specialization: { type: "string", example: "Plumbing" },
+                    description: { type: "string", example: "All plumbing related services" },
+                }
+            },
+            ServiceInput: {
+                type: "object",
+                properties: {
+                    specialization: { type: "string", example: "Plumbing" },
+                    description: { type: "string", example: "All plumbing related services" },
+                }
+            },
+            ServiceUpdateInput: {
+                type: "object",
+                properties: {
+                    specialization: { type: "string", example: "Plumbing" },
+                    description: { type: "string", example: "All plumbing related services" },
+                }
+            },
         },
         responses: {
             BadRequest: {

@@ -169,7 +169,7 @@ router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction)
                     type: 'object',
                     properties: {
                         status: { type: 'string', example: 'success' },
-                        statusCode: { type: 'number', example: 200 },
+                        statusCode: { type: 'number', example: 201 },
                         message: { type: 'string', example: 'Job Assignment created' },
                         data: { $ref: '#/components/schemas/JobAssignment' }
                     }
