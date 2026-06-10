@@ -1,17 +1,41 @@
 # Service Tracking Platform — Frontend
  
-The frontend for the Service Tracking Platform. Built with Next.js and TypeScript, it provides role-based dashboards for customers, staff, and technicians.
+The frontend for the Service Tracking Platform. Built with React, Vite and TypeScript, it provides role-based dashboards for customers, staff, and technicians.
  
-> **Status:** In progress.
+> **Status:** In progress
  
+---
+
+## About The Project
+
+The Service Tracking Platform is a full-stack application designed to streamline service management workflows.
+
+The frontend provides separate user experiences for different roles:
+
+- Customers can submit and track service requests.
+- Staff can manage requests and assign technicians.
+- Technicians can view and update assigned jobs.
+
+The application communicates with the backend API using JWT-based authentication and role-based authorization.
+
 ---
  
 ## Tech Stack
- 
-- Next.js 15
+
+Core
+
+- React 19
+- Vite 8
 - TypeScript
+
+Styling
+
 - Tailwind CSS
+
+Authentication
+
 - JWT Authentication
+
 ---
  
 ## Planned Features
@@ -19,20 +43,24 @@ The frontend for the Service Tracking Platform. Built with Next.js and TypeScrip
 ### Customer Dashboard
 
 - Submit a service request using natural language
+- AI-powered request classification
 - View request status in real time
 - View request history
+- View assigned technician information
 
 ### Staff Dashboard
 
 - View all incoming service requests
 - Assign technicians manually or via AI recommendation
 - Monitor technician workload
+- Manage service request lifecycle
 
 ### Technician Dashboard
 
 - View assigned jobs
 - Update job status
 - View job details and location
+- Mark jobs as completed
 
 ---
  
@@ -60,7 +88,7 @@ npm install
 3. Create `.env.local`
 
 ```
-NEXT_PUBLIC_API_URL=http://localhost:3000
+VITE_API_URL=http://localhost:3000
 ```
  
 4. Run in development mode
@@ -69,7 +97,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000
 npm run dev
 ```
  
-The frontend will be available at `http://localhost:3001`.
+The frontend will be available at `http://localhost:5173`.
  
 ---
  
@@ -77,7 +105,7 @@ The frontend will be available at `http://localhost:3001`.
  
 | Variable | Description |
 |---|---|
-| NEXT_PUBLIC_API_URL | URL of the backend API |
+| VITE_API_URL | URL of the backend API |
  
 ---
  
