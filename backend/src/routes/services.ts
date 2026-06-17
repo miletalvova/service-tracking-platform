@@ -5,7 +5,7 @@ import ServiceService from "../services/serviceService.js";
 import { isAuth, isStaff} from "../middleware/auth.js";
 
 
-router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
     // #swagger.tags = ['Services']
     // #swagger.summary = 'Get all services'
     // #swagger.description = 'Endpoint to get all services'
