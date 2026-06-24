@@ -1,0 +1,25 @@
+.page-footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: white;
+    border-top: 1px solid #d1d5db;
+    font-size: small;
+}
+
+.footer-card {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem;
+}
+
+.footer-card a {
+    color: rgb(112, 9, 104);
+}
+
+.footer-card a:hover {
+    text-decoration: none;
+}

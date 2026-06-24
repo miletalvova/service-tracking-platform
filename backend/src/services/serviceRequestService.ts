@@ -1,7 +1,7 @@
 import db from "../models/index.js";
 import type { ServiceRequest } from "../models/ServiceRequest.js";
 import type { User } from "../models/user.js";
-import { type ServiceRequestCreationAttributes, type SmartServiceRequestCreationAttributes, type ServiceRequestAttributes, StatusEnum } from "../types/serviceRequest.types.js";
+import { type ServiceRequestCreationAttributes, type SmartServiceRequestCreationAttributes, type ServiceRequestAttributes, StatusEnum, type LocationSuggestion } from "../types/serviceRequest.types.js";
 import type { StatusHistory } from "../models/StatusHistory.js";
 import jobAssignmentService from "./jobAssignmentService.js";
 import AIService from "./aiService.js";
@@ -39,7 +39,7 @@ class ServiceRequestService {
             return serviceRequest;
         }
 
-        async createSmart({ customerId, description, locationId }: SmartServiceRequestCreationAttributes) {
+        async createSmart({ customerId, description, location }: SmartServiceRequestCreationAttributes) {
             const transaction = await this.client.transaction();
             try {
                 let aiResult;
@@ -71,11 +71,27 @@ class ServiceRequestService {
                     description: `All ${aiResult.service.toLowerCase()} related services` }, { transaction });
             }
 
+            const locationRecord = await db.Location.create({
+                address: location.display_name,
+                city: 
+                location.address.city ??
+                location.address.town ??
+                location.address.village ??
+                "",
+                state: location.address.state ??
+                "",
+                zipCode: location.address.postcode ??
+                ""
+            },
+        {
+            transaction
+        });
+
             const serviceRequest = await this.ServiceRequest.create({
                 customerId,
                 serviceId: service.id,
                 statusId: StatusEnum.Created,
-                locationId,
+                locationId: locationRecord.id,
                 description: aiResult.cleanDescription,
                 priority: finalPriority
             }, { transaction });

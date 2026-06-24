@@ -40,6 +40,29 @@ router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) 
     }
 });
 
+router.get("/search", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const query = req.query.q;
+        if(!query) {
+            return res.status(400).json({
+                message: "Search query required"
+            })
+        }
+        const response = await fetch(
+           `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(String(query))}&format=jsonv2&addressdetails=1&limit=5`,
+           { headers: { "User-Agent": "ServiceTrackingPlatform/1.0"}
+    }
+        );
+
+        const data = await response.json();
+        console.log(data);
+
+        return res.json(data);
+    } catch (err) {
+        return next(err);
+    }
+});
+
 router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
     // #swagger.tags = ['Locations']
     // #swagger.summary = 'Get locations by ID'

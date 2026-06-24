@@ -32,11 +32,11 @@
     border: none;
     border-radius: 0.75rem;
     padding: 0.75rem;
-    background: #2563eb;
+    background: #218073;
     color: #ffffff;
     cursor: pointer;
 }
 
 .login-button:hover {
-    background: #1d4ed8;
+    background: #56afa3;
 }

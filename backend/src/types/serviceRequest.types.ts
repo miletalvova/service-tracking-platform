@@ -16,9 +16,20 @@ export interface ServiceRequestCreationAttributes {
     description: string;
 }
 
+export interface LocationSuggestion {
+    display_name: string;
+    address: {
+        city?: string;
+        town?: string;
+        village?: string;
+        state?: string;
+        postcode?: string;
+    }
+}
+
 export interface SmartServiceRequestCreationAttributes {
     customerId: number;
-    locationId: number;
+    location: LocationSuggestion;
     description: string;
 }
 

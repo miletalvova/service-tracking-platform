@@ -176,10 +176,10 @@ router.post("/smart", isAuth, async (req: Request, res: Response, next: NextFunc
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
     try {
-        const { description, locationId } = req.body;
+        const { description, location } = req.body;
         const customerId = (req as any).user.id;
 
-        if (!description || !locationId) {
+        if (!description || !location) {
             return res.status(400).json({
                 status: "error", 
                 statusCode: 400, 
@@ -190,7 +190,7 @@ router.post("/smart", isAuth, async (req: Request, res: Response, next: NextFunc
         const service = await ServiceRequestService.createSmart({
             customerId,
             description, 
-            locationId 
+            location 
         });
 
         return res.status(201).json({
