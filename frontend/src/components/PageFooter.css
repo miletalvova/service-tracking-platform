@@ -1,25 +1,76 @@
 .page-footer {
+    background: #083d36;
+    color: white;
+    padding: 3rem 4rem 2rem;
+    margin-top: 4rem;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 4rem;
+    margin-bottom: 2rem;
+}
+
+.footer-about,
+.footer-card,
+.footer-contact {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 1rem 2rem;
-    background: white;
-    border-top: 1px solid #d1d5db;
-    font-size: small;
+    gap: 0.75rem;
+}
+
+.footer-about {
+    flex: 1;
 }
 
 .footer-card {
+    flex: 1;
+}
+
+.footer-contact {
+    flex: 1;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.footer-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: .5rem;
+    color:white
+}
+
+.footer-about a,
+.footer-card a {
+    text-decoration: none;
+    color: white;
+    opacity: .9;
+    transition: opacity .2s;
+}
+
+.footer-about a:hover,
+.footer-card a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.footer-icons {
     display: flex;
     justify-content: center;
-    gap: 1rem;
-    margin: 1rem;
+    gap: 1.25rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, .2);
 }
 
-.footer-card a {
-    color: rgb(112, 9, 104);
+.footer-icons svg {
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: transform .2s, opacity .2s;
 }
 
-.footer-card a:hover {
-    text-decoration: none;
+.footer-icons svg:hover {
+    transform: translateY(-3px);
+    opacity: .8;
 }

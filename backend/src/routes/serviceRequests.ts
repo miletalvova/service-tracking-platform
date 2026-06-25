@@ -42,6 +42,47 @@ router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) 
     }
 });
 
+router.get("/customer", isAuth, async (req: Request, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Service Requests']
+    // #swagger.summary = 'Get all active customers service requests by Customer ID'
+    // #swagger.description = 'Endpoint to get all active service requests by Cutomer ID'
+    // #swagger.produces = ['application/json']
+    /* #swagger.security = [{ "JWT": [] }] */
+    /* #swagger.responses[200] = {
+        description: 'Service requests retrieved successfully',
+        content: {
+            'application/json': {
+                schema: {
+                    type: 'object',
+                    properties: {
+                        status: { type: 'string', example: 'success' },
+                        statusCode: { type: 'number', example: 200 },
+                        message: { type: 'string', example: 'Customer's Service Requests' },
+                        data: { $ref: '#/components/schemas/ServiceRequest' }
+                        }
+                    }
+                }
+            }
+        }
+    } */
+    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+    /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
+    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+
+    try {
+        const customerId = (req as any).user.id;
+
+        const requests = await ServiceRequestService.getOneByCustomerId(customerId);
+        if (requests.length === 0) {
+            return res.status(200).json({ status: "success", statusCode: 200, message: "No active service requetsts", data: [] });
+        }
+        return res.status(200).json({ status: "success", statusCode:200, message: "Customer's service requests details", data: requests });
+    } catch (err) {
+        return next(err);
+    }
+});
+
 router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
     // #swagger.tags = ['Service Requests']
     // #swagger.summary = 'Get service request by ID'

@@ -22,25 +22,25 @@ function RegisterPage() {
     }
   }
 
-   return (
+  return (
     <>
       <h1>Register</h1>
 
       <form onSubmit={handleSubmit}>
         <div>
-            <label htmlFor="firstname">First Name:</label>
+          <label htmlFor="firstname">First Name:</label>
           <input type="text" id="firstname" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
         </div>
         <div>
-            <label htmlFor="lastname">Last Name:</label>
+          <label htmlFor="lastname">Last Name:</label>
           <input type="text" id="lastname" value={lastname} onChange={(e) => setLastname(e.target.value)} />
         </div>
         <div>
-            <label htmlFor="email">Email:</label>
+          <label htmlFor="email">Email:</label>
           <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <div>
-            <label htmlFor="username">Username:</label>
+          <label htmlFor="username">Username:</label>
           <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
         </div>
         <div>

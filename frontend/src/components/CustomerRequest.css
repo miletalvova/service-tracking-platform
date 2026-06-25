@@ -1,0 +1,153 @@
+.customer-card {
+   display: flex;
+   flex-direction: column;
+   gap: 1.5rem;
+}
+
+.request-title {
+    color: #0f172a;
+    margin-bottom: .5rem;;
+}
+
+.request-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background: white;
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    transition: transform .25s box-shadow .25s;
+}
+
+.request-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,.12);
+}
+
+.request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.request-header h3 {
+    margin:0;
+    color: #0f172a;
+}
+
+.request-header small {
+    color: #64748b
+}
+
+.status {
+    padding: .45rem .9rem;
+    border-radius: 999px;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.status.created {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.status.assigned {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status.inprogress {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status.completed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status.cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.request-description {
+    background: #f8fafc;
+    border-left: 4px solid #218073;
+    padding: 1rem;
+    border-radius: .5rem;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.request-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .8rem;
+    border: 1px solid #e5e7eb;
+    border-radius: .75rem;
+    background: #fafafa;
+}
+
+.info-item svg {
+    color: #218073;
+}
+
+.info-item small {
+    display: block;
+    color: #64748b;
+    margin-bottom: .2rem;
+}
+
+.info-item strong{
+    color: #0f172a;
+    font-size: .95rem;
+}
+
+.priority::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.priority.high::before {
+    background: #ef4444;
+}
+
+.priority.medium::before {
+    background: #f59e0b;
+}
+
+.priority.low::before {
+    background: #94a3b8;
+}
+
+.request-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.details-button {
+    background: #218073;
+    color: white;
+    padding: .7rem 1.4rem;
+    border: none;
+    border-radius: .6rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.details-button:hover {
+    background: #17665c;
+}

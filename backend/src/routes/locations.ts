@@ -34,7 +34,7 @@ router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) 
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
     try {
         const locations = await locationService.getAll();
-        return res.status(200).json({ status: "success", statusCode: 200, message: "List of locations", data: locations});
+        return res.status(200).json({ status: "success", statusCode: 200, message: "List of locations", data: locations });
     } catch (err) {
         return next(err);
     }
@@ -43,20 +43,34 @@ router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) 
 router.get("/search", async (req: Request, res: Response, next: NextFunction) => {
     try {
         const query = req.query.q;
-        if(!query) {
+
+        if (!query) {
             return res.status(400).json({
                 message: "Search query required"
             })
         }
         const response = await fetch(
-           `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(String(query))}&format=jsonv2&addressdetails=1&limit=5`,
-           { headers: { "User-Agent": "ServiceTrackingPlatform/1.0"}
-    }
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(String(query))}&format=jsonv2&addressdetails=1&limit=5`,
+            {
+                headers: {
+                    "User-Agent": "ServiceTrackingPlatform/1.0",
+                    "Accept": "application/json"
+                },
+
+            }
         );
 
-        const data = await response.json();
-        console.log(data);
+        if (!response.ok) {
+            throw new Error(`Nominatim returned ${response.status} ${response.statusText}`)
+        }
 
+        const contentType = response.headers.get("content-type");
+
+        if (!contentType?.includes("application/json")) {
+            throw new Error(`Expected JSON but received ${contentType}`)
+        }
+
+        const data = await response.json();
         return res.json(data);
     } catch (err) {
         return next(err);
@@ -100,15 +114,15 @@ router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, n
     try {
         const idNum = Number(req.params.id);
 
-        if(Number.isNaN(idNum)) {
-            return res.status(400).json({ status: "error", statusCode: 400, message: "Location ID must be a number"})
+        if (Number.isNaN(idNum)) {
+            return res.status(400).json({ status: "error", statusCode: 400, message: "Location ID must be a number" })
         }
 
         const location = await locationService.getOneById(idNum);
-        if(!location){
-            return res.status(404).json({ status: "error", statusCode: 404, message: "Location not found"})
+        if (!location) {
+            return res.status(404).json({ status: "error", statusCode: 404, message: "Location not found" })
         }
-        return res.status(200).json({ status: "success", statusCode: 200, message: "Location details", data: location});
+        return res.status(200).json({ status: "success", statusCode: 200, message: "Location details", data: location });
     } catch (err) {
         return next(err);
     }
@@ -151,7 +165,7 @@ router.post("/", isAuth, isStaff, async (req: Request, res: Response, next: Next
     try {
         const { address, city, state, zipCode } = req.body;
 
-        if(!address?.trim() || !city?.trim() || !state?.trim() || !zipCode?.trim()) {
+        if (!address?.trim() || !city?.trim() || !state?.trim() || !zipCode?.trim()) {
             return res.status(400).json({ status: "error", statusCode: 400, message: "Missing required fields: address, city, state, zipCode" });
         }
 
@@ -159,7 +173,7 @@ router.post("/", isAuth, isStaff, async (req: Request, res: Response, next: Next
 
         return res.status(201).json({ status: "success", statusCode: 201, message: "Location created", data: newLocation });
     } catch (err) {
-       return next(err);
+        return next(err);
     }
 });
 

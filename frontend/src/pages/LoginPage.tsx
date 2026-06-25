@@ -18,7 +18,7 @@ function LoginPage() {
       login(result.token, result.user, result.role);
       console.log(result);
 
-      switch(result.role) {
+      switch (result.role) {
         case 'Customer':
           navigate('/customer');
           break;
@@ -41,7 +41,7 @@ function LoginPage() {
   const auth = useAuth();
   console.log(auth);
 
-   return (
+  return (
     <>
       <h1 className="login-page">Login</h1>
 

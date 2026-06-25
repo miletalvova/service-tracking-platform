@@ -11,6 +11,11 @@ export async function getServiceRequest(id: string): Promise<ServiceRequest> {
     return response.data.data;
 }
 
+export async function getActiveRequests(): Promise<ServiceRequest[]> {
+    const response = await api.get("/api/requests/customer");
+    return response.data.data;
+}
+
 export async function createServiceRequest(data: any): Promise<ServiceRequest> {
     const response = await api.post("/api/requests", data);
     return response.data.data;

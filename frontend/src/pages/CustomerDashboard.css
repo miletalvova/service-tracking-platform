@@ -9,6 +9,10 @@
     margin-bottom: 1rem;
 }
 
+.customer-page p {
+    padding-bottom: 1rem;
+}
+
 .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -38,6 +42,14 @@
     flex-direction: column;
     text-align: left;
     margin-bottom: 1rem;
+}
+
+.form-group textarea{
+   border-radius: 10px;
+}
+
+.form-group input{
+   border-radius: 10px;
 }
 
 .request-button {
@@ -73,4 +85,8 @@
 
 .address-suggestions li:hover {
     background: #dcfce7;
+}
+
+.form-hint {
+    font-size: small;
 }

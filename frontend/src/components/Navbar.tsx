@@ -1,26 +1,58 @@
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
+import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
 
 export default function Navbar() {
-    const { user, logout, isAuthenticated } = useAuth();
+    const { user, role, logout, isAuthenticated } = useAuth();
     return (
         <nav className="navbar">
-            <div className='navbar-links'>
-            <Link to="/">Home</Link>
-
-            {!isAuthenticated ? (
-                <>
-                    <Link to="/login">Login</Link>
-                    <Link to="/register">Register</Link>
-                </>
-            ) : (
-                <>
-                <span>Welcome {user?.username}!</span>
-                <button className='logout-button' onClick={logout}>Logout</button>
-                </>
-            )}
+            <div className='navbar-logo'>
+                <HomeRepairServiceIcon />
+                <Link to="/">Service Tracking Platform</Link>
             </div>
+
+            <div className='navbar-links'>
+                {!isAuthenticated ? (
+                    <>
+                        <Link to="/login">Login</Link>
+                        <Link to="/register">Register</Link>
+                    </>
+                ) : (
+                    <>
+                        {role === "Customer" && (
+                            <>
+                                <Link to="/customer">Dashboard</Link>
+                                <Link to="/requests">Requests</Link>
+                            </>
+                        )}
+
+                        {role === "Staff" && (
+                            <>
+                                <Link to="/staff">Dashboard</Link>
+                                <Link to="/requests">Service Requests</Link>
+                                <Link to="/technicians">Technicians</Link>
+                            </>
+                        )}
+
+                        {role === "Technician" && (
+                            <>
+                                <Link to="/technician">Dashboard</Link>
+                                <Link to="/jobs">My Jobs</Link>
+                            </>
+                        )}
+                    </>
+                )}
+            </div>
+
+            {isAuthenticated && (
+                <div className='navbar-user'>
+                    <span>
+                        Welcome, <strong>{user?.username}</strong>
+                    </span>
+                    <button className='logout-button' onClick={logout}>Logout</button>
+                </div>
+            )}
         </nav>
     );
 }
