@@ -18,6 +18,8 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(response => response, error => {
     if (error.response && error.response.status === 401) {
         localStorage.removeItem("token");
+        localStorage.removeItem('role');
+        localStorage.removeItem('user');
         window.location.href = "/login";
     }
     throw error;

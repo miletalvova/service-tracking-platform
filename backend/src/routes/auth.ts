@@ -58,7 +58,7 @@ router.post("/login", async (req: Request, res: Response) => {
         }
         let token;
         try {
-            token = jwt.sign({ id: data.id, email: data.Email, role: data.Role?.name }, process.env.JWT_SECRET!, { expiresIn: "1h" });
+            token = jwt.sign({ id: data.id, email: data.Email, role: data.Role?.name }, process.env.JWT_SECRET!, { expiresIn: "1min" });
         } catch (err) {
             return res.status(500).json({ status: "error", statusCode: 500, message: "Internal server error" });
         }

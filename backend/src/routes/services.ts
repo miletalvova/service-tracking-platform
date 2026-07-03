@@ -2,10 +2,10 @@ import { Router } from "express";
 const router = Router();
 import type { NextFunction, Request, Response } from "express";
 import ServiceService from "../services/serviceService.js";
-import { isAuth, isStaff} from "../middleware/auth.js";
+import { isAuth, isStaff, isCustomer} from "../middleware/auth.js";
 
 
-router.get("/", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/", isAuth, isCustomer, async (req: Request, res: Response, next: NextFunction) => {
     // #swagger.tags = ['Services']
     // #swagger.summary = 'Get all services'
     // #swagger.description = 'Endpoint to get all services'

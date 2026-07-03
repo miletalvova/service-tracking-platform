@@ -1,9 +1,11 @@
 import './HomePage.css'
 import Services from '../components/Services';
+import { useAuth } from '../hooks/useAuth';
 
 function Home() {
+  const { role } = useAuth();
   return (
-    <>
+    <>   
       <div className="home-page">
         <div className='home-grid'>
           <div className="home-card">
@@ -13,8 +15,11 @@ function Home() {
               Please log in to access your dashboard.
             </p>
           </div>
-
-          <Services />
+          {role === 'Customer' && (
+            <div className="home-card">
+              <Services />
+            </div>
+          )}
         </div>
       </div>
     </>
