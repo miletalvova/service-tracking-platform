@@ -23,7 +23,7 @@ function Home() {
         ? '/staff'
         : role === 'Technician'
           ? '/technician'
-          : '/login';
+          : '/register';
 
   return (
     <>

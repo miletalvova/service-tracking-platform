@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { register as registerApi } from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
+import './RegisterPage.css'
 
 function RegisterPage() {
   const [firstname, setFirstname] = useState('');
@@ -24,30 +25,30 @@ function RegisterPage() {
 
   return (
     <>
-      <h1>Register</h1>
+      <h1 className='register-page'>Register</h1>
 
-      <form onSubmit={handleSubmit}>
-        <div>
+      <form className='register-form' onSubmit={handleSubmit}>
+        <div className='form-group'>
           <label htmlFor="firstname">First Name:</label>
           <input type="text" id="firstname" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
         </div>
-        <div>
+        <div className='form-group'>
           <label htmlFor="lastname">Last Name:</label>
           <input type="text" id="lastname" value={lastname} onChange={(e) => setLastname(e.target.value)} />
         </div>
-        <div>
+        <div className='form-group'>
           <label htmlFor="email">Email:</label>
           <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
-        <div>
+        <div className='form-group'>
           <label htmlFor="username">Username:</label>
           <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
         </div>
-        <div>
+        <div className='form-group'>
           <label htmlFor="password">Password:</label>
           <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
-        <div>
+        <div className='form-group'>
           <label htmlFor="role">Role:</label>
           <select id="role" value={role} onChange={(e) => setRole(Number(e.target.value))}>
             <option value="1">Customer</option>
@@ -55,7 +56,7 @@ function RegisterPage() {
             <option value="3">Technician</option>
           </select>
         </div>
-        <button type="submit">Register</button>
+        <button className="register-button" type="submit">Register</button>
       </form>
     </>
   );

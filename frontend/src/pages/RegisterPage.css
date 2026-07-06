@@ -1,0 +1,42 @@
+.register-form {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+}
+
+.register-page {
+    text-align: center;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+}
+
+.register-button {
+    width: 100%;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    background: #218073;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.register-button:hover {
+    background: #56afa3;
+}
