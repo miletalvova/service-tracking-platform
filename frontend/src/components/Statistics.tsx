@@ -4,7 +4,7 @@ import './Statistics.css'
 export default function Statistics() {
     const { requests, loading } = useActiveRequests();
     const activeRequests = requests.length;
-    const waiting = requests.filter(request => request.Status?.status === "Craeted").length;
+    const waiting = requests.filter(request => request.Status?.status === "Created").length;
     const completed = requests.filter(request => request.Status?.status === "Completed").length;
     const highPriority = requests.filter(request => request.priority === "High").length;
 
