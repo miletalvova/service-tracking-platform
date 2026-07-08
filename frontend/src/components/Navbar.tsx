@@ -2,9 +2,11 @@ import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
+import { useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
     const { user, role, logout, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
     return (
         <nav className="navbar">
             <div className='navbar-logo'>
@@ -50,7 +52,12 @@ export default function Navbar() {
                     <span>
                         Welcome, <strong>{user?.username}</strong>
                     </span>
-                    <button className='logout-button' onClick={logout}>Logout</button>
+                    <button className='logout-button' onClick={() => {
+                        logout();
+                        navigate("/login")
+                    }}
+                    >
+                        Logout</button>
                 </div>
             )}
         </nav>

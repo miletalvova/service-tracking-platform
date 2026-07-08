@@ -27,6 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [role, setRole] = useState<string | null>(localStorage.getItem('role'));
     const [user, setUser] = useState<User | null>(JSON.parse(localStorage.getItem("user") || "null"));
 
+
     const logout = useCallback(() => {
         setToken(null);
         setRole(null);
@@ -34,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem('token');
         localStorage.removeItem('role');
         localStorage.removeItem('user');
-        window.location.href = "/login";
+        /* window.location.href = "/login"; */
     }, []);
 
     function login(token: string, user: User, role: string) {
