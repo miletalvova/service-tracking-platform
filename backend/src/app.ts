@@ -19,7 +19,10 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: [
+    'http://localhost:5173',
+    'https://service-tracking-platform.vercel.app'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Authorization', 'Content-Type'],
   credentials: true
@@ -35,7 +38,7 @@ app.use('/api/locations', locationRouter);
 
 
 // catch 404 and forward to error handler
-app.use((_req: Request, _res: Response, next: NextFunction) => {  
+app.use((_req: Request, _res: Response, next: NextFunction) => {
   next(createError(404));
 });
 
