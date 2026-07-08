@@ -19,7 +19,7 @@ COPY package.json package-lock.json ./
 RUN npm install --omit=dev
 
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/swagger-output.json ./swagger-outup.json
+COPY --from=builder /app/swagger-output.json ./swagger-output.json
 EXPOSE 3000
 
 CMD ["node", "dist/index.js"]
