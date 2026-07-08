@@ -21,6 +21,7 @@ app.use(express.json());
 app.use(cors({
   origin: [
     'http://localhost:5173',
+    'https://service-tracking-platform.vercel.app',
     'https://service-tracking-platform-git-main-miletas-projects-977d2388.vercel.app',
     'https://service-tracking-platform-kbr1pq0uu-miletas-projects-977d2388.vercel.app'
   ],
