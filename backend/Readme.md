@@ -1,22 +1,92 @@
 # Service Tracking Platform Backend
 
+**Status:** Production-ready and deployed
+
 ## About The Project
 
-The backend for the Service Tracking Platform. A REST API built with Node.js, Express.js, and TypeScript, backed by MySQL via Sequelize ORM. Includes JWT authentication, role-based access control, AI-powered workflows, and a controlled status transition engine.
+The backend for the Service Tracking Platform is a production-ready REST API built with Node.js, Express.js, TypeScript, and MySQL using Sequelize ORM.
+
+It manages the complete lifecycle of service requests, including AI-powered request classification, technician assignment, authentication, authorization, and real-time workflow management.
+
+The API provides:
+
+- JWT authentication
+- Role-Based Access Control (RBAC)
+- AI-powered service request classification
+- AI-assisted technician recommendations
+- Request lifecycle management
+- Docker containerization
+- Swagger/OpenAPI documentation
+
+The backend is deployed on Render and connects securely to an Aiven MySQL database.
 
 ---
 
+## Features
+
+- JWT authentication
+- Role-based authorization
+- AI-powered request classification
+- AI technician recommendations
+- Status transition validation
+- OpenStreetMap integration
+- Swagger documentation
+- Dockerized deployment
+- Cloud-hosted MySQL database
+- CI/CD with GitHub Actions
+
+---
+
+## Architecture
+
+```mermaid
+flowchart LR
+
+Frontend[React Frontend]
+-->API[Express REST API]
+
+API-->Services[Business Services]
+
+Services-->DB[(MySQL / Aiven)]
+
+Services-->Claude[Anthropic Claude API]
+```
+
+---
+
+## Tech Stack
+
+| Category | Technologies |
+|----------|--------------|
+| Backend | Node.js 22, Express.js 5, TypeScript |
+| Database | MySQL, Sequelize ORM |
+| AI | Anthropic Claude API |
+| DevOps | Docker, Docker Compose, GitHub Actions, Render, Docker Hub |
+| Documentation | Swagger / OpenAPI |
+| Security | JWT, bcrypt |
+
+---
+
+## System Roles
+ 
+| Role | Description |
+|---|---|
+| Customer | Creates and tracks service requests |
+| Staff | Manages requests and assigns technicians |
+| Technician | Views assigned jobs and updates status |
+
+---
 
 ## AI Features
 
-### AI Smart Request Creation
+### AI Service Request Classification
 
-Customers describe their issue in plain language. Claude automatically classifies the request:
+Customers describe their issue in plain language. Claude analyzes the customer's natural language description and automatically:
  
-- Detects service type (Plumbing, Electrical, IT Support, Cleaning, etc.)
+- Detects the requested service
 - Cleans and normalizes the description
 - Detects urgency using tool use
-- Sets request priority (Low / Medium / High)
+- Assigns request priority (Low / Medium / High)
 
 Example input:
 
@@ -37,33 +107,19 @@ The platform can automatically recommend the best technician for a service reque
 - Maximum active jobs capacity
 
 
-Claude receives a filtered list of available technicians and returns the best match with a reason.
-
-
----
-
-## Tech Stack
-
-- Node.js 22
-- Express.js 5
-- TypeScript
-- Sequelize ORM
-- MySQL 8
-- Docker + Docker Compose
-- Anthropic Claude API
-- JWT Authentication
+Claude receives a filtered list of available technicians and returns the most suitable technician together with the reasoning behind the recommendation.
 
 ---
-
-
-## System Roles
  
-| Role | Description |
-|---|---|
-| Customer | Creates and tracks service requests |
-| Staff | Manages requests and assigns technicians |
-| Technician | Views assigned jobs and updates status |
-
+## Authentication Flow
+ 
+1. User registers via `POST /api/auth/register`
+2. Password is hashed with bcrypt before storage
+3. User logs in via `POST /api/auth/login`
+4. Server returns a signed JWT token
+5. Client sends token in the `Authorization: Bearer <token>` header
+6. Middleware validates token and attaches user + role to the request
+7. Frontend automatically logs the user out when the JWT expires
 
 ---
 
@@ -84,24 +140,24 @@ Core tables:
 | TechnicianProfiles | Skills, availability, workload capacity per technician |
  
 All relationships are defined via Sequelize associations and follow 3NF.
- 
----
- 
-## Authentication Flow
- 
-1. User registers via `POST /api/auth/register`
-2. Password is hashed with bcrypt before storage
-3. User logs in via `POST /api/auth/login`
-4. Server returns a signed JWT token
-5. Client sends token in the `Authorization: Bearer <token>` header
-6. Middleware validates token and attaches user + role to the request
-
 
 ---
 
-## API Endpoints
+## API Documentation
  
-Full documentation is available at `/doc` (Swagger) when the server is running.
+Interactive API documentation is available through Swagger.
+
+Development
+
+```
+http://localhost:3000/doc
+```
+
+Production
+
+```
+https://service-tracking-backend-latest.onrender.com/doc/
+```
  
 ### Auth
  
@@ -163,8 +219,50 @@ Sample request:
  
 ---
 
+## Deployment
 
-## Local Development Setup
+The production backend is deployed using Docker on Render and connects to an Aiven MySQL database.
+
+| Component | Platform |
+|-----------|----------|
+| Backend | Render |
+| Database | Aiven MySQL |
+| Container Registry | Docker Hub |
+| CI/CD | GitHub Actions |
+
+```mermaid
+flowchart TD
+
+A[Push to GitHub]
+-->B[GitHub Actions]
+
+B-->C[Build Docker Image]
+
+C-->D[Push to Docker Hub]
+
+D-->E[Trigger Render Deploy Hook API]
+
+E-->F[Render pulls latest Docker image]
+
+F-->G[Production Deployment]
+
+```
+
+---
+
+## Continuous Integration
+
+Every push to the main branch automatically:
+
+- installs project dependencies
+- builds the TypeScript application
+- builds a Docker image
+- pushes the image to Docker Hub
+- triggers a Render deployment
+
+---
+
+## Local Development
 
 ### Requirements
  
@@ -178,7 +276,7 @@ Sample request:
 
 ```bash
 git clone https://github.com/leta373/service-tracking-platform.git
-cd service-tracjing-platform/backend
+cd service-tracking-platform/backend
 ```
 
 2. Install dependencies
@@ -197,7 +295,7 @@ ADMIN_PASSWORD=YOURPASSWORD
 DATABASE_NAME=service_tracking_db
 DIALECT=mysql
 PORT=3000
-HOST=localhost
+DATABASE_HOST=localhost
 JWT_SECRET=YOUR_SECRET
 ANTHROPIC_API_KEY=YOUR_API_KEY
 ```
@@ -209,7 +307,6 @@ ANTHROPIC_API_KEY=YOUR_API_KEY
 The API will be available at `http://localhost:3000`.
 
 ---
-
 
 ## Docker Setup
 
@@ -235,13 +332,13 @@ ADMIN_PASSWORD=YOURPASSWORD
 DATABASE_NAME=service_tracking_db
 DIALECT=mysql
 PORT=3000
-HOST=db
+DATABASE_HOST=db
 JWT_SECRET=YOUR_SECRET
 ANTHROPIC_API_KEY=YOUR_API_KEY
 ```
 
 > [!NOTE]
-> `HOST=db` refers to the MySQL container name in Docker Compose, not localhsot.
+> `DATABASE_HOST=db` refers to the MySQL container name in Docker Compose, not localhost.
 
 ### Useful Docker Commands
 
@@ -289,6 +386,25 @@ Password: yourpassword
 
 ---
 
+## Docker Hub
+
+Latest production:
+
+https://hub.docker.com/repository/docker/leta373/service-tracking-backend
+
+```bash
+docker pull leta373/service-tracking-backend:latest
+```
+
+```bash
+docker run \
+-p 3000:3000 \
+--env-file .env.docker \
+leta373/service-tracking-backend:latest
+```
+
+---
+
 ## Seed Data
  
 On startup, the application automatically seeds:
@@ -306,21 +422,16 @@ To disable seeding, comment out the seed calls:
 // await seedServices();
 // await seedLocations();
 ```
- 
+
 ---
  
 ## Security
  
-- JWT authentication on all protected routes
-- Role-based middleware (isAuth, isStaff, isTechnician)
-- Password hashing with bcrypt
-- Input validation on all request bodies
-- Transaction support for all multi-step database operations
-- Controlled status transition engine — invalid transitions are rejected
----
- 
-## Docker Hub
- 
-Pre-built image available at:
- 
-[hub.docker.com/r/leta373/service-tracking-backend](https://hub.docker.com/repository/docker/leta373/service-tracking-backend/general)
+- JWT authentication
+- Role-based authorization
+- Secure password hashing with bcrypt
+- Automatic JWT expiration
+- Automatic client logout
+- Request validation
+- Transactional database operations
+- Controlled status transitions
