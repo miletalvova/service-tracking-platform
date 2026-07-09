@@ -6,23 +6,22 @@ export function useActiveRequests() {
     const [requests, setRequests] = useState<ServiceRequest[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-
-        async function fetchRequests() {
+    async function fetchRequests() {
             try {
                 const data = await getActiveRequests();
                 setRequests(data);
-            } catch (error) {
-                console.error(error);
             } finally {
                 setLoading(false)
             }
         }
+
+    useEffect(() => {
         fetchRequests();
     }, []);
 
     return {
         requests,
-        loading
+        loading,
+        refresh: fetchRequests
     };
 }

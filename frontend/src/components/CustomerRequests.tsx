@@ -1,11 +1,16 @@
-import { useActiveRequests } from "../hooks/useActiveRequests";
 import './CustomerRequest.css';
+import type { ServiceRequest } from '../types/serviceRequest';
+
 import PersonIcon from "@mui/icons-material/Person";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import FlagIcon from "@mui/icons-material/Flag";
 
-export default function CustomerRequests() {
-    const { requests, loading } = useActiveRequests();
+type Props = {
+    requests: ServiceRequest[], 
+    loading: boolean;
+}
+
+export default function CustomerRequests({ requests, loading }: Props ) {
 
     if (loading) {
         return <p>Loading...</p>

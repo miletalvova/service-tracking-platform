@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import CustomerRequests from '../components/CustomerRequests';
 import Statistics from '../components/Statistics';
 import { useAuth } from '../hooks/useAuth';
+import { useActiveRequests } from "../hooks/useActiveRequests";
 import { createSmartServiceRequest } from '../api/serviceRequest';
 import { searchAddress } from '../api/locationApi';
 import { debounce } from 'lodash';
@@ -10,6 +11,9 @@ import './CustomerDashboard.css'
 
 function CustomerDashboard() {
   const { user } = useAuth();
+
+  const { requests, loading: requestsLoading, refresh } = useActiveRequests();
+
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -33,6 +37,8 @@ function CustomerDashboard() {
 
     try {
       await createSmartServiceRequest(user.id, description, selectedAddress);
+
+      await refresh();
 
       setSuccessMessage("Service request submitted successfully.");
       setDescription('');
@@ -78,21 +84,32 @@ function CustomerDashboard() {
   return (
     <>
       <div className='customer-page'>
+
         <h1 className='customer-title'>Customer Dashboard</h1>
+
         <p>Welcome, {user?.username}!</p>
+
         <Statistics />
+
         <div className='dashboard-grid'>
+
           <div className='dashboard-card'>
+
             <h2>Create Request</h2>
+
             <form className='request-form' onSubmit={handleSubmit}>
+
               <div className='form-group'>
+
                 <label htmlFor="description">Describe your request</label>
                 <p className='form-hint'>
                   Tell us what happened, and our AI will identify the correct service for you.
                 </p>
                 <textarea id="description" rows={5} value={description} onChange={(e) => setDescription(e.target.value)} />
               </div>
+
               <div className='form-group'>
+
                 <label htmlFor="locationId">Location</label>
                 <input value={address} onChange={handleAddressChange} placeholder='Karl Johans gate 1, Oslo' />
 
@@ -112,6 +129,7 @@ function CustomerDashboard() {
                   </ul>
                 )}
               </div>
+
               {
                 successMessage && (
                   <p className='success-message'>{successMessage}</p>
@@ -124,9 +142,10 @@ function CustomerDashboard() {
               }
               <button className="request-button" type="submit" disabled={loading}>{loading ? "Submitting..." : "Submit Request"}</button>
             </form>
+
           </div>
 
-          <CustomerRequests />
+          <CustomerRequests requests={requests} loading={requestsLoading}/>
         </div>
       </div>
     </>
