@@ -160,7 +160,7 @@ function RegisterPage() {
             <button className="register-button" disabled={loading}>
               {loading
               ? "Creating Account..."
-              : "Craete Account"}
+              : "Create Account"}
               </button>
 
           </form>
