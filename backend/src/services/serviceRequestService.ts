@@ -1,6 +1,7 @@
 import db from "../models/index.js";
 import type { ServiceRequest } from "../models/ServiceRequest.js";
 import type { User } from "../models/user.js";
+import type { Location } from "../models/location.js";
 import { type ServiceRequestCreationAttributes, type SmartServiceRequestCreationAttributes, type ServiceRequestAttributes, StatusEnum, type LocationSuggestion } from "../types/serviceRequest.types.js";
 import type { StatusHistory } from "../models/StatusHistory.js";
 import jobAssignmentService from "./jobAssignmentService.js";
@@ -16,6 +17,7 @@ class ServiceRequestService {
     Service: typeof db.Service;
     Status: typeof db.Status;
     JobAssignment: typeof db.JobAssignment;
+    Location: typeof db.Location;
     constructor(db: any) {
         this.client = db.sequelize;
         this.ServiceRequest = db.ServiceRequest;
@@ -24,6 +26,7 @@ class ServiceRequestService {
         this.Service = db.Service;
         this.Status = db.Status;
         this.JobAssignment = db.JobAssignment
+        this.Location = db.Location
     }
 
     async create({ customerId, serviceId, locationId, description }: ServiceRequestCreationAttributes) {
@@ -133,16 +136,40 @@ class ServiceRequestService {
         return this.ServiceRequest.findByPk(id);
     }
 
-    async getOneByCustomerId(customerId: number) {
+    async getCustomerRequests(customerId: number, status: string = "active") {
+
+        let statusIds: number[];
+
+        switch (status) {
+            case 'history':
+                statusIds = [
+                    StatusEnum.Completed,
+                    StatusEnum.Cancelled
+                ];
+                break;
+
+            case 'all':
+                statusIds = [
+                    StatusEnum.Created,
+                    StatusEnum.Assigned,
+                    StatusEnum.InProgress,
+                    StatusEnum.Completed,
+                    StatusEnum.Cancelled
+                ];
+                break;
+
+            default:
+                statusIds = [
+                    StatusEnum.Created,
+                    StatusEnum.Assigned,
+                    StatusEnum.InProgress
+                ];
+        }
         return this.ServiceRequest.findAll({
             where: {
                 customerId,
                 statusId: {
-                    [Op.in]: [
-                        StatusEnum.Created,
-                        StatusEnum.Assigned,
-                        StatusEnum.InProgress
-                    ]
+                    [Op.in]: statusIds
                 }
             },
             include: [
@@ -165,6 +192,26 @@ class ServiceRequestService {
                 {
                     model: this.Service,
                     as: "Service"
+                },
+                {
+                    model: this.Location,
+                    as: "Location"
+                },
+                {
+                    model: this.StatusHistory,
+                    as: "StatusHistory",
+                    include: [
+                        {
+                            model: this.Status,
+                            as: "OldStatus"
+                        },
+                        {
+                            model: this.Status,
+                            as: "NewStatus"
+                        }
+                    ],
+                    separate: true,
+                    order: [["changedAt", "ASC"]]
                 }
             ],
             order: [["updatedAt", "DESC"]]

@@ -73,11 +73,15 @@ router.get("/customer", isAuth, async (req: Request, res: Response, next: NextFu
     try {
         const customerId = (req as any).user.id;
 
-        const requests = await ServiceRequestService.getOneByCustomerId(customerId);
+        const status = req.query.status as string || 'active';
+
+        const requests = await ServiceRequestService.getCustomerRequests(customerId, status);
+
         if (requests.length === 0) {
             return res.status(200).json({ status: "success", statusCode: 200, message: "No active service requetsts", data: [] });
         }
-        return res.status(200).json({ status: "success", statusCode:200, message: "Customer's service requests details", data: requests });
+
+        return res.status(200).json({ status: "success", statusCode: 200, message: "Customer's service requests details", data: requests });
     } catch (err) {
         return next(err);
     }
@@ -128,7 +132,7 @@ router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, n
         if (!service) {
             return res.status(404).json({ status: "error", statusCode: 404, message: "Service request not found" });
         }
-        return res.status(200).json({ status: "success", statusCode:200, message: "Service request details", data: service });
+        return res.status(200).json({ status: "success", statusCode: 200, message: "Service request details", data: service });
     } catch (err) {
         return next(err);
     }
@@ -175,10 +179,10 @@ router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction)
             return res.status(400).json({ status: "error", statusCode: 400, message: "Missing required fields" });
         }
 
-        const service = await ServiceRequestService.create({ customerId, serviceId, locationId, description});
+        const service = await ServiceRequestService.create({ customerId, serviceId, locationId, description });
         return res.status(201).json({ status: "success", statusCode: 201, message: "Service request created successfully", data: service });
     } catch (err) {
-       return next(err);
+        return next(err);
     }
 });
 
@@ -222,26 +226,26 @@ router.post("/smart", isAuth, async (req: Request, res: Response, next: NextFunc
 
         if (!description || !location) {
             return res.status(400).json({
-                status: "error", 
-                statusCode: 400, 
-                message: "Missing required fields" 
+                status: "error",
+                statusCode: 400,
+                message: "Missing required fields"
             });
         }
 
         const service = await ServiceRequestService.createSmart({
             customerId,
-            description, 
-            location 
+            description,
+            location
         });
 
         return res.status(201).json({
-            status: "success", 
+            status: "success",
             statusCode: 201,
-            message: "Service request created successfully", 
-            data: service 
+            message: "Service request created successfully",
+            data: service
         });
     } catch (err) {
-       return next(err);
+        return next(err);
     }
 });
 
@@ -290,7 +294,7 @@ router.put("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, n
 
     try {
         const idNum = Number(req.params.id);
-        
+
         if (Number.isNaN(idNum)) {
             return res.status(400).json({ status: "error", statusCode: 400, message: "Service request ID must be a number" });
         }
@@ -299,12 +303,12 @@ router.put("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, n
         if (customerId == null && serviceId == null && statusId == null && locationId == null) {
             return res.status(400).json({ status: "error", statusCode: 400, message: "At least one field must be provided" });
         }
-        
+
         const updatedService = await ServiceRequestService.update(idNum, {
-            customerId, 
-            serviceId, 
-            statusId, 
-            locationId 
+            customerId,
+            serviceId,
+            statusId,
+            locationId
         });
         return res.status(200).json({ status: "success", statusCode: 200, message: "Service request updated successfully", data: updatedService });
     } catch (err) {

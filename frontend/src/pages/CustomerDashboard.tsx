@@ -12,7 +12,7 @@ import './CustomerDashboard.css'
 function CustomerDashboard() {
   const { user } = useAuth();
 
-  const { requests, loading: requestsLoading, refresh } = useActiveRequests();
+  const { requests, loading: requestsLoading, refresh, view, setView } = useActiveRequests();
 
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -145,7 +145,7 @@ function CustomerDashboard() {
 
           </div>
 
-          <CustomerRequests requests={requests} loading={requestsLoading}/>
+          <CustomerRequests requests={requests} loading={requestsLoading} view={view} setView={setView}/>
         </div>
       </div>
     </>

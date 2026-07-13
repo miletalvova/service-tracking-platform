@@ -13,6 +13,15 @@ export default function Statistics() {
         return <p>Loading...</p>
     }
 
+    if (requests.length === 0 ) {
+        return (
+            <div className="statistics-empty">
+                <h3>No requests yet</h3>
+                <p>Submit your first request to start tracking repairs, technician assignments, and request progress.</p>
+            </div>
+        )
+    }
+
     return (
         <div className="statistics-card">
 

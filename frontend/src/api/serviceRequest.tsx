@@ -11,8 +11,8 @@ export async function getServiceRequest(id: string): Promise<ServiceRequest> {
     return response.data.data;
 }
 
-export async function getActiveRequests(): Promise<ServiceRequest[]> {
-    const response = await api.get("/api/requests/customer");
+export async function getCustomersRequests(status: 'active' | 'history' | 'all'): Promise<ServiceRequest[]> {
+    const response = await api.get(`/api/requests/customer?status=${status}`);
     return response.data.data;
 }
 

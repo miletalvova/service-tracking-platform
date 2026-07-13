@@ -1,27 +1,32 @@
 import { useState, useEffect } from 'react';
-import { getActiveRequests } from '../api/serviceRequest';
+import { getCustomersRequests } from '../api/serviceRequest';
 import type { ServiceRequest } from '../types/serviceRequest';
 
 export function useActiveRequests() {
     const [requests, setRequests] = useState<ServiceRequest[]>([]);
     const [loading, setLoading] = useState(true);
+    const [view, setView] = useState<'active' | 'history'>('active');
 
-    async function fetchRequests() {
-            try {
-                const data = await getActiveRequests();
-                setRequests(data);
-            } finally {
-                setLoading(false)
-            }
+    async function fetchRequests(status: 'active' | 'history') {
+        setLoading(true);
+
+        try {
+            const data = await getCustomersRequests(status);
+            setRequests(data);
+        } finally {
+            setLoading(false)
         }
+    }
 
     useEffect(() => {
-        fetchRequests();
-    }, []);
+        fetchRequests(view);
+    }, [view]);
 
     return {
         requests,
         loading,
-        refresh: fetchRequests
+        view,
+        setView,
+        refresh: () => fetchRequests(view)
     };
 }
