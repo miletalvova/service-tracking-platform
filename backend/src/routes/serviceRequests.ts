@@ -34,8 +34,10 @@ router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) 
     /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
+    const status = req.query.status as string || 'all';
+
     try {
-        const services = await ServiceRequestService.getAll();
+        const services = await ServiceRequestService.getAll(status);
         return res.status(200).json({ status: "success", statusCode: 200, message: "List of service requests", data: services });
     } catch (err) {
         return next(err);

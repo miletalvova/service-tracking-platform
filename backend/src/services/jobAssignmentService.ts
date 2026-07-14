@@ -21,11 +21,11 @@ class JobAssignmentService {
         const transaction = await this.client.transaction();
         try {
             const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId, { transaction });
-            
+
             if (!serviceRequest) {
-            throw createError(404, "Service request not found");
-        }
-            if (serviceRequest.statusId === StatusEnum.Completed || 
+                throw createError(404, "Service request not found");
+            }
+            if (serviceRequest.statusId === StatusEnum.Completed ||
                 serviceRequest.statusId === StatusEnum.Cancelled
             ) {
                 throw createError(400, "Cannot assign technician to a completed or cancelled service request");
@@ -61,13 +61,12 @@ class JobAssignmentService {
                 oldStatusId: StatusEnum.Created,
                 newStatusId: StatusEnum.Assigned
             }, { transaction }); */
-            
+
             await statusService.updateStatus(serviceRequestId, StatusEnum.Assigned, transaction);
 
             await db.TechnicianProfile.update(
                 {
-                    currentLocationId: serviceRequest.locationId,
-                    isAvailable: false
+                    currentLocationId: serviceRequest.locationId
                 },
                 { where: { userId: technicianId }, transaction }
             );
@@ -88,11 +87,11 @@ class JobAssignmentService {
                 unassignedAt: null
             }
         });
-        
+
         if (!jobAssignment) return;
 
         await jobAssignment.update({
-            unassignedAt: new Date() 
+            unassignedAt: new Date()
         });
     }
 
@@ -106,7 +105,7 @@ class JobAssignmentService {
 
     async update(id: number, data: JobAssignmentCreationAttributes) {
         const jobAssignment = await this.JobAssignment.findByPk(id);
-        if(!jobAssignment) {
+        if (!jobAssignment) {
             throw createError(404, "Job Assignment not found");
         }
         return jobAssignment.update(data);
@@ -115,18 +114,18 @@ class JobAssignmentService {
     async delete(id: number) {
         const jobAssignment = await this.JobAssignment.findByPk(id);
 
-        if(!jobAssignment) {
+        if (!jobAssignment) {
             throw createError(404, "Job Assignment not found")
         }
-        
+
         return jobAssignment.destroy();
     }
 
     async recommendTechnician(serviceRequestId: number) {
         const transaction = await this.client.transaction();
-        const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId, { transaction});
+        const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId, { transaction });
 
-        if(!serviceRequest) {
+        if (!serviceRequest) {
             throw createError(404, "Service request not found");
         }
 
@@ -165,7 +164,7 @@ class JobAssignmentService {
                 activeJobs: activeJobsCount,
                 maxActiveJobs: tech.TechnicianProfile?.maxActiveJobs ?? 3,
                 currentLocation: tech.TechnicianProfile?.CurrentLocation ?? null,
-             };
+            };
         }));
 
         const availableTechnicians = techniciansWithWorkload.filter(

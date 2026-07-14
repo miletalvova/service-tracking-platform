@@ -8,6 +8,15 @@ import jobAssignmentService from "./jobAssignmentService.js";
 import AIService from "./aiService.js";
 import createError from "http-errors";
 import { Op } from "sequelize";
+import { stat } from "fs";
+
+const statusMap = {
+    created: StatusEnum.Created,
+    assigned: StatusEnum.Assigned,
+    inprogress: StatusEnum.InProgress,
+    completed: StatusEnum.Completed,
+    cancelled: StatusEnum.Cancelled,
+}
 
 class ServiceRequestService {
     client: any;
@@ -128,8 +137,46 @@ class ServiceRequestService {
         }
     }
 
-    async getAll() {
-        return this.ServiceRequest.findAll();
+    async getAll(status = 'all') {
+        const where = status === 'all' ? {} : { statusId: statusMap[status as keyof typeof statusMap] }
+        return this.ServiceRequest.findAll({
+            where,
+            include: [
+                {
+                    model: this.Status, as: "Status"
+                },
+                {
+                    model: this.Service,
+                    as: "Service"
+                },
+                {
+                    model: this.User, as: "Customer",
+                    attributes: [
+                        "id",
+                        "FirstName",
+                        "LastName",
+                        "Email",
+                        "Username"
+                    ]
+                },
+                {
+                    model: this.JobAssignment, as: "JobAssignments",
+                    include: [
+                        {
+                            model: this.User,
+                            as: "Technician",
+                            attributes: [
+                                "id",
+                                "FirstName",
+                                "LastName",
+                                "Email",
+                                "Username"
+                            ]
+                        }
+                    ]
+                },
+            ]
+        });
     }
 
     async getOneById(id: number) {
@@ -174,7 +221,14 @@ class ServiceRequestService {
             },
             include: [
                 {
-                    model: this.User, as: "Customer"
+                    model: this.User, as: "Customer",
+                    attributes: [
+                        "id",
+                        "FirstName",
+                        "LastName",
+                        "Email",
+                        "Username"
+                    ]
                 },
                 {
                     model: this.Status, as: "Status"
@@ -185,7 +239,14 @@ class ServiceRequestService {
                     include: [
                         {
                             model: this.User,
-                            as: "Technician"
+                            as: "Technician",
+                            attributes: [
+                                "id",
+                                "FirstName",
+                                "LastName",
+                                "Email",
+                                "Username"
+                            ]
                         }
                     ]
                 },

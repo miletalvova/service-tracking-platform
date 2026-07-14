@@ -1,8 +1,8 @@
 import type { ServiceRequest } from "../types/serviceRequest";
 import api from "./axios";
 
-export async function getServiceRequests(): Promise<ServiceRequest[]> {
-    const response = await api.get("/api/requests");
+export async function getServiceRequests(status: "all" | "created" | "assigned" | "inprogress" | "completed" | "cancelled"): Promise<ServiceRequest[]> {
+    const response = await api.get(`/api/requests?status=${status}`);
     return response.data.data;
 }
 
