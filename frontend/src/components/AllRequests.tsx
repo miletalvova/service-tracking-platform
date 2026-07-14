@@ -4,10 +4,11 @@ import { getServiceRequests } from '../api/serviceRequest';
 import type { ServiceRequest } from '../types/serviceRequest';
 
 type Props = {
-    onSelectRequest: (id: number) => void
+    onSelectRequest: (id: number) => void;
+    refreshKey: number
 }
 
-export default function AllRequests({ onSelectRequest }: Props) {
+export default function AllRequests({ onSelectRequest, refreshKey }: Props) {
     const [requests, setRequests] = useState<ServiceRequest[]>([]);
     const [statusFilter, setStatusFilter] = useState<
         "all" |
@@ -28,7 +29,7 @@ export default function AllRequests({ onSelectRequest }: Props) {
             }
         }
         fetchRequests();
-    }, [statusFilter]);
+    }, [statusFilter, refreshKey]);
 
     return (
         <div className='staff-card'>

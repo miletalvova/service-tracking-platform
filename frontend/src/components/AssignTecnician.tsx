@@ -1,5 +1,5 @@
 import './AssignTecnician.css';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { getRecommendedTechnician } from '../api/jobAssignmentApi'
 
 type Props = {
