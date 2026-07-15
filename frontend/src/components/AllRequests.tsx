@@ -73,7 +73,7 @@ export default function AllRequests({ onSelectRequest, refreshKey }: Props) {
                                 : "Awaiting Assignment"}</td>
                             <td>{new Date(r.createdAt).toLocaleDateString()}</td>
                             <td><span className={`priority ${r.priority.toLowerCase()}`}>{r.priority}</span></td>
-                            <td><span className={`status ${r.Status?.status.toLowerCase()}`}>{r.Status?.status}</span></td>
+                            <td><span className={`status ${r.Status?.status.replace(/\s+/g, "").toLowerCase()}`}>{r.Status?.status}</span></td>
                             <td>
                                 {r.Status?.status === 'Created' && (
                                     <button onClick={() => onSelectRequest(r.id)}>Assign</button>

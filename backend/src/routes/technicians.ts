@@ -2,7 +2,7 @@ import { Router } from "express";
 const router = Router();
 import type { Request, Response, NextFunction } from "express";
 import TechnicianService from "../services/technicianService.js";
-import { isAuth, isTechnician } from "../middleware/auth.js";
+import { isAuth, isTechnician, isStaff } from "../middleware/auth.js";
 import jobAssignmentService from "../services/jobAssignmentService.js";
 import { StatusEnum } from "../types/serviceRequest.types.js";
 
@@ -40,10 +40,20 @@ router.get("/assigned-requests", isAuth, isTechnician, async (req: Request, res:
         const technicianId = (req as any).user.id;
 
         const assignedRequests = await TechnicianService.getAssignedRequests(technicianId);
-        return res.status(200).json({ status: "success", statusCode: 200, message: "List of assigned requests", data: assignedRequests});
+        return res.status(200).json({ status: "success", statusCode: 200, message: "List of assigned requests", data: assignedRequests });
     } catch (err) {
         return next(err);
     }
+});
+
+router.get("/workload", isAuth, isStaff, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const techWorkload = await TechnicianService.getWorkloadOverview();
+        return res.status(200).json({ status: "success", statusCode: 200, message: "Technician workload overview", data: techWorkload });
+    } catch (err) {
+        return next(err);
+    }
+
 });
 
 router.patch("/:id/status", isAuth, isTechnician, async (req: Request, res: Response, next: NextFunction) => {
@@ -92,7 +102,7 @@ router.patch("/:id/status", isAuth, isTechnician, async (req: Request, res: Resp
     try {
         const serviceRequestId = Number(req.params.id);
 
-        if(Number.isNaN(serviceRequestId)) {
+        if (Number.isNaN(serviceRequestId)) {
             return res.status(400).json({ status: "error", statusCode: 400, message: "Service Request ID must be a number" })
         }
 
@@ -169,10 +179,10 @@ router.patch("/profile", isAuth, isTechnician, async (req: Request, res: Respons
         if (!profile) {
             return res.status(404).json({ status: "error", statusCode: 404, message: "Technician profile not found" });
         }
-        await profile.update({ 
-            ...(skills !== undefined && { skills }), 
-            ...(isAvailable !== undefined && { isAvailable }), 
-            ...(currentLocationId !== undefined && { currentLocationId }), 
+        await profile.update({
+            ...(skills !== undefined && { skills }),
+            ...(isAvailable !== undefined && { isAvailable }),
+            ...(currentLocationId !== undefined && { currentLocationId }),
             ...(maxActiveJobs !== undefined && { maxActiveJobs })
         });
 

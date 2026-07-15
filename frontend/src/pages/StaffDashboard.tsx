@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import AllRequests from '../components/AllRequests';
-import AssignTechnician from '../components/AssignTecnician'
+import AssignTechnician from '../components/AssignTecnician';
+import WorkloadOverview from '../components/Workload';
 
 export default function StaffDashboard() {
   const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
@@ -12,6 +13,7 @@ export default function StaffDashboard() {
         <h1>Staff Dashboard</h1>
 
         <div className='staff-grid'>
+          <WorkloadOverview />
           <AllRequests
             refreshKey={refreshKey}
             onSelectRequest={setSelectedRequestId} />

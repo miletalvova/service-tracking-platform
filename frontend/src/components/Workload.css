@@ -1,0 +1,51 @@
+.workload-overview {
+
+}
+
+.dashoard-section {
+
+}
+
+.stats-row {
+
+}
+
+.created {
+
+}
+
+.assigned {
+
+}
+
+.inprogress {
+
+}
+
+.completed {
+
+}
+
+.completed {
+
+}
+
+.technicians {
+
+}
+
+.available {
+    border-left: 4px solid #22c55e;
+}
+
+.busy {
+    border-left: 4px solid #f59e0b;
+}
+
+.capacity {
+    border-left: 4px solid #ef4444;
+}
+
+.technicians {
+    border-left: 4px solid #3b82f6;
+}

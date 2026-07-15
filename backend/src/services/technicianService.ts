@@ -87,15 +87,60 @@ class TechnicianService {
             if (!assignment) {
                 throw createError(404, "No active assignment found for this service request and technician");
             }
-            
+
             const updatedRequest = await statusService.updateStatus(serviceRequestId, statusId, transaction);
-            
+
             await transaction.commit();
 
             return updatedRequest;
         } catch (err) {
             await transaction.rollback();
             throw err;
+        }
+    }
+
+    async getWorkloadOverview() {
+        const technicians = await this.TechnicianProfile.findAll({
+            include: [{
+                model: this.User,
+                as: "User",
+                attributes: [
+                    "id",
+                    "FirstName",
+                    "LastName"
+                ]
+            }]
+        });
+
+        let available = 0;
+        let busy = 0;
+        let atCapacity = 0;
+
+        for (const tech of technicians) {
+            const activeJobs = await this.JobAssignment.count({
+                where: {
+                    technicianId: tech.id,
+                    unassignedAt: null
+                }
+            });
+
+            const maxJobs = tech.maxActiveJobs ?? 3;
+
+            if (activeJobs === 0)
+                available++;
+
+            if (activeJobs > 0)
+                busy++;
+
+            if (activeJobs >= maxJobs)
+                atCapacity++;
+        }
+
+        return {
+            totalTechnicians: technicians.length,
+            available,
+            busy,
+            atCapacity
         }
     }
 

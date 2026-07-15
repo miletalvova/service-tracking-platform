@@ -6,3 +6,10 @@ export interface Technician {
   currentLocationId: number | null;
   maxActiveJobs: number;
 }
+
+export interface WorkloadOverview {
+  totalTechnicians: number;
+  available: number;
+  busy: number;
+  atCapacity: number;
+}
