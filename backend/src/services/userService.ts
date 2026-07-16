@@ -1,8 +1,8 @@
-import db from "../models/index.js";
-import type { User } from "../models/user.js";
-import type { Role } from "../models/role.js";
-import type { TechnicianProfile } from "../models/TechnicianProfile.js";
-import type { UserCreationAttributes } from "../types/user.types.js";
+import db from '../models/index.js';
+import type { User } from '../models/user.js';
+import type { Role } from '../models/role.js';
+import type { TechnicianProfile } from '../models/TechnicianProfile.js';
+import type { UserCreationAttributes } from '../types/user.types.js';
 
 class UserService {
     client: any;
@@ -19,7 +19,7 @@ class UserService {
     async getOne(email: string) {
         return this.User.findOne({
             where: { Email: email },
-            include: [{ model: this.Role, as: "Role" }]
+            include: [{ model: this.Role, as: 'Role' }],
         });
     }
 
@@ -28,16 +28,22 @@ class UserService {
         try {
             const user = await this.User.create(data, { transaction });
 
-            const technicianRole = await this.Role.findOne({ where: { name: "Technician" }, transaction });
+            const technicianRole = await this.Role.findOne({
+                where: { name: 'Technician' },
+                transaction,
+            });
 
             if (technicianRole && user.RoleId === technicianRole.id) {
-                await this.TechnicianProfile.create({ 
-                    userId: user.id,
-                    skills: "",
-                    isAvailable: true,
-                    currentLocationId: null,
-                    maxActiveJobs: 3
-                 }, { transaction });
+                await this.TechnicianProfile.create(
+                    {
+                        userId: user.id,
+                        skills: '',
+                        isAvailable: true,
+                        currentLocationId: null,
+                        maxActiveJobs: 3,
+                    },
+                    { transaction }
+                );
             }
             await transaction.commit();
             return user;
@@ -46,7 +52,6 @@ class UserService {
             throw err;
         }
     }
-
 }
 
 export default new UserService(db);

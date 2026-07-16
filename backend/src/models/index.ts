@@ -1,44 +1,42 @@
 /* import "dotenv/config"; */
-import { Sequelize } from "sequelize";
-import mysql2 from "mysql2";
-import { initUserModel, User } from "./user.js";
-import { initRoleModel, Role } from "./role.js";
-import { initServiceRequestModel, ServiceRequest } from "./ServiceRequest.js";
-import { initServiceModel, Service } from "./service.js";
-import { initJobAssignment, JobAssignment } from "./JobAssignment.js";
-import { initStatusHistoryModel, StatusHistory } from "./StatusHistory.js";
-import { initLocationModel, Location } from "./location.js";
-import { initStatusModel, Status } from "./status.js";
-import { initTechnicianProfileModel, TechnicianProfile } from "./TechnicianProfile.js";
-import type { Models, SequelizeModel } from "../types/model.types.js";
-import { seedRoles } from "../seeders/roles.js";
-import { seedStatuses } from "../seeders/statuses.js";
-import { seedServices } from "../seeders/services.js";
-import { seedLocations } from "../seeders/locations.js";
+import { Sequelize } from 'sequelize';
+import mysql2 from 'mysql2';
+import { initUserModel, User } from './user.js';
+import { initRoleModel, Role } from './role.js';
+import { initServiceRequestModel, ServiceRequest } from './ServiceRequest.js';
+import { initServiceModel, Service } from './service.js';
+import { initJobAssignment, JobAssignment } from './JobAssignment.js';
+import { initStatusHistoryModel, StatusHistory } from './StatusHistory.js';
+import { initLocationModel, Location } from './location.js';
+import { initStatusModel, Status } from './status.js';
+import { initTechnicianProfileModel, TechnicianProfile } from './TechnicianProfile.js';
+import type { Models, SequelizeModel } from '../types/model.types.js';
+import { seedRoles } from '../seeders/roles.js';
+import { seedStatuses } from '../seeders/statuses.js';
+import { seedServices } from '../seeders/services.js';
+import { seedLocations } from '../seeders/locations.js';
 
-const { DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, DATABASE_HOST, DATABASE_PORT, DIALECT } = process.env;
+const { DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, DATABASE_HOST, DATABASE_PORT, DIALECT } =
+    process.env;
 
 if (!DATABASE_NAME || !ADMIN_USERNAME || !ADMIN_PASSWORD || !DATABASE_HOST) {
-    throw new Error("Missing required environment variables: DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, DATABASE_HOST");
+    throw new Error(
+        'Missing required environment variables: DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, DATABASE_HOST'
+    );
 }
 
-const sequelize = new Sequelize( 
-    DATABASE_NAME,
-    ADMIN_USERNAME,
-    ADMIN_PASSWORD,
-    {
-        host: DATABASE_HOST,
-        port: Number(DATABASE_PORT),
-        dialect: DIALECT as any,
-        dialectModule: mysql2,
-        logging: false,
-        dialectOptions: {
-            ssl: {
-                rejectUnauthorized: false
-            }
-        }
-    }
-);
+const sequelize = new Sequelize(DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, {
+    host: DATABASE_HOST,
+    port: Number(DATABASE_PORT),
+    dialect: DIALECT as any,
+    dialectModule: mysql2,
+    logging: false,
+    dialectOptions: {
+        ssl: {
+            rejectUnauthorized: false,
+        },
+    },
+});
 
 initUserModel(sequelize);
 initRoleModel(sequelize);
@@ -50,7 +48,7 @@ initLocationModel(sequelize);
 initStatusModel(sequelize);
 initTechnicianProfileModel(sequelize);
 
-export const models: Omit<Models, "sequelize"> = {
+export const models: Omit<Models, 'sequelize'> = {
     User,
     Role,
     ServiceRequest,
@@ -59,31 +57,31 @@ export const models: Omit<Models, "sequelize"> = {
     StatusHistory,
     Location,
     Status,
-    TechnicianProfile
+    TechnicianProfile,
 };
 
-Object.values(models).forEach(model => {
-    (model as SequelizeModel).associate?.(models as Models)
+Object.values(models).forEach((model) => {
+    (model as SequelizeModel).associate?.(models as Models);
 });
 
 export const db: Models = {
     sequelize,
-    ...models
+    ...models,
 };
 
 (async () => {
     try {
         await sequelize.authenticate();
-        console.log("Connection has been established successfully.");
+        console.log('Connection has been established successfully.');
 
         await sequelize.sync({ force: false });
-        console.log("All models were synchronized successfully.");
+        console.log('All models were synchronized successfully.');
         await seedRoles();
         await seedStatuses();
         await seedServices();
         await seedLocations();
     } catch (error) {
-        console.error("Unable to connect to the database:", error);
+        console.error('Unable to connect to the database:', error);
     }
 })();
 

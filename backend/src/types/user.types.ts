@@ -8,4 +8,4 @@ export interface UserAttributes {
     RoleId: number;
     /* Salt: Buffer; */
 }
-export interface UserCreationAttributes extends Omit<UserAttributes, "id"> {}
+export interface UserCreationAttributes extends Omit<UserAttributes, 'id'> {}

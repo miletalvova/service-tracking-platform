@@ -1,14 +1,20 @@
-import db from "../models/index.js";
-import type { ServiceRequest } from "../models/ServiceRequest.js";
-import type { User } from "../models/user.js";
-import type { Location } from "../models/location.js";
-import { type ServiceRequestCreationAttributes, type SmartServiceRequestCreationAttributes, type ServiceRequestAttributes, StatusEnum, type LocationSuggestion } from "../types/serviceRequest.types.js";
-import type { StatusHistory } from "../models/StatusHistory.js";
-import jobAssignmentService from "./jobAssignmentService.js";
-import AIService from "./aiService.js";
-import createError from "http-errors";
-import { Op } from "sequelize";
-import { stat } from "fs";
+import db from '../models/index.js';
+import type { ServiceRequest } from '../models/ServiceRequest.js';
+import type { User } from '../models/user.js';
+import type { Location } from '../models/location.js';
+import {
+    type ServiceRequestCreationAttributes,
+    type SmartServiceRequestCreationAttributes,
+    type ServiceRequestAttributes,
+    StatusEnum,
+    type LocationSuggestion,
+} from '../types/serviceRequest.types.js';
+import type { StatusHistory } from '../models/StatusHistory.js';
+import jobAssignmentService from './jobAssignmentService.js';
+import AIService from './aiService.js';
+import createError from 'http-errors';
+import { Op } from 'sequelize';
+import { stat } from 'fs';
 
 const statusMap = {
     created: StatusEnum.Created,
@@ -16,7 +22,7 @@ const statusMap = {
     inprogress: StatusEnum.InProgress,
     completed: StatusEnum.Completed,
     cancelled: StatusEnum.Cancelled,
-}
+};
 
 class ServiceRequestService {
     client: any;
@@ -34,99 +40,122 @@ class ServiceRequestService {
         this.StatusHistory = db.StatusHistory;
         this.Service = db.Service;
         this.Status = db.Status;
-        this.JobAssignment = db.JobAssignment
-        this.Location = db.Location
+        this.JobAssignment = db.JobAssignment;
+        this.Location = db.Location;
     }
 
-    async create({ customerId, serviceId, locationId, description }: ServiceRequestCreationAttributes) {
+    async create({
+        customerId,
+        serviceId,
+        locationId,
+        description,
+    }: ServiceRequestCreationAttributes) {
         const serviceRequest = await this.ServiceRequest.create({
             customerId,
             serviceId,
             statusId: 1,
             locationId,
             description,
-            priority: "Medium"
+            priority: 'Medium',
         });
 
         await this.StatusHistory.create({
             serviceRequestId: serviceRequest.id,
             oldStatusId: 1,
-            newStatusId: 1
+            newStatusId: 1,
         });
         return serviceRequest;
     }
 
-    async createSmart({ customerId, description, location }: SmartServiceRequestCreationAttributes) {
+    async createSmart({
+        customerId,
+        description,
+        location,
+    }: SmartServiceRequestCreationAttributes) {
         const transaction = await this.client.transaction();
         try {
             let aiResult;
             let urgencyResult;
-            let finalPriority: "Low" | "Medium" | "High" = "Medium";
+            let finalPriority: 'Low' | 'Medium' | 'High' = 'Medium';
 
             try {
                 [aiResult, urgencyResult] = await Promise.all([
                     AIService.classifyRequest(description),
-                    AIService.detectUrgency(description)
+                    AIService.detectUrgency(description),
                 ]);
 
-                finalPriority = urgencyResult.isUrgent ? "High" : aiResult.priority;
-            }
-            catch (error) {
-                console.error("AI classification failed, falling back to default values. Error:", error);
+                finalPriority = urgencyResult.isUrgent ? 'High' : aiResult.priority;
+            } catch (error) {
+                console.error(
+                    'AI classification failed, falling back to default values. Error:',
+                    error
+                );
                 aiResult = {
-                    service: "IT Support",
+                    service: 'IT Support',
                     cleanDescription: description,
-                    priority: "Medium"
+                    priority: 'Medium',
                 };
             }
 
-            let service = await this.Service.findOne({ where: { specialization: aiResult.service }, transaction });
+            let service = await this.Service.findOne({
+                where: { specialization: aiResult.service },
+                transaction,
+            });
 
             if (!service) {
-                service = await this.Service.create({
-                    specialization: aiResult.service,
-                    description: `All ${aiResult.service.toLowerCase()} related services`
-                }, { transaction });
+                service = await this.Service.create(
+                    {
+                        specialization: aiResult.service,
+                        description: `All ${aiResult.service.toLowerCase()} related services`,
+                    },
+                    { transaction }
+                );
             }
 
-            const locationRecord = await db.Location.create({
-                address: location.display_name,
-                city:
-                    location.address.city ??
-                    location.address.town ??
-                    location.address.village ??
-                    "",
-                state: location.address.state ??
-                    "",
-                zipCode: location.address.postcode ??
-                    ""
-            },
+            const locationRecord = await db.Location.create(
                 {
-                    transaction
-                });
+                    address: location.display_name,
+                    city:
+                        location.address.city ??
+                        location.address.town ??
+                        location.address.village ??
+                        '',
+                    state: location.address.state ?? '',
+                    zipCode: location.address.postcode ?? '',
+                },
+                {
+                    transaction,
+                }
+            );
 
-            const serviceRequest = await this.ServiceRequest.create({
-                customerId,
-                serviceId: service.id,
-                statusId: StatusEnum.Created,
-                locationId: locationRecord.id,
-                description: aiResult.cleanDescription,
-                priority: finalPriority
-            }, { transaction });
+            const serviceRequest = await this.ServiceRequest.create(
+                {
+                    customerId,
+                    serviceId: service.id,
+                    statusId: StatusEnum.Created,
+                    locationId: locationRecord.id,
+                    description: aiResult.cleanDescription,
+                    priority: finalPriority,
+                },
+                { transaction }
+            );
 
             console.log({
-                event: "ai_classification",
+                event: 'ai_classification',
                 input: description.slice(0, 100),
                 output: aiResult,
                 urgency: urgencyResult,
-                timestamp: new Date().toISOString()
-            })
+                timestamp: new Date().toISOString(),
+            });
 
-            await this.StatusHistory.create({
-                serviceRequestId: serviceRequest.id,
-                oldStatusId: 1,
-                newStatusId: 1
-            }, { transaction });
+            await this.StatusHistory.create(
+                {
+                    serviceRequestId: serviceRequest.id,
+                    oldStatusId: 1,
+                    newStatusId: 1,
+                },
+                { transaction }
+            );
 
             await transaction.commit();
 
@@ -138,44 +167,36 @@ class ServiceRequestService {
     }
 
     async getAll(status = 'all') {
-        const where = status === 'all' ? {} : { statusId: statusMap[status as keyof typeof statusMap] }
+        const where =
+            status === 'all' ? {} : { statusId: statusMap[status as keyof typeof statusMap] };
         return this.ServiceRequest.findAll({
             where,
             include: [
                 {
-                    model: this.Status, as: "Status"
+                    model: this.Status,
+                    as: 'Status',
                 },
                 {
                     model: this.Service,
-                    as: "Service"
+                    as: 'Service',
                 },
                 {
-                    model: this.User, as: "Customer",
-                    attributes: [
-                        "id",
-                        "FirstName",
-                        "LastName",
-                        "Email",
-                        "Username"
-                    ]
+                    model: this.User,
+                    as: 'Customer',
+                    attributes: ['id', 'FirstName', 'LastName', 'Email', 'Username'],
                 },
                 {
-                    model: this.JobAssignment, as: "JobAssignments",
+                    model: this.JobAssignment,
+                    as: 'JobAssignments',
                     include: [
                         {
                             model: this.User,
-                            as: "Technician",
-                            attributes: [
-                                "id",
-                                "FirstName",
-                                "LastName",
-                                "Email",
-                                "Username"
-                            ]
-                        }
-                    ]
+                            as: 'Technician',
+                            attributes: ['id', 'FirstName', 'LastName', 'Email', 'Username'],
+                        },
+                    ],
                 },
-            ]
+            ],
         });
     }
 
@@ -183,16 +204,12 @@ class ServiceRequestService {
         return this.ServiceRequest.findByPk(id);
     }
 
-    async getCustomerRequests(customerId: number, status: string = "active") {
-
+    async getCustomerRequests(customerId: number, status: string = 'active') {
         let statusIds: number[];
 
         switch (status) {
             case 'history':
-                statusIds = [
-                    StatusEnum.Completed,
-                    StatusEnum.Cancelled
-                ];
+                statusIds = [StatusEnum.Completed, StatusEnum.Cancelled];
                 break;
 
             case 'all':
@@ -201,81 +218,69 @@ class ServiceRequestService {
                     StatusEnum.Assigned,
                     StatusEnum.InProgress,
                     StatusEnum.Completed,
-                    StatusEnum.Cancelled
+                    StatusEnum.Cancelled,
                 ];
                 break;
 
             default:
-                statusIds = [
-                    StatusEnum.Created,
-                    StatusEnum.Assigned,
-                    StatusEnum.InProgress
-                ];
+                statusIds = [StatusEnum.Created, StatusEnum.Assigned, StatusEnum.InProgress];
         }
         return this.ServiceRequest.findAll({
             where: {
                 customerId,
                 statusId: {
-                    [Op.in]: statusIds
-                }
+                    [Op.in]: statusIds,
+                },
             },
             include: [
                 {
-                    model: this.User, as: "Customer",
-                    attributes: [
-                        "id",
-                        "FirstName",
-                        "LastName",
-                        "Email",
-                        "Username"
-                    ]
+                    model: this.User,
+                    as: 'Customer',
+                    attributes: ['id', 'FirstName', 'LastName', 'Email', 'Username'],
                 },
                 {
-                    model: this.Status, as: "Status"
+                    model: this.Status,
+                    as: 'Status',
                 },
                 {
-                    model: this.JobAssignment, as: "JobAssignments",
-                    required: false, where: { unassignedAt: null },
+                    model: this.JobAssignment,
+                    as: 'JobAssignments',
+                    required: false,
+                    where: { unassignedAt: null },
                     include: [
                         {
                             model: this.User,
-                            as: "Technician",
-                            attributes: [
-                                "id",
-                                "FirstName",
-                                "LastName",
-                                "Email",
-                                "Username"
-                            ]
-                        }
-                    ]
+                            as: 'Technician',
+                            attributes: ['id', 'FirstName', 'LastName', 'Email', 'Username'],
+                        },
+                    ],
                 },
                 {
                     model: this.Service,
-                    as: "Service"
+                    as: 'Service',
                 },
                 {
                     model: this.Location,
-                    as: "Location"
+                    as: 'Location',
                 },
                 {
                     model: this.StatusHistory,
-                    as: "StatusHistory",
+                    as: 'StatusHistory',
                     include: [
                         {
                             model: this.Status,
-                            as: "OldStatus"
+                            as: 'OldStatus',
                         },
                         {
                             model: this.Status,
-                            as: "NewStatus"
-                        }
+                            as: 'NewStatus',
+                        },
                     ],
                     separate: true,
-                    order: [["changedAt", "ASC"]]
-                }
+                    order: [['changedAt', 'ASC']],
+                },
             ],
-            order: [["updatedAt", "DESC"]]
+            order: [['updatedAt', 'DESC']],
         });
     }
 
@@ -283,7 +288,7 @@ class ServiceRequestService {
         const serviceRequest = await this.ServiceRequest.findByPk(id);
 
         if (!serviceRequest) {
-            throw createError(404, "Service request not found");
+            throw createError(404, 'Service request not found');
         }
 
         const oldStatusId = serviceRequest.statusId;
@@ -294,8 +299,8 @@ class ServiceRequestService {
             await this.StatusHistory.create({
                 serviceRequestId: id,
                 oldStatusId,
-                newStatusId: data.statusId
-            })
+                newStatusId: data.statusId,
+            });
         }
 
         if (data.statusId === StatusEnum.Completed || data.statusId === StatusEnum.Cancelled) {
@@ -309,12 +314,11 @@ class ServiceRequestService {
         const serviceRequest = await this.ServiceRequest.findByPk(id);
 
         if (!serviceRequest) {
-            throw createError(404, "Service request not found");
+            throw createError(404, 'Service request not found');
         }
 
         return serviceRequest.destroy();
     }
-
 }
 
 export default new ServiceRequestService(db);

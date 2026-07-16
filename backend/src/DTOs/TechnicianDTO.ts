@@ -20,12 +20,20 @@ export class TechnicianDTO {
         this.Created = new Date(job.createdAt).toISOString();
         this.Updated = new Date(job.updatedAt).toISOString();
         this.technicianId = job.Technician.id;
-        this.FullName = job.Technician.FirstName + " " + job.Technician.LastName;
+        this.FullName = job.Technician.FirstName + ' ' + job.Technician.LastName;
         this.Email = job.Technician.Email;
-        this.Customer = job.ServiceRequest.Customer.FirstName + " " + job.ServiceRequest.Customer.LastName;
+        this.Customer =
+            job.ServiceRequest.Customer.FirstName + ' ' + job.ServiceRequest.Customer.LastName;
         this.CustomerEmail = job.ServiceRequest.Customer.Email;
         this.Service = job.ServiceRequest.Service.serviceType;
-        this.Address = job.ServiceRequest.Location.address + ", " + job.ServiceRequest.Location.city + ", " + job.ServiceRequest.Location.state + " " + job.ServiceRequest.Location.zipCode;
+        this.Address =
+            job.ServiceRequest.Location.address +
+            ', ' +
+            job.ServiceRequest.Location.city +
+            ', ' +
+            job.ServiceRequest.Location.state +
+            ' ' +
+            job.ServiceRequest.Location.zipCode;
         this.Status = job.ServiceRequest.Status ? job.ServiceRequest.Status.status : undefined;
     }
 }

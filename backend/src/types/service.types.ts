@@ -4,4 +4,4 @@ export interface ServiceAttributes {
     description: string;
 }
 
-export interface ServiceCreationAttributes extends Omit<ServiceAttributes, "id"> {}
+export interface ServiceCreationAttributes extends Omit<ServiceAttributes, 'id'> {}

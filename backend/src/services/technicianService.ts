@@ -1,14 +1,14 @@
-import db from "../models/index.js";
-import type { User } from "../models/user.js";
-import type { ServiceRequest } from "../models/ServiceRequest.js";
-import type { JobAssignment } from "../models/JobAssignment.js";
-import type { Service } from "../models/service.js";
-import type { Location } from "../models/location.js";
-import type { Status } from "../models/status.js";
-import { TechnicianDTO } from "../DTOs/TechnicianDTO.js";
-import statusService from "./statusService.js";
-import type { TechnicianProfile } from "../models/TechnicianProfile.js";
-import createError from "http-errors";
+import db from '../models/index.js';
+import type { User } from '../models/user.js';
+import type { ServiceRequest } from '../models/ServiceRequest.js';
+import type { JobAssignment } from '../models/JobAssignment.js';
+import type { Service } from '../models/service.js';
+import type { Location } from '../models/location.js';
+import type { Status } from '../models/status.js';
+import { TechnicianDTO } from '../DTOs/TechnicianDTO.js';
+import statusService from './statusService.js';
+import type { TechnicianProfile } from '../models/TechnicianProfile.js';
+import createError from 'http-errors';
 
 class TechnicianService {
     client: any;
@@ -40,38 +40,37 @@ class TechnicianService {
             include: [
                 {
                     model: this.ServiceRequest,
-                    as: "ServiceRequest",
+                    as: 'ServiceRequest',
                     include: [
                         {
                             model: this.Service,
-                            as: "Service"
+                            as: 'Service',
                         },
                         {
                             model: this.User,
-                            as: "Customer",
-                            attributes: ["id", "FirstName", "LastName", "Email"]
+                            as: 'Customer',
+                            attributes: ['id', 'FirstName', 'LastName', 'Email'],
                         },
                         {
                             model: this.Location,
-                            as: "Location",
-                            attributes: ["address", "city", "state", "zipCode"]
+                            as: 'Location',
+                            attributes: ['address', 'city', 'state', 'zipCode'],
                         },
                         {
                             model: this.Status,
-                            as: "Status",
-                            attributes: ["status"]
-                        }
-                    ]
-
+                            as: 'Status',
+                            attributes: ['status'],
+                        },
+                    ],
                 },
                 {
                     model: this.User,
-                    as: "Technician",
-                    attributes: ["id", "FirstName", "LastName", "Email"]
-                }
-            ]
+                    as: 'Technician',
+                    attributes: ['id', 'FirstName', 'LastName', 'Email'],
+                },
+            ],
         });
-        return assignments.map(job => new TechnicianDTO(job));
+        return assignments.map((job) => new TechnicianDTO(job));
     }
 
     async updateStatus(serviceRequestId: number, statusId: number, technicianId: number) {
@@ -79,16 +78,25 @@ class TechnicianService {
         try {
             const assignment = await this.JobAssignment.findOne({
                 where: {
-                    serviceRequestId, technicianId, unassignedAt: null
+                    serviceRequestId,
+                    technicianId,
+                    unassignedAt: null,
                 },
-                transaction
+                transaction,
             });
 
             if (!assignment) {
-                throw createError(404, "No active assignment found for this service request and technician");
+                throw createError(
+                    404,
+                    'No active assignment found for this service request and technician'
+                );
             }
 
-            const updatedRequest = await statusService.updateStatus(serviceRequestId, statusId, transaction);
+            const updatedRequest = await statusService.updateStatus(
+                serviceRequestId,
+                statusId,
+                transaction
+            );
 
             await transaction.commit();
 
@@ -101,15 +109,13 @@ class TechnicianService {
 
     async getWorkloadOverview() {
         const technicians = await this.TechnicianProfile.findAll({
-            include: [{
-                model: this.User,
-                as: "User",
-                attributes: [
-                    "id",
-                    "FirstName",
-                    "LastName"
-                ]
-            }]
+            include: [
+                {
+                    model: this.User,
+                    as: 'User',
+                    attributes: ['id', 'FirstName', 'LastName'],
+                },
+            ],
         });
 
         let available = 0;
@@ -120,30 +126,26 @@ class TechnicianService {
             const activeJobs = await this.JobAssignment.count({
                 where: {
                     technicianId: tech.id,
-                    unassignedAt: null
-                }
+                    unassignedAt: null,
+                },
             });
 
             const maxJobs = tech.maxActiveJobs ?? 3;
 
-            if (activeJobs === 0)
-                available++;
+            if (activeJobs === 0) available++;
 
-            if (activeJobs > 0)
-                busy++;
+            if (activeJobs > 0) busy++;
 
-            if (activeJobs >= maxJobs)
-                atCapacity++;
+            if (activeJobs >= maxJobs) atCapacity++;
         }
 
         return {
             totalTechnicians: technicians.length,
             available,
             busy,
-            atCapacity
-        }
+            atCapacity,
+        };
     }
-
 }
 
 export default new TechnicianService(db);

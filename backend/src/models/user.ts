@@ -1,11 +1,13 @@
-import { Sequelize, Model, DataTypes } from "sequelize";
-import type { InferAttributes, InferCreationAttributes } from "sequelize";
-import type { Models } from "../types/model.types.js";
-import type { Role } from "./role.js";
-import type { TechnicianProfile } from "./TechnicianProfile.js";
+import { Sequelize, Model, DataTypes } from 'sequelize';
+import type { InferAttributes, InferCreationAttributes } from 'sequelize';
+import type { Models } from '../types/model.types.js';
+import type { Role } from './role.js';
+import type { TechnicianProfile } from './TechnicianProfile.js';
 
-export class User
-extends Model<InferAttributes<User>, InferCreationAttributes<User, { omit: "id" }>> {
+export class User extends Model<
+    InferAttributes<User>,
+    InferCreationAttributes<User, { omit: 'id' }>
+> {
     declare id: number;
     declare FirstName: string;
     declare LastName: string;
@@ -15,73 +17,72 @@ extends Model<InferAttributes<User>, InferCreationAttributes<User, { omit: "id" 
     declare RoleId: number;
     declare Role?: Role;
     declare TechnicianProfile?: TechnicianProfile;
-    
+
     static associate(models: Models) {
         User.belongsTo(models.Role, {
-            foreignKey: "RoleId",
-            as: "Role"
+            foreignKey: 'RoleId',
+            as: 'Role',
         });
 
         User.hasMany(models.ServiceRequest, {
-            foreignKey: "customerId",
-            as: "CustomerServiceRequests"
+            foreignKey: 'customerId',
+            as: 'CustomerServiceRequests',
         });
 
         User.hasMany(models.JobAssignment, {
-            foreignKey: "technicianId",
-            as: "TechnicianAssignments"
+            foreignKey: 'technicianId',
+            as: 'TechnicianAssignments',
         });
         User.hasOne(models.TechnicianProfile, {
-            foreignKey: "userId",
-            as: "TechnicianProfile"
+            foreignKey: 'userId',
+            as: 'TechnicianProfile',
         });
     }
 }
 export function initUserModel(sequelize: Sequelize) {
-    User.init (
+    User.init(
         {
-        id: {
-            type: DataTypes.INTEGER.UNSIGNED,
-            autoIncrement: true,
-            primaryKey: true
+            id: {
+                type: DataTypes.INTEGER.UNSIGNED,
+                autoIncrement: true,
+                primaryKey: true,
+            },
+            FirstName: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            LastName: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            Email: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true,
+                validate: {
+                    isEmail: true,
+                },
+            },
+            Username: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true,
+            },
+            EncryptedPassword: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            RoleId: {
+                type: DataTypes.INTEGER.UNSIGNED,
+                allowNull: false,
+            },
         },
-        FirstName: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        LastName: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        Email: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
-            validate: {
-                isEmail: true
-            }
-        },
-        Username: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true
-        },  
-        EncryptedPassword: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        RoleId: {
-            type: DataTypes.INTEGER.UNSIGNED,
-            allowNull: false,
-        }
-    }, 
-    {
-        sequelize,
-        timestamps: false
+        {
+            sequelize,
+            timestamps: false,
         }
     );
-};
-
+}
 
 /* interface UserInstance extends Model<UserAttributes>, UserAttributes {} */
 

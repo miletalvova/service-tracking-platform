@@ -1,10 +1,10 @@
-import { Router } from "express";
+import { Router } from 'express';
 const router = Router();
-import type { Request, Response, NextFunction } from "express";
-import { isAuth, isStaff } from "../middleware/auth.js";
-import jobAssignmentService from "../services/jobAssignmentService.js";
+import type { Request, Response, NextFunction } from 'express';
+import { isAuth, isStaff } from '../middleware/auth.js';
+import jobAssignmentService from '../services/jobAssignmentService.js';
 
-router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
+router.get('/', isAuth, async (req: Request, res: Response, next: NextFunction) => {
     // #swagger.tags = ['Job Assignments']
     // #swagger.summary = 'Get all job assignments'
     // #swagger.description = 'Endpoint to get all job assignments'
@@ -35,25 +35,35 @@ router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) 
 
     try {
         const assignments = await jobAssignmentService.getAll();
-        return res.status(200).json({ status: "success", statusCode: 200, message: "List of assignments", data: assignments });
+        return res
+            .status(200)
+            .json({
+                status: 'success',
+                statusCode: 200,
+                message: 'List of assignments',
+                data: assignments,
+            });
     } catch (err) {
         return next(err);
     }
 });
 
-router.get("/recommend/:serviceRequestId", isAuth, async (req: Request<{ serviceRequestId: string }>, res: Response, next: NextFunction) => {
-    // #swagger.tags = ['Job Assignments']
-    // #swagger.summary = 'Recommend a technician for a service request'
-    // #swagger.description = 'Endpoint to recommend the best available technician for a given service request ID'
-    // #swagger.produces = ['application/json']
-    /* #swagger.security = [{ "JWT": [] }] */
-    /* #swagger.parameters['serviceRequestId'] = {
+router.get(
+    '/recommend/:serviceRequestId',
+    isAuth,
+    async (req: Request<{ serviceRequestId: string }>, res: Response, next: NextFunction) => {
+        // #swagger.tags = ['Job Assignments']
+        // #swagger.summary = 'Recommend a technician for a service request'
+        // #swagger.description = 'Endpoint to recommend the best available technician for a given service request ID'
+        // #swagger.produces = ['application/json']
+        /* #swagger.security = [{ "JWT": [] }] */
+        /* #swagger.parameters['serviceRequestId'] = {
         in: 'path',
         description: 'ID of the service request to get a technician recommendation for',
         required: true,
         schema: { type: 'number', example: 101 }
     } */
-    /* #swagger.responses[200] = {
+        /* #swagger.responses[200] = {
         description: 'Recommended technician retrieved successfully',
         content: {
             'application/json': {
@@ -70,43 +80,67 @@ router.get("/recommend/:serviceRequestId", isAuth, async (req: Request<{ service
             }
         }
     } */
-    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
-    /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
-    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+        /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+        /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+        /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
+        /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
-    try {    
-        const serviceRequestId = Number(req.params.serviceRequestId);
+        try {
+            const serviceRequestId = Number(req.params.serviceRequestId);
 
-        if (Number.isNaN(serviceRequestId)) {
-            return res.status(400).json({ status: "error", statusCode: 400, message: "serviceRequestId must be a number" });
+            if (Number.isNaN(serviceRequestId)) {
+                return res
+                    .status(400)
+                    .json({
+                        status: 'error',
+                        statusCode: 400,
+                        message: 'serviceRequestId must be a number',
+                    });
+            }
+
+            const recommendedAssignment =
+                await jobAssignmentService.recommendTechnician(serviceRequestId);
+
+            if (!recommendedAssignment) {
+                return res
+                    .status(404)
+                    .json({
+                        status: 'error',
+                        statusCode: 404,
+                        message: 'No techinician recommended found',
+                    });
+            }
+
+            return res
+                .status(200)
+                .json({
+                    status: 'success',
+                    statusCode: 200,
+                    message: 'Recommended assignment',
+                    data: recommendedAssignment,
+                });
+        } catch (err) {
+            return next(err);
         }
-
-        const recommendedAssignment = await jobAssignmentService.recommendTechnician(serviceRequestId);
-
-        if(!recommendedAssignment) {
-            return res.status(404).json({ status: "error", statusCode: 404, message: "No techinician recommended found" })
-        }
-
-        return res.status(200).json({ status: "success", statusCode: 200, message: "Recommended assignment", data: recommendedAssignment });
-    } catch (err) {
-        return next(err);
     }
-});
+);
 
-router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
-    // #swagger.tags = ['Job Assignments']
-    // #swagger.summary = 'Get job assignment by ID'
-    // #swagger.description = 'Endpoint to get details of a specific job assignment by its ID'
-    // #swagger.produces = ['application/json']
-    /* #swagger.security = [{ "JWT": [] }] */
-    /* #swagger.parameters['id'] = {
+router.get(
+    '/:id',
+    isAuth,
+    async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
+        // #swagger.tags = ['Job Assignments']
+        // #swagger.summary = 'Get job assignment by ID'
+        // #swagger.description = 'Endpoint to get details of a specific job assignment by its ID'
+        // #swagger.produces = ['application/json']
+        /* #swagger.security = [{ "JWT": [] }] */
+        /* #swagger.parameters['id'] = {
         in: 'path',
         description: 'Job Assignment ID',
         required: true,
         schema: { type: 'integer', example: 1 }
     } */
-    /* #swagger.responses[200] = {
+        /* #swagger.responses[200] = {
         description: 'Details of a job assignment retrieved successfully',
         content: {
             'application/json': {
@@ -123,31 +157,51 @@ router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, n
             }
         }
     } */
-    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
-    /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
-    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+        /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+        /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+        /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
+        /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
-    try {
-        const idNum = Number(req.params.id);
+        try {
+            const idNum = Number(req.params.id);
 
-        if(Number.isNaN(idNum)) {
-            return res.status(400).json({ status: "error", statusCode: 400, message: "Job Assignment ID must be a number"})
+            if (Number.isNaN(idNum)) {
+                return res
+                    .status(400)
+                    .json({
+                        status: 'error',
+                        statusCode: 400,
+                        message: 'Job Assignment ID must be a number',
+                    });
+            }
+
+            const jobAssignment = await jobAssignmentService.getOneById(idNum);
+
+            if (!jobAssignment) {
+                return res
+                    .status(404)
+                    .json({
+                        status: 'error',
+                        statusCode: 404,
+                        message: 'Job Assignment not found',
+                    });
+            }
+
+            return res
+                .status(200)
+                .json({
+                    status: 'success',
+                    statusCode: 200,
+                    message: 'Job Assignment details',
+                    data: jobAssignment,
+                });
+        } catch (err) {
+            return next(err);
         }
-
-        const jobAssignment = await jobAssignmentService.getOneById(idNum);
-
-        if(!jobAssignment){
-            return res.status(404).json({ status: "error", statusCode: 404, message: "Job Assignment not found"})
-        }
-
-        return res.status(200).json({ status: "success", statusCode:200, message: "Job Assignment details", data: jobAssignment});
-    } catch (err) {
-        return next(err);
     }
-});
+);
 
-router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
+router.post('/', isAuth, async (req: Request, res: Response, next: NextFunction) => {
     // #swagger.tags = ['Job Assignments']
     // #swagger.summary = 'Creates a new job assignment'
     // #swagger.description = 'Endpoint to create a new job assignment'
@@ -180,36 +234,53 @@ router.post("/", isAuth, async (req: Request, res: Response, next: NextFunction)
     /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
     /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
-    
+
     try {
         const { serviceRequestId, technicianId } = req.body;
 
         if (serviceRequestId == null || technicianId == null) {
-            return res.status(400).json({ status: "error", statusCode: 400, message: "serviceRequestId and technicianId are required" });
+            return res
+                .status(400)
+                .json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'serviceRequestId and technicianId are required',
+                });
         }
 
-        const newAssignment = await jobAssignmentService.create({ serviceRequestId, technicianId});
+        const newAssignment = await jobAssignmentService.create({ serviceRequestId, technicianId });
 
-        return res.status(201).json({ status: "success", statusCode: 201, message: "Job Assignment created", data: newAssignment });
+        return res
+            .status(201)
+            .json({
+                status: 'success',
+                statusCode: 201,
+                message: 'Job Assignment created',
+                data: newAssignment,
+            });
     } catch (err) {
         return next(err);
     }
 });
 
-router.put("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
-    // #swagger.tags = ['Job Assignments']
-    // #swagger.summary = 'Updates a job assignment'
-    // #swagger.description = 'Endpoint to update a job assignment'
-    // #swagger.produces = ['application/json']
-    // #swagger.consumes = ['application/json']
-    /* #swagger.security = [{"JWT": [] }] */
-    /* #swagger.parameters['id'] = {
+router.put(
+    '/:id',
+    isAuth,
+    isStaff,
+    async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
+        // #swagger.tags = ['Job Assignments']
+        // #swagger.summary = 'Updates a job assignment'
+        // #swagger.description = 'Endpoint to update a job assignment'
+        // #swagger.produces = ['application/json']
+        // #swagger.consumes = ['application/json']
+        /* #swagger.security = [{"JWT": [] }] */
+        /* #swagger.parameters['id'] = {
         in: 'path',
         description: 'JobAssignment ID',
         required: true,
         schema: { type: 'integer', example: 1 }
     } */
-    /* #swagger.requestBody = {
+        /* #swagger.requestBody = {
         required: true,
         content: {
             "application/json": {
@@ -217,7 +288,7 @@ router.put("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res: Re
             }
         }
     } */
-    /* #swagger.responses[200] = {
+        /* #swagger.responses[200] = {
         description: 'Job Assignment updated successfully',
         content: {
             'application/json': {
@@ -233,46 +304,74 @@ router.put("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res: Re
             }
         }
     } */
-    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
-    /* #swagger.responses[403] = { $ref: '#/components/responses/Forbidden' } */
-    /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
-    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+        /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+        /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+        /* #swagger.responses[403] = { $ref: '#/components/responses/Forbidden' } */
+        /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
+        /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
-    try {
-        const idNum = Number(req.params.id);
+        try {
+            const idNum = Number(req.params.id);
 
-        if (Number.isNaN(idNum)) {
-            return res.status(400).json({ status: "error", statusCode: 400, message: "Job Assignment ID must be a number" });
+            if (Number.isNaN(idNum)) {
+                return res
+                    .status(400)
+                    .json({
+                        status: 'error',
+                        statusCode: 400,
+                        message: 'Job Assignment ID must be a number',
+                    });
+            }
+
+            const { serviceRequestId, technicianId } = req.body;
+
+            if (serviceRequestId == null && technicianId == null) {
+                return res
+                    .status(400)
+                    .json({
+                        status: 'error',
+                        statusCode: 400,
+                        message:
+                            'At least one field (serviceRequestId or technicianId) must be provided for update',
+                    });
+            }
+
+            const updatedAssignment = await jobAssignmentService.update(idNum, {
+                serviceRequestId,
+                technicianId,
+            });
+
+            return res
+                .status(200)
+                .json({
+                    status: 'success',
+                    statusCode: 200,
+                    message: 'Job Assignment updated',
+                    data: updatedAssignment,
+                });
+        } catch (err) {
+            return next(err);
         }
-
-        const { serviceRequestId, technicianId } = req.body;
-
-        if (serviceRequestId == null && technicianId == null) {
-            return res.status(400).json({ status: "error", statusCode: 400, message: "At least one field (serviceRequestId or technicianId) must be provided for update" });
-        }
-
-        const updatedAssignment = await jobAssignmentService.update(idNum, { serviceRequestId, technicianId });
-
-        return res.status(200).json({ status: "success", statusCode: 200, message: "Job Assignment updated", data: updatedAssignment });
-    } catch (err) {
-        return next(err);
     }
-});
+);
 
-router.delete("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
-    // #swagger.tags = ['Job Assignments']
-    // #swagger.summary = 'Delete a job assignment'
-    // #swagger.description = 'Endpoint to delete a job assignment'
-    // #swagger.produces = ['application/json']
-    /* #swagger.security = [{"JWT": [] }] */
-    /* #swagger.parameters['id'] = {
+router.delete(
+    '/:id',
+    isAuth,
+    isStaff,
+    async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
+        // #swagger.tags = ['Job Assignments']
+        // #swagger.summary = 'Delete a job assignment'
+        // #swagger.description = 'Endpoint to delete a job assignment'
+        // #swagger.produces = ['application/json']
+        /* #swagger.security = [{"JWT": [] }] */
+        /* #swagger.parameters['id'] = {
         in: 'path',
         description: 'Job assignment ID',
         required: true,
         schema: { type: 'integer', example: 1 }
     } */
-    /* #swagger.responses[200] = {
+        /* #swagger.responses[200] = {
         description: 'Job assignment deleted successfully',
         content: {
             'application/json': {
@@ -287,25 +386,34 @@ router.delete("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res:
             }
         }
     } */
-    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
-    /* #swagger.responses[403] = { $ref: '#/components/responses/Forbidden' } */
-    /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
-    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+        /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+        /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+        /* #swagger.responses[403] = { $ref: '#/components/responses/Forbidden' } */
+        /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
+        /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
-    try {
-        const idNum = Number(req.params.id);
+        try {
+            const idNum = Number(req.params.id);
 
-        if (Number.isNaN(idNum)) {
-            return res.status(400).json({ status: "error", statusCode: 400, message: "Job Assignment ID must be a number" });
+            if (Number.isNaN(idNum)) {
+                return res
+                    .status(400)
+                    .json({
+                        status: 'error',
+                        statusCode: 400,
+                        message: 'Job Assignment ID must be a number',
+                    });
+            }
+
+            await jobAssignmentService.delete(idNum);
+
+            return res
+                .status(200)
+                .json({ status: 'success', statusCode: 200, message: 'Job assignment deleted' });
+        } catch (err) {
+            return next(err);
         }
-
-        await jobAssignmentService.delete(idNum);
-
-        return res.status(200).json({ status: "success", statusCode: 200, message: "Job assignment deleted" });
-    } catch (err) {
-        return next(err);
     }
-});
+);
 
 export default router;

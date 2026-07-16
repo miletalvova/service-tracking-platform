@@ -1,11 +1,11 @@
-import { Role } from "../models/role.js";
+import { Role } from '../models/role.js';
 
 export async function seedRoles() {
-    const roles = ["Customer", "Staff", "Technician"];
+    const roles = ['Customer', 'Staff', 'Technician'];
     for (const roleName of roles) {
         await Role.findOrCreate({
-            where: { name: roleName }
+            where: { name: roleName },
         });
     }
-    console.log("Roles seeded successfully.");
+    console.log('Roles seeded successfully.');
 }

@@ -5,7 +5,7 @@ export interface ServiceRequestAttributes {
     statusId: number;
     locationId: number;
     description: string;
-    priority: "Low" | "Medium" | "High";
+    priority: 'Low' | 'Medium' | 'High';
 }
 /* export interface ServiceRequestCreationAttributes extends Omit<ServiceRequestAttributes, "id" | "statusId"> {} */
 
@@ -24,7 +24,7 @@ export interface LocationSuggestion {
         village?: string;
         state?: string;
         postcode?: string;
-    }
+    };
 }
 
 export interface SmartServiceRequestCreationAttributes {
@@ -38,5 +38,5 @@ export enum StatusEnum {
     Assigned = 2,
     InProgress = 3,
     Completed = 4,
-    Cancelled = 5
+    Cancelled = 5,
 }

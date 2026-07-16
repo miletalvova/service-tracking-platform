@@ -1,10 +1,10 @@
-import { Router } from "express";
+import { Router } from 'express';
 const router = Router();
-import type { Request, Response, NextFunction } from "express";
-import { isAuth, isStaff } from "../middleware/auth.js";
-import locationService from "../services/locationService.js";
+import type { Request, Response, NextFunction } from 'express';
+import { isAuth, isStaff } from '../middleware/auth.js';
+import locationService from '../services/locationService.js';
 
-router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
+router.get('/', isAuth, async (req: Request, res: Response, next: NextFunction) => {
     // #swagger.tags = ['Locations']
     // #swagger.summary = 'Get all locations'
     // #swagger.description = 'Endpoint to get all locations'
@@ -34,40 +34,46 @@ router.get("/", isAuth, async (req: Request, res: Response, next: NextFunction) 
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
     try {
         const locations = await locationService.getAll();
-        return res.status(200).json({ status: "success", statusCode: 200, message: "List of locations", data: locations });
+        return res
+            .status(200)
+            .json({
+                status: 'success',
+                statusCode: 200,
+                message: 'List of locations',
+                data: locations,
+            });
     } catch (err) {
         return next(err);
     }
 });
 
-router.get("/search", async (req: Request, res: Response, next: NextFunction) => {
+router.get('/search', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const query = req.query.q;
 
         if (!query) {
             return res.status(400).json({
-                message: "Search query required"
-            })
+                message: 'Search query required',
+            });
         }
         const response = await fetch(
             `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(String(query))}&format=jsonv2&addressdetails=1&limit=5`,
             {
                 headers: {
-                    "User-Agent": "ServiceTrackingPlatform/1.0",
-                    "Accept": "application/json"
+                    'User-Agent': 'ServiceTrackingPlatform/1.0',
+                    Accept: 'application/json',
                 },
-
             }
         );
 
         if (!response.ok) {
-            throw new Error(`Nominatim returned ${response.status} ${response.statusText}`)
+            throw new Error(`Nominatim returned ${response.status} ${response.statusText}`);
         }
 
-        const contentType = response.headers.get("content-type");
+        const contentType = response.headers.get('content-type');
 
-        if (!contentType?.includes("application/json")) {
-            throw new Error(`Expected JSON but received ${contentType}`)
+        if (!contentType?.includes('application/json')) {
+            throw new Error(`Expected JSON but received ${contentType}`);
         }
 
         const data = await response.json();
@@ -77,19 +83,22 @@ router.get("/search", async (req: Request, res: Response, next: NextFunction) =>
     }
 });
 
-router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
-    // #swagger.tags = ['Locations']
-    // #swagger.summary = 'Get locations by ID'
-    // #swagger.description = 'Endpoint to get details of a specific location by its ID'
-    // #swagger.produces = ['application/json']
-    /* #swagger.security = [{ "JWT": [] }] */
-    /* #swagger.parameters['id'] = {
+router.get(
+    '/:id',
+    isAuth,
+    async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
+        // #swagger.tags = ['Locations']
+        // #swagger.summary = 'Get locations by ID'
+        // #swagger.description = 'Endpoint to get details of a specific location by its ID'
+        // #swagger.produces = ['application/json']
+        /* #swagger.security = [{ "JWT": [] }] */
+        /* #swagger.parameters['id'] = {
         in: 'path',
         description: 'Location ID',
         required: true,
         schema: { type: 'integer', example: 1 }
     } */
-    /* #swagger.responses[200] = {
+        /* #swagger.responses[200] = {
         description: 'Details of a location retrieved successfully',
         content: {
             'application/json': {
@@ -106,29 +115,45 @@ router.get("/:id", isAuth, async (req: Request<{ id: string }>, res: Response, n
             }
         }
     } */
-    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
-    /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
-    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+        /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+        /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+        /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
+        /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
-    try {
-        const idNum = Number(req.params.id);
+        try {
+            const idNum = Number(req.params.id);
 
-        if (Number.isNaN(idNum)) {
-            return res.status(400).json({ status: "error", statusCode: 400, message: "Location ID must be a number" })
+            if (Number.isNaN(idNum)) {
+                return res
+                    .status(400)
+                    .json({
+                        status: 'error',
+                        statusCode: 400,
+                        message: 'Location ID must be a number',
+                    });
+            }
+
+            const location = await locationService.getOneById(idNum);
+            if (!location) {
+                return res
+                    .status(404)
+                    .json({ status: 'error', statusCode: 404, message: 'Location not found' });
+            }
+            return res
+                .status(200)
+                .json({
+                    status: 'success',
+                    statusCode: 200,
+                    message: 'Location details',
+                    data: location,
+                });
+        } catch (err) {
+            return next(err);
         }
-
-        const location = await locationService.getOneById(idNum);
-        if (!location) {
-            return res.status(404).json({ status: "error", statusCode: 404, message: "Location not found" })
-        }
-        return res.status(200).json({ status: "success", statusCode: 200, message: "Location details", data: location });
-    } catch (err) {
-        return next(err);
     }
-});
+);
 
-router.post("/", isAuth, isStaff, async (req: Request, res: Response, next: NextFunction) => {
+router.post('/', isAuth, isStaff, async (req: Request, res: Response, next: NextFunction) => {
     // #swagger.tags = ['Locations']
     // #swagger.summary = 'Creates a location'
     // #swagger.description = 'Endpoint to create a location'
@@ -166,31 +191,48 @@ router.post("/", isAuth, isStaff, async (req: Request, res: Response, next: Next
         const { address, city, state, zipCode } = req.body;
 
         if (!address?.trim() || !city?.trim() || !state?.trim() || !zipCode?.trim()) {
-            return res.status(400).json({ status: "error", statusCode: 400, message: "Missing required fields: address, city, state, zipCode" });
+            return res
+                .status(400)
+                .json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Missing required fields: address, city, state, zipCode',
+                });
         }
 
         const newLocation = await locationService.create({ address, city, state, zipCode });
 
-        return res.status(201).json({ status: "success", statusCode: 201, message: "Location created", data: newLocation });
+        return res
+            .status(201)
+            .json({
+                status: 'success',
+                statusCode: 201,
+                message: 'Location created',
+                data: newLocation,
+            });
     } catch (err) {
         return next(err);
     }
 });
 
-router.put("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
-    // #swagger.tags = ['Locations']
-    // #swagger.summary = 'Updates a location'
-    // #swagger.description = 'Endpoint to update a location'
-    // #swagger.produces = ['application/json']
-    // #swagger.consumes = ['application/json']
-    /* #swagger.security = [{"JWT": [] }] */
-    /* #swagger.parameters['id'] = {
+router.put(
+    '/:id',
+    isAuth,
+    isStaff,
+    async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
+        // #swagger.tags = ['Locations']
+        // #swagger.summary = 'Updates a location'
+        // #swagger.description = 'Endpoint to update a location'
+        // #swagger.produces = ['application/json']
+        // #swagger.consumes = ['application/json']
+        /* #swagger.security = [{"JWT": [] }] */
+        /* #swagger.parameters['id'] = {
         in: 'path',
         description: 'Location ID',
         required: true,
         schema: { type: 'integer', example: 1 }
     } */
-    /* #swagger.requestBody = {
+        /* #swagger.requestBody = {
         required: true,
         content: {
             "application/json": {
@@ -198,7 +240,7 @@ router.put("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res: Re
             }
         }
     } */
-    /* #swagger.responses[200] = {
+        /* #swagger.responses[200] = {
         description: 'Location updated successfully',
         content: {
             'application/json': {
@@ -214,46 +256,76 @@ router.put("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res: Re
             }
         }
     } */
-    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
-    /* #swagger.responses[403] = { $ref: '#/components/responses/Forbidden' } */
-    /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
-    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+        /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+        /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+        /* #swagger.responses[403] = { $ref: '#/components/responses/Forbidden' } */
+        /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
+        /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
-    try {
-        const idNum = Number(req.params.id);
+        try {
+            const idNum = Number(req.params.id);
 
-        if (Number.isNaN(idNum)) {
-            return res.status(400).json({ status: "error", statusCode: 400, message: "Location ID must be a number" });
+            if (Number.isNaN(idNum)) {
+                return res
+                    .status(400)
+                    .json({
+                        status: 'error',
+                        statusCode: 400,
+                        message: 'Location ID must be a number',
+                    });
+            }
+
+            const { address, city, state, zipCode } = req.body;
+
+            if (!address && !city && !state && !zipCode) {
+                return res
+                    .status(400)
+                    .json({
+                        status: 'error',
+                        statusCode: 400,
+                        message:
+                            'At least one field (address, city, state, zipCode) must be provided for update',
+                    });
+            }
+
+            const updatedLocation = await locationService.update(idNum, {
+                address,
+                city,
+                state,
+                zipCode,
+            });
+
+            return res
+                .status(200)
+                .json({
+                    status: 'success',
+                    statusCode: 200,
+                    message: 'Location updated',
+                    data: updatedLocation,
+                });
+        } catch (err) {
+            return next(err);
         }
-
-        const { address, city, state, zipCode } = req.body;
-
-        if (!address && !city && !state && !zipCode) {
-            return res.status(400).json({ status: "error", statusCode: 400, message: "At least one field (address, city, state, zipCode) must be provided for update" });
-        }
-
-        const updatedLocation = await locationService.update(idNum, { address, city, state, zipCode });
-
-        return res.status(200).json({ status: "success", statusCode: 200, message: "Location updated", data: updatedLocation });
-    } catch (err) {
-        return next(err);
     }
-});
+);
 
-router.delete("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
-    // #swagger.tags = ['Locations']
-    // #swagger.summary = 'Delete a location'
-    // #swagger.description = 'Endpoint to delete a location'
-    // #swagger.produces = ['application/json']
-    /* #swagger.security = [{"JWT": [] }] */
-    /* #swagger.parameters['id'] = {
+router.delete(
+    '/:id',
+    isAuth,
+    isStaff,
+    async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
+        // #swagger.tags = ['Locations']
+        // #swagger.summary = 'Delete a location'
+        // #swagger.description = 'Endpoint to delete a location'
+        // #swagger.produces = ['application/json']
+        /* #swagger.security = [{"JWT": [] }] */
+        /* #swagger.parameters['id'] = {
         in: 'path',
         description: 'Location ID',
         required: true,
         schema: { type: 'integer', example: 1 }
     } */
-    /* #swagger.responses[200] = {
+        /* #swagger.responses[200] = {
         description: 'Location deleted successfully',
         content: {
             'application/json': {
@@ -268,25 +340,34 @@ router.delete("/:id", isAuth, isStaff, async (req: Request<{ id: string }>, res:
             }
         }
     } */
-    /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
-    /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
-    /* #swagger.responses[403] = { $ref: '#/components/responses/Forbidden' } */
-    /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
-    /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
+        /* #swagger.responses[400] = { $ref: '#/components/responses/BadRequest' } */
+        /* #swagger.responses[401] = { $ref: '#/components/responses/Unauthorized' } */
+        /* #swagger.responses[403] = { $ref: '#/components/responses/Forbidden' } */
+        /* #swagger.responses[404] = { $ref: '#/components/responses/NotFound' } */
+        /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
-    try {
-        const idNum = Number(req.params.id);
+        try {
+            const idNum = Number(req.params.id);
 
-        if (Number.isNaN(idNum)) {
-            return res.status(400).json({ status: "error", statusCode: 400, message: "Location ID must be a number" });
+            if (Number.isNaN(idNum)) {
+                return res
+                    .status(400)
+                    .json({
+                        status: 'error',
+                        statusCode: 400,
+                        message: 'Location ID must be a number',
+                    });
+            }
+
+            await locationService.delete(idNum);
+
+            return res
+                .status(200)
+                .json({ status: 'success', statusCode: 200, message: 'Location deleted' });
+        } catch (err) {
+            return next(err);
         }
-
-        await locationService.delete(idNum);
-
-        return res.status(200).json({ status: "success", statusCode: 200, message: "Location deleted" });
-    } catch (err) {
-        return next(err);
     }
-});
+);
 
 export default router;

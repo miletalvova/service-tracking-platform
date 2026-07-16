@@ -1,7 +1,7 @@
-import db from "../models/index.js";
-import { Location } from "../models/location.js";
-import type { LocationCreationAttributes } from "../types/location.types.js";
-import createError from "http-errors";
+import db from '../models/index.js';
+import { Location } from '../models/location.js';
+import type { LocationCreationAttributes } from '../types/location.types.js';
+import createError from 'http-errors';
 
 class LocationService {
     client: any;
@@ -24,16 +24,16 @@ class LocationService {
 
     async update(id: number, data: LocationCreationAttributes) {
         const location = await this.Location.findByPk(id);
-        if(!location) {
-            throw createError(404, "Location not found");
+        if (!location) {
+            throw createError(404, 'Location not found');
         }
         return location.update(data);
     }
-    
+
     async delete(id: number) {
         const location = await this.Location.findByPk(id);
-        if(!location) {
-            throw createError(404, "Location not found");
+        if (!location) {
+            throw createError(404, 'Location not found');
         }
         return location.destroy();
     }

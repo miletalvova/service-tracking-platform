@@ -6,4 +6,7 @@ export interface JobAssignmentAttributes {
     unassignedAt?: Date;
 }
 
-export interface JobAssignmentCreationAttributes extends Omit<JobAssignmentAttributes, "id" | "assignedAt" | "unassignedAt"> {}
+export interface JobAssignmentCreationAttributes extends Omit<
+    JobAssignmentAttributes,
+    'id' | 'assignedAt' | 'unassignedAt'
+> {}

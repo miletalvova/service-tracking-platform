@@ -1,12 +1,12 @@
-import { Status } from "../models/status.js";
+import { Status } from '../models/status.js';
 
 export async function seedStatuses() {
-    const statuses = [ "Created", "Assigned", "In Progress", "Completed","Cancelled" ];
+    const statuses = ['Created', 'Assigned', 'In Progress', 'Completed', 'Cancelled'];
 
     for (const statusName of statuses) {
-        await Status.findOrCreate({ 
-            where: { status: statusName }
+        await Status.findOrCreate({
+            where: { status: statusName },
         });
     }
-    console.log("Statuses seeded successfully.");
+    console.log('Statuses seeded successfully.');
 }

@@ -56,24 +56,24 @@ Services-->Claude[Anthropic Claude API]
 
 ## Tech Stack
 
-| Category | Technologies |
-|----------|--------------|
-| Backend | Node.js 22, Express.js 5, TypeScript |
-| Database | MySQL, Sequelize ORM |
-| AI | Anthropic Claude API |
-| DevOps | Docker, Docker Compose, GitHub Actions, Render, Docker Hub |
-| Documentation | Swagger / OpenAPI |
-| Security | JWT, bcrypt |
+| Category      | Technologies                                               |
+| ------------- | ---------------------------------------------------------- |
+| Backend       | Node.js 22, Express.js 5, TypeScript                       |
+| Database      | MySQL, Sequelize ORM                                       |
+| AI            | Anthropic Claude API                                       |
+| DevOps        | Docker, Docker Compose, GitHub Actions, Render, Docker Hub |
+| Documentation | Swagger / OpenAPI                                          |
+| Security      | JWT, bcrypt                                                |
 
 ---
 
 ## System Roles
- 
-| Role | Description |
-|---|---|
-| Customer | Creates and tracks service requests |
-| Staff | Manages requests and assigns technicians |
-| Technician | Views assigned jobs and updates status |
+
+| Role       | Description                              |
+| ---------- | ---------------------------------------- |
+| Customer   | Creates and tracks service requests      |
+| Staff      | Manages requests and assigns technicians |
+| Technician | Views assigned jobs and updates status   |
 
 ---
 
@@ -82,7 +82,7 @@ Services-->Claude[Anthropic Claude API]
 ### AI Service Request Classification
 
 Customers describe their issue in plain language. Claude analyzes the customer's natural language description and automatically:
- 
+
 - Detects the requested service
 - Cleans and normalizes the description
 - Detects urgency using tool use
@@ -106,13 +106,12 @@ The platform can automatically recommend the best technician for a service reque
 - Availability status
 - Maximum active jobs capacity
 
-
 Claude receives a filtered list of available technicians and returns the most suitable technician together with the reasoning behind the recommendation.
 
 ---
- 
+
 ## Authentication Flow
- 
+
 1. User registers via `POST /api/auth/register`
 2. Password is hashed with bcrypt before storage
 3. User logs in via `POST /api/auth/login`
@@ -124,27 +123,27 @@ Claude receives a filtered list of available technicians and returns the most su
 ---
 
 ## Database Schema
- 
+
 Core tables:
- 
-| Table | Description |
-|---|---|
-| Users | All users with role reference |
-| Roles | Customer, Staff, Technician |
-| ServiceRequests | Customer requests with AI-classified data |
-| Services | Service categories (Plumbing, Electrical, etc.) |
-| JobAssignments | Technician assignments per request |
-| StatusHistory | Full audit trail of status changes |
-| Locations | Address data for requests and technicians |
-| Statuses | Created, Assigned, InProgress, Completed, Cancelled |
+
+| Table              | Description                                            |
+| ------------------ | ------------------------------------------------------ |
+| Users              | All users with role reference                          |
+| Roles              | Customer, Staff, Technician                            |
+| ServiceRequests    | Customer requests with AI-classified data              |
+| Services           | Service categories (Plumbing, Electrical, etc.)        |
+| JobAssignments     | Technician assignments per request                     |
+| StatusHistory      | Full audit trail of status changes                     |
+| Locations          | Address data for requests and technicians              |
+| Statuses           | Created, Assigned, InProgress, Completed, Cancelled    |
 | TechnicianProfiles | Skills, availability, workload capacity per technician |
- 
+
 All relationships are defined via Sequelize associations and follow 3NF.
 
 ---
 
 ## API Documentation
- 
+
 Interactive API documentation is available through Swagger.
 
 Development
@@ -158,77 +157,79 @@ Production
 ```
 https://service-tracking-backend-latest.onrender.com/doc/
 ```
- 
+
 ### Auth
- 
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | /api/auth/register | Register a new user |
-| POST | /api/auth/login | Login and receive JWT token |
- 
+
+| Method | Endpoint           | Description                 |
+| ------ | ------------------ | --------------------------- |
+| POST   | /api/auth/register | Register a new user         |
+| POST   | /api/auth/login    | Login and receive JWT token |
+
 ### Service Requests
- 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | /api/requests | Get all service requests |
-| GET | /api/requests/:id | Get request by ID |
-| POST | /api/requests | Create request (AI-powered) |
-| POST | /api/requests/smart | Create request using AI — classifies service type, detects urgency, sets priority automatically
-| PUT | /api/requests/:id | Update request |
-| DELETE | /api/requests/:id | Delete request (Staff only) |
-| PATCH | /api/requests/:id/status | Update request status |
+
+| Method | Endpoint                 | Description                                                                                     |
+| ------ | ------------------------ | ----------------------------------------------------------------------------------------------- |
+| GET    | /api/requests            | Get all service requests                                                                        |
+| GET    | /api/requests/:id        | Get request by ID                                                                               |
+| POST   | /api/requests            | Create request (AI-powered)                                                                     |
+| POST   | /api/requests/smart      | Create request using AI — classifies service type, detects urgency, sets priority automatically |
+| PUT    | /api/requests/:id        | Update request                                                                                  |
+| DELETE | /api/requests/:id        | Delete request (Staff only)                                                                     |
+| PATCH  | /api/requests/:id/status | Update request status                                                                           |
 
 ### POST /api/requests
+
 Creates a service request manually. Requires `serviceId` to be provided by the client.
 
 ### POST /api/requests/smart
+
 Creates an AI-powered service request. Only requires a plain text `description` and `locationId`.
 Claude automatically classifies the service type, cleans the description, detects urgency, and sets priority.
 
 Sample request:
 {
-  "description": "The router is blinking red and internet is down",
-  "locationId": 1
+"description": "The router is blinking red and internet is down",
+"locationId": 1
 }
- 
+
 ### Job Assignments
- 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | /api/assignments | Get all assignments |
-| GET | /api/assignments/:id | Get assignment by ID |
-| GET | /api/assignments/recommend/:serviceRequestId | AI technician recommendation |
-| POST | /api/assignments | Create manual assignment |
-| PUT | /api/assignments/:id | Update assignment (Staff only) |
-| DELETE | /api/assignments/:id | Delete assignment (Staff only) |
- 
+
+| Method | Endpoint                                     | Description                    |
+| ------ | -------------------------------------------- | ------------------------------ |
+| GET    | /api/assignments                             | Get all assignments            |
+| GET    | /api/assignments/:id                         | Get assignment by ID           |
+| GET    | /api/assignments/recommend/:serviceRequestId | AI technician recommendation   |
+| POST   | /api/assignments                             | Create manual assignment       |
+| PUT    | /api/assignments/:id                         | Update assignment (Staff only) |
+| DELETE | /api/assignments/:id                         | Delete assignment (Staff only) |
+
 ### Technicians
- 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | /api/technicians/assigned-requests | Get assigned jobs (Technician only) |
-| PATCH | /api/technicians/:id/status | Update job status (Technician only) |
-| PATCH | /api/technicians/location | Update current location (Technician only) |
- 
+
+| Method | Endpoint                           | Description                               |
+| ------ | ---------------------------------- | ----------------------------------------- |
+| GET    | /api/technicians/assigned-requests | Get assigned jobs (Technician only)       |
+| PATCH  | /api/technicians/:id/status        | Update job status (Technician only)       |
+| PATCH  | /api/technicians/location          | Update current location (Technician only) |
+
 ### Services and Locations
- 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | /api/services | Get all services |
-| GET | /api/locations | Get all locations |
- 
+
+| Method | Endpoint       | Description       |
+| ------ | -------------- | ----------------- |
+| GET    | /api/services  | Get all services  |
+| GET    | /api/locations | Get all locations |
+
 ---
 
 ## Deployment
 
 The production backend is deployed using Docker on Render and connects to an Aiven MySQL database.
 
-| Component | Platform |
-|-----------|----------|
-| Backend | Render |
-| Database | Aiven MySQL |
-| Container Registry | Docker Hub |
-| CI/CD | GitHub Actions |
+| Component          | Platform       |
+| ------------------ | -------------- |
+| Backend            | Render         |
+| Database           | Aiven MySQL    |
+| Container Registry | Docker Hub     |
+| CI/CD              | GitHub Actions |
 
 ```mermaid
 flowchart TD
@@ -265,10 +266,10 @@ Every push to the main branch automatically:
 ## Local Development
 
 ### Requirements
- 
+
 - Node.js 22+
 - MySQL 8
-- Anthropic API 
+- Anthropic API
 
 ### Steps
 
@@ -303,7 +304,6 @@ ANTHROPIC_API_KEY=YOUR_API_KEY
 > [!WARNING]
 > Replace all placeholder values with your actual credentials. Never commit .env.local to version control.
 
-
 The API will be available at `http://localhost:3000`.
 
 ---
@@ -316,11 +316,10 @@ The API will be available at `http://localhost:3000`.
 docker compose up --build
 ```
 
-| Service | URL |
-|---|---|
+| Service     | URL                   |
+| ----------- | --------------------- |
 | Backend API | http://localhost:3000 |
-| MySQL | localhost:3307 |
-
+| MySQL       | localhost:3307        |
 
 ### Create `.env.docker`
 
@@ -376,7 +375,7 @@ SELECT * FROM ServiceRequests;
 ```
 
 External connection settings:
- 
+
 ```
 Host: localhost
 Port: 3307
@@ -406,16 +405,16 @@ leta373/service-tracking-backend:latest
 ---
 
 ## Seed Data
- 
+
 On startup, the application automatically seeds:
- 
+
 - Roles (Customer, Staff, Technician)
 - Statuses (Created, Assigned, InProgress, Completed, Cancelled)
 - Services (Plumbing, Electrical, IT Support, Cleaning, etc.)
 - Locations (sample addresses)
 
 To disable seeding, comment out the seed calls:
- 
+
 ```typescript
 // await seedRoles();
 // await seedStatuses();
@@ -424,9 +423,9 @@ To disable seeding, comment out the seed calls:
 ```
 
 ---
- 
+
 ## Security
- 
+
 - JWT authentication
 - Role-based authorization
 - Secure password hashing with bcrypt
