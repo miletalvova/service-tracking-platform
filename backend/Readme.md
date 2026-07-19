@@ -301,6 +301,13 @@ JWT_SECRET=YOUR_SECRET
 ANTHROPIC_API_KEY=YOUR_API_KEY
 ```
 
+4. Start the development server
+
+```bash
+npm run dev
+
+```
+
 > [!WARNING]
 > Replace all placeholder values with your actual credentials. Never commit .env.local to version control.
 
