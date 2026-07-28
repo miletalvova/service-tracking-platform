@@ -1,26 +1,19 @@
 import db from '../models/index.js';
-import { JobAssignment } from '../models/JobAssignment.js';
-import { TechnicianProfile } from '../models/TechnicianProfile.js';
 import type { JobAssignmentCreationAttributes } from '../types/jobAssignment.types.js';
+import type { Models } from '../types/model.types.js';
 import { StatusEnum } from '../types/serviceRequest.types.js';
 import aiService from './aiService.js';
 import statusService from './statusService.js';
 import createError from 'http-errors';
 
 class JobAssignmentService {
-    client: any;
-    JobAssignment: typeof JobAssignment;
-    TechnicianProfile: typeof TechnicianProfile;
-    constructor(db: any) {
-        this.client = db.sequelize;
-        this.JobAssignment = db.JobAssignment;
-        this.TechnicianProfile = db.TechnicianProfile;
-    }
+    constructor(private readonly db: Models) {}
 
     async create({ serviceRequestId, technicianId }: JobAssignmentCreationAttributes) {
-        const transaction = await this.client.transaction();
+        const transaction = await this.db.sequelize.transaction();
+
         try {
-            const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId, {
+            const serviceRequest = await this.db.ServiceRequest.findByPk(serviceRequestId, {
                 transaction,
             });
 
@@ -44,7 +37,7 @@ class JobAssignmentService {
                 );
             }
 
-            const existingAssignment = await this.JobAssignment.findOne({
+            const existingAssignment = await this.db.JobAssignment.findOne({
                 where: {
                     serviceRequestId,
                     unassignedAt: null,
@@ -56,7 +49,7 @@ class JobAssignmentService {
                 throw createError(409, 'Service request already has an assigned technician');
             }
 
-            const newAssignment = await this.JobAssignment.create(
+            const newAssignment = await this.db.JobAssignment.create(
                 {
                     serviceRequestId,
                     technicianId,
@@ -64,20 +57,9 @@ class JobAssignmentService {
                 { transaction }
             );
 
-            /* await serviceRequest.update(
-                { statusId: StatusEnum.Assigned },
-                { transaction }
-            ); */
-
-            /* await db.StatusHistory.create({
-                serviceRequestId,
-                oldStatusId: StatusEnum.Created,
-                newStatusId: StatusEnum.Assigned
-            }, { transaction }); */
-
             await statusService.updateStatus(serviceRequestId, StatusEnum.Assigned, transaction);
 
-            await db.TechnicianProfile.update(
+            await this.db.TechnicianProfile.update(
                 {
                     currentLocationId: serviceRequest.locationId,
                 },
@@ -94,7 +76,7 @@ class JobAssignmentService {
     }
 
     async unassign(serviceRequestId: number) {
-        const jobAssignment = await this.JobAssignment.findOne({
+        const jobAssignment = await this.db.JobAssignment.findOne({
             where: {
                 serviceRequestId,
                 unassignedAt: null,
@@ -109,15 +91,15 @@ class JobAssignmentService {
     }
 
     async getAll() {
-        return this.JobAssignment.findAll();
+        return this.db.JobAssignment.findAll();
     }
 
     async getOneById(id: number) {
-        return this.JobAssignment.findByPk(id);
+        return this.db.JobAssignment.findByPk(id);
     }
 
     async update(id: number, data: JobAssignmentCreationAttributes) {
-        const jobAssignment = await this.JobAssignment.findByPk(id);
+        const jobAssignment = await this.db.JobAssignment.findByPk(id);
         if (!jobAssignment) {
             throw createError(404, 'Job Assignment not found');
         }
@@ -125,7 +107,7 @@ class JobAssignmentService {
     }
 
     async delete(id: number) {
-        const jobAssignment = await this.JobAssignment.findByPk(id);
+        const jobAssignment = await this.db.JobAssignment.findByPk(id);
 
         if (!jobAssignment) {
             throw createError(404, 'Job Assignment not found');
@@ -135,26 +117,25 @@ class JobAssignmentService {
     }
 
     async recommendTechnician(serviceRequestId: number) {
-        const transaction = await this.client.transaction();
-        const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId, { transaction });
+        const serviceRequest = await this.db.ServiceRequest.findByPk(serviceRequestId);
 
         if (!serviceRequest) {
             throw createError(404, 'Service request not found');
         }
 
-        const technicians = await db.User.findAll({
+        const technicians = await this.db.User.findAll({
             include: [
                 {
-                    model: db.Role,
+                    model: this.db.Role,
                     as: 'Role',
                     where: { name: 'Technician' },
                 },
                 {
-                    model: db.TechnicianProfile,
+                    model: this.db.TechnicianProfile,
                     as: 'TechnicianProfile',
                     include: [
                         {
-                            model: db.Location,
+                            model: this.db.Location,
                             as: 'CurrentLocation',
                         },
                     ],
@@ -164,7 +145,7 @@ class JobAssignmentService {
 
         const techniciansWithWorkload = await Promise.all(
             technicians.map(async (tech) => {
-                const activeJobsCount = await db.JobAssignment.count({
+                const activeJobsCount = await this.db.JobAssignment.count({
                     where: {
                         technicianId: tech.id,
                         unassignedAt: null,
@@ -191,6 +172,7 @@ class JobAssignmentService {
         }
 
         const aiResult = await aiService.recommendTechnician(serviceRequest, availableTechnicians);
+
         console.log('AI Recommendation Result:', aiResult);
         console.log('All Available Technicians:', JSON.stringify(availableTechnicians, null, 2));
 
@@ -204,6 +186,7 @@ class JobAssignmentService {
         const technicianExists = availableTechnicians.find(
             (tech) => tech.id === aiResult.technicianId
         );
+
         if (!technicianExists) {
             throw createError(
                 500,
@@ -215,6 +198,7 @@ class JobAssignmentService {
             serviceRequestId,
             technicianId: aiResult.technicianId,
         });
+
         ///add status history changes
     }
 }

@@ -1,15 +1,17 @@
 import db from '../models/index.js';
+import type { Sequelize } from 'sequelize';
 import type { User } from '../models/user.js';
 import type { Role } from '../models/role.js';
 import type { TechnicianProfile } from '../models/TechnicianProfile.js';
 import type { UserCreationAttributes } from '../types/user.types.js';
+import type { Models } from '../types/model.types.js';
 
 class UserService {
-    client: any;
+    client: Sequelize;
     User: typeof User;
     Role: typeof Role;
     TechnicianProfile: typeof TechnicianProfile;
-    constructor(db: any) {
+    constructor(db: Models) {
         this.client = db.sequelize;
         this.User = db.User;
         this.Role = db.Role;

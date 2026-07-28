@@ -1,3 +1,23 @@
+import type { JobAssignment } from '../models/JobAssignment.js';
+import type { ServiceRequest } from '../models/ServiceRequest.js';
+import type { User } from '../models/user.js';
+import type { Service } from '../models/service.js';
+import type { Location } from '../models/location.js';
+import type { Status } from '../models/status.js';
+
+export type TechnicianAssignment = JobAssignment & {
+    Technician: User;
+    createdAt: string | Date;
+    updatedAt: string | Date;
+
+    ServiceRequest: ServiceRequest & {
+        Service: Service;
+        Customer: User;
+        Location: Location;
+        Status: Status;
+    };
+};
+
 export class TechnicianDTO {
     assignmentId: number;
     Assigned: string;
@@ -11,9 +31,9 @@ export class TechnicianDTO {
     CustomerEmail: string;
     Service: string;
     Address: string;
-    Status?: string;
+    Status?: string | undefined;
 
-    constructor(job: any) {
+    constructor(job: TechnicianAssignment) {
         this.assignmentId = job.id;
         this.Assigned = new Date(job.assignedAt).toISOString();
         this.Unassigned = job.unassignedAt ? new Date(job.unassignedAt).toISOString() : null;
@@ -25,7 +45,7 @@ export class TechnicianDTO {
         this.Customer =
             job.ServiceRequest.Customer.FirstName + ' ' + job.ServiceRequest.Customer.LastName;
         this.CustomerEmail = job.ServiceRequest.Customer.Email;
-        this.Service = job.ServiceRequest.Service.serviceType;
+        this.Service = job.ServiceRequest.Service.specialization;
         this.Address =
             job.ServiceRequest.Location.address +
             ', ' +

@@ -2,7 +2,7 @@ import { Router } from 'express';
 const router = Router();
 import type { Request, Response, NextFunction } from 'express';
 import ServiceRequestService from '../services/serviceRequestService.js';
-import { isAuth, isStaff, isTechnician } from '../middleware/auth.js';
+import { isAuth, isStaff } from '../middleware/auth.js';
 
 router.get('/', isAuth, async (req: Request, res: Response, next: NextFunction) => {
     // #swagger.tags = ['Service Requests']
@@ -79,7 +79,7 @@ router.get('/customer', isAuth, async (req: Request, res: Response, next: NextFu
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
     try {
-        const customerId = (req as any).user.id;
+        const customerId = req.user!.id;
 
         const status = (req.query.status as string) || 'active';
 
@@ -281,7 +281,7 @@ router.post('/smart', isAuth, async (req: Request, res: Response, next: NextFunc
 
     try {
         const { description, location } = req.body;
-        const customerId = (req as any).user.id;
+        const customerId = req.user!.id;
 
         if (!description || !location) {
             return res.status(400).json({

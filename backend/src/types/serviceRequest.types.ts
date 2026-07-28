@@ -7,7 +7,6 @@ export interface ServiceRequestAttributes {
     description: string;
     priority: 'Low' | 'Medium' | 'High';
 }
-/* export interface ServiceRequestCreationAttributes extends Omit<ServiceRequestAttributes, "id" | "statusId"> {} */
 
 export interface ServiceRequestCreationAttributes {
     customerId: number;

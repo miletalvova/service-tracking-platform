@@ -6,4 +6,4 @@ export interface LocationAttributes {
     zipCode: string;
 }
 
-export interface LocationCreationAttributes extends Omit<LocationAttributes, 'id'> {}
+export type LocationCreationAttributes = Omit<LocationAttributes, 'id'>;

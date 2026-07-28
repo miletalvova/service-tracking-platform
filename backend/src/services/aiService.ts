@@ -1,12 +1,5 @@
 import { createClient } from '../config/anthropicClient.js';
-import type {
-    TextBlock,
-    Base64ImageSource,
-    Tool,
-    ToolUseBlock,
-    ContentBlock,
-    MessageParam,
-} from '@anthropic-ai/sdk/resources';
+import type { TextBlock, Tool, ToolUseBlock } from '@anthropic-ai/sdk/resources';
 import createError from 'http-errors';
 
 const client = createClient();
@@ -66,7 +59,7 @@ class AIService {
         try {
             /* console.log("AI classification response:", text); */
             return JSON.parse(text) as AIRequestClassification;
-        } catch (error) {
+        } catch (_err) {
             const match = text.match(/({[\s\S]*})/);
 
             if (match) return JSON.parse(match[0]) as AIRequestClassification;
@@ -163,7 +156,7 @@ class AIService {
 
         try {
             return JSON.parse(text);
-        } catch (err) {
+        } catch (_err) {
             throw createError(502, 'AI service returned an invalid response');
         }
     }

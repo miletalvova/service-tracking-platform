@@ -1,29 +1,24 @@
 import db from '../models/index.js';
-import type { Service } from '../models/service.js';
 import type { ServiceCreationAttributes } from '../types/service.types.js';
+import type { Models } from '../types/model.types.js';
 import createError from 'http-errors';
 
 class ServiceService {
-    client: any;
-    Service: typeof Service;
-    constructor(db: any) {
-        this.client = db.sequelize;
-        this.Service = db.Service;
-    }
+    constructor(private readonly db: Models) {}
     async getAll() {
-        return this.Service.findAll();
+        return this.db.Service.findAll();
     }
 
     async getOneById(id: number) {
-        return this.Service.findByPk(id);
+        return this.db.Service.findByPk(id);
     }
 
     async create(data: ServiceCreationAttributes) {
-        return this.Service.create(data);
+        return this.db.Service.create(data);
     }
 
     async update(id: number, data: Partial<ServiceCreationAttributes>) {
-        const service = await this.Service.findByPk(id);
+        const service = await this.db.Service.findByPk(id);
 
         if (!service) {
             throw createError(404, 'Service not found');
@@ -33,7 +28,7 @@ class ServiceService {
     }
 
     async delete(id: number) {
-        const service = await this.Service.findByPk(id);
+        const service = await this.db.Service.findByPk(id);
         if (!service) {
             throw createError(404, 'Service not found');
         }

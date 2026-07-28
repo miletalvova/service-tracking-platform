@@ -1,6 +1,12 @@
 import type { Request, Response, NextFunction } from 'express';
 import type { HttpError } from 'http-errors';
 
+interface DatabaseError extends Error {
+    parent?: {
+        sqlMessage?: string;
+    };
+}
+
 export const errorHandler = (
     err: Error | HttpError,
     _req: Request,
@@ -11,7 +17,9 @@ export const errorHandler = (
 
     console.error('FULL ERROR:', err);
     console.error('MESSAGE:', err.message);
-    console.error('SQL MESSAGE:', (err as any)?.parent?.sqlMessage);
+    
+    const dbError = err as DatabaseError;
+    console.error(dbError.parent?.sqlMessage);
 
     res.status(statusCode || 500).json({
         status: 'error',

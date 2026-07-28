@@ -1,82 +1,59 @@
 import db from '../models/index.js';
-import type { User } from '../models/user.js';
-import type { ServiceRequest } from '../models/ServiceRequest.js';
-import type { JobAssignment } from '../models/JobAssignment.js';
-import type { Service } from '../models/service.js';
-import type { Location } from '../models/location.js';
-import type { Status } from '../models/status.js';
-import { TechnicianDTO } from '../DTOs/TechnicianDTO.js';
+import type { Models } from '../types/model.types.js';
+import { TechnicianDTO, type TechnicianAssignment } from '../DTOs/TechnicianDTO.js';
 import statusService from './statusService.js';
-import type { TechnicianProfile } from '../models/TechnicianProfile.js';
 import createError from 'http-errors';
 
 class TechnicianService {
-    client: any;
-    User: typeof User;
-    TechnicianProfile: typeof TechnicianProfile;
-    ServiceRequest: typeof ServiceRequest;
-    JobAssignment: typeof JobAssignment;
-    Service: typeof Service;
-    Location: typeof Location;
-    Status: typeof Status;
-    constructor(db: any) {
-        this.client = db.sequelize;
-        this.User = db.User;
-        this.TechnicianProfile = db.TechnicianProfile;
-        this.ServiceRequest = db.ServiceRequest;
-        this.JobAssignment = db.JobAssignment;
-        this.Service = db.Service;
-        this.Location = db.Location;
-        this.Status = db.Status;
-    }
+    constructor(private readonly db: Models) {}
 
     async getOneByUserId(userId: number) {
-        return this.TechnicianProfile.findOne({ where: { userId } });
+        return this.db.TechnicianProfile.findOne({ where: { userId } });
     }
 
     async getAssignedRequests(technicianId: number) {
-        const assignments = await this.JobAssignment.findAll({
+        const assignments = await this.db.JobAssignment.findAll({
             where: { technicianId },
             include: [
                 {
-                    model: this.ServiceRequest,
+                    model: this.db.ServiceRequest,
                     as: 'ServiceRequest',
                     include: [
                         {
-                            model: this.Service,
+                            model: this.db.Service,
                             as: 'Service',
                         },
                         {
-                            model: this.User,
+                            model: this.db.User,
                             as: 'Customer',
                             attributes: ['id', 'FirstName', 'LastName', 'Email'],
                         },
                         {
-                            model: this.Location,
+                            model: this.db.Location,
                             as: 'Location',
                             attributes: ['address', 'city', 'state', 'zipCode'],
                         },
                         {
-                            model: this.Status,
+                            model: this.db.Status,
                             as: 'Status',
                             attributes: ['status'],
                         },
                     ],
                 },
                 {
-                    model: this.User,
+                    model: this.db.User,
                     as: 'Technician',
                     attributes: ['id', 'FirstName', 'LastName', 'Email'],
                 },
             ],
         });
-        return assignments.map((job) => new TechnicianDTO(job));
+        return assignments.map((job) => new TechnicianDTO(job as TechnicianAssignment));
     }
 
     async updateStatus(serviceRequestId: number, statusId: number, technicianId: number) {
-        const transaction = await this.client.transaction();
+        const transaction = await this.db.sequelize.transaction();
         try {
-            const assignment = await this.JobAssignment.findOne({
+            const assignment = await this.db.JobAssignment.findOne({
                 where: {
                     serviceRequestId,
                     technicianId,
@@ -108,10 +85,10 @@ class TechnicianService {
     }
 
     async getWorkloadOverview() {
-        const technicians = await this.TechnicianProfile.findAll({
+        const technicians = await this.db.TechnicianProfile.findAll({
             include: [
                 {
-                    model: this.User,
+                    model: this.db.User,
                     as: 'User',
                     attributes: ['id', 'FirstName', 'LastName'],
                 },
@@ -123,7 +100,7 @@ class TechnicianService {
         let atCapacity = 0;
 
         for (const tech of technicians) {
-            const activeJobs = await this.JobAssignment.count({
+            const activeJobs = await this.db.JobAssignment.count({
                 where: {
                     technicianId: tech.id,
                     unassignedAt: null,

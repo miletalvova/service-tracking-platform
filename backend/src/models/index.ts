@@ -1,5 +1,6 @@
 /* import "dotenv/config"; */
 import { Sequelize } from 'sequelize';
+import type { Dialect } from "sequelize";
 import mysql2 from 'mysql2';
 import { initUserModel, User } from './user.js';
 import { initRoleModel, Role } from './role.js';
@@ -28,7 +29,7 @@ if (!DATABASE_NAME || !ADMIN_USERNAME || !ADMIN_PASSWORD || !DATABASE_HOST) {
 const sequelize = new Sequelize(DATABASE_NAME, ADMIN_USERNAME, ADMIN_PASSWORD, {
     host: DATABASE_HOST,
     port: Number(DATABASE_PORT),
-    dialect: DIALECT as any,
+    dialect: DIALECT as Dialect,
     dialectModule: mysql2,
     logging: false,
     dialectOptions: {
@@ -61,7 +62,7 @@ export const models: Omit<Models, 'sequelize'> = {
 };
 
 Object.values(models).forEach((model) => {
-    (model as SequelizeModel).associate?.(models as Models);
+    (model as SequelizeModel).associate?.(models);
 });
 
 export const db: Models = {

@@ -1,20 +1,19 @@
 import db from '../models/index.js';
+import type { Sequelize } from 'sequelize';
 import type { ServiceRequest } from '../models/ServiceRequest.js';
 import type { User } from '../models/user.js';
-import type { Location } from '../models/location.js';
+import type { Models } from '../types/model.types.js';
 import {
     type ServiceRequestCreationAttributes,
     type SmartServiceRequestCreationAttributes,
     type ServiceRequestAttributes,
     StatusEnum,
-    type LocationSuggestion,
 } from '../types/serviceRequest.types.js';
 import type { StatusHistory } from '../models/StatusHistory.js';
 import jobAssignmentService from './jobAssignmentService.js';
 import AIService from './aiService.js';
 import createError from 'http-errors';
 import { Op } from 'sequelize';
-import { stat } from 'fs';
 
 const statusMap = {
     created: StatusEnum.Created,
@@ -25,24 +24,7 @@ const statusMap = {
 };
 
 class ServiceRequestService {
-    client: any;
-    ServiceRequest: typeof ServiceRequest;
-    User: typeof User;
-    StatusHistory: typeof StatusHistory;
-    Service: typeof db.Service;
-    Status: typeof db.Status;
-    JobAssignment: typeof db.JobAssignment;
-    Location: typeof db.Location;
-    constructor(db: any) {
-        this.client = db.sequelize;
-        this.ServiceRequest = db.ServiceRequest;
-        this.User = db.User;
-        this.StatusHistory = db.StatusHistory;
-        this.Service = db.Service;
-        this.Status = db.Status;
-        this.JobAssignment = db.JobAssignment;
-        this.Location = db.Location;
-    }
+    constructor(private readonly db: Models) {}
 
     async create({
         customerId,
@@ -50,7 +32,7 @@ class ServiceRequestService {
         locationId,
         description,
     }: ServiceRequestCreationAttributes) {
-        const serviceRequest = await this.ServiceRequest.create({
+        const serviceRequest = await this.db.ServiceRequest.create({
             customerId,
             serviceId,
             statusId: 1,
@@ -59,7 +41,7 @@ class ServiceRequestService {
             priority: 'Medium',
         });
 
-        await this.StatusHistory.create({
+        await this.db.StatusHistory.create({
             serviceRequestId: serviceRequest.id,
             oldStatusId: 1,
             newStatusId: 1,
@@ -72,7 +54,7 @@ class ServiceRequestService {
         description,
         location,
     }: SmartServiceRequestCreationAttributes) {
-        const transaction = await this.client.transaction();
+        const transaction = await this.db.sequelize.transaction();
         try {
             let aiResult;
             let urgencyResult;
@@ -97,13 +79,13 @@ class ServiceRequestService {
                 };
             }
 
-            let service = await this.Service.findOne({
+            let service = await this.db.Service.findOne({
                 where: { specialization: aiResult.service },
                 transaction,
             });
 
             if (!service) {
-                service = await this.Service.create(
+                service = await this.db.Service.create(
                     {
                         specialization: aiResult.service,
                         description: `All ${aiResult.service.toLowerCase()} related services`,
@@ -128,7 +110,7 @@ class ServiceRequestService {
                 }
             );
 
-            const serviceRequest = await this.ServiceRequest.create(
+            const serviceRequest = await this.db.ServiceRequest.create(
                 {
                     customerId,
                     serviceId: service.id,
@@ -148,7 +130,7 @@ class ServiceRequestService {
                 timestamp: new Date().toISOString(),
             });
 
-            await this.StatusHistory.create(
+            await this.db.StatusHistory.create(
                 {
                     serviceRequestId: serviceRequest.id,
                     oldStatusId: 1,
@@ -169,28 +151,28 @@ class ServiceRequestService {
     async getAll(status = 'all') {
         const where =
             status === 'all' ? {} : { statusId: statusMap[status as keyof typeof statusMap] };
-        return this.ServiceRequest.findAll({
+        return this.db.ServiceRequest.findAll({
             where,
             include: [
                 {
-                    model: this.Status,
+                    model: this.db.Status,
                     as: 'Status',
                 },
                 {
-                    model: this.Service,
+                    model: this.db.Service,
                     as: 'Service',
                 },
                 {
-                    model: this.User,
+                    model: this.db.User,
                     as: 'Customer',
                     attributes: ['id', 'FirstName', 'LastName', 'Email', 'Username'],
                 },
                 {
-                    model: this.JobAssignment,
+                    model: this.db.JobAssignment,
                     as: 'JobAssignments',
                     include: [
                         {
-                            model: this.User,
+                            model: this.db.User,
                             as: 'Technician',
                             attributes: ['id', 'FirstName', 'LastName', 'Email', 'Username'],
                         },
@@ -201,7 +183,7 @@ class ServiceRequestService {
     }
 
     async getOneById(id: number) {
-        return this.ServiceRequest.findByPk(id);
+        return this.db.ServiceRequest.findByPk(id);
     }
 
     async getCustomerRequests(customerId: number, status: string = 'active') {
@@ -225,7 +207,7 @@ class ServiceRequestService {
             default:
                 statusIds = [StatusEnum.Created, StatusEnum.Assigned, StatusEnum.InProgress];
         }
-        return this.ServiceRequest.findAll({
+        return this.db.ServiceRequest.findAll({
             where: {
                 customerId,
                 statusId: {
@@ -234,45 +216,45 @@ class ServiceRequestService {
             },
             include: [
                 {
-                    model: this.User,
+                    model: this.db.User,
                     as: 'Customer',
                     attributes: ['id', 'FirstName', 'LastName', 'Email', 'Username'],
                 },
                 {
-                    model: this.Status,
+                    model: this.db.Status,
                     as: 'Status',
                 },
                 {
-                    model: this.JobAssignment,
+                    model: this.db.JobAssignment,
                     as: 'JobAssignments',
                     required: false,
                     where: { unassignedAt: null },
                     include: [
                         {
-                            model: this.User,
+                            model: this.db.User,
                             as: 'Technician',
                             attributes: ['id', 'FirstName', 'LastName', 'Email', 'Username'],
                         },
                     ],
                 },
                 {
-                    model: this.Service,
+                    model: this.db.Service,
                     as: 'Service',
                 },
                 {
-                    model: this.Location,
+                    model: this.db.Location,
                     as: 'Location',
                 },
                 {
-                    model: this.StatusHistory,
+                    model: this.db.StatusHistory,
                     as: 'StatusHistory',
                     include: [
                         {
-                            model: this.Status,
+                            model: this.db.Status,
                             as: 'OldStatus',
                         },
                         {
-                            model: this.Status,
+                            model: this.db.Status,
                             as: 'NewStatus',
                         },
                     ],
@@ -285,7 +267,7 @@ class ServiceRequestService {
     }
 
     async update(id: number, data: Partial<ServiceRequestAttributes>) {
-        const serviceRequest = await this.ServiceRequest.findByPk(id);
+        const serviceRequest = await this.db.ServiceRequest.findByPk(id);
 
         if (!serviceRequest) {
             throw createError(404, 'Service request not found');
@@ -296,7 +278,7 @@ class ServiceRequestService {
         await serviceRequest.update(data);
 
         if (data.statusId && data.statusId !== oldStatusId) {
-            await this.StatusHistory.create({
+            await this.db.StatusHistory.create({
                 serviceRequestId: id,
                 oldStatusId,
                 newStatusId: data.statusId,
@@ -311,7 +293,7 @@ class ServiceRequestService {
     }
 
     async delete(id: number) {
-        const serviceRequest = await this.ServiceRequest.findByPk(id);
+        const serviceRequest = await this.db.ServiceRequest.findByPk(id);
 
         if (!serviceRequest) {
             throw createError(404, 'Service request not found');

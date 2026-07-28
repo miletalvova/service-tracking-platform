@@ -95,7 +95,7 @@ router.post('/login', async (req: Request, res: Response) => {
                     process.env.JWT_SECRET!,
                     { expiresIn: '30min' }
                 );
-            } catch (err) {
+            } catch (_err) {
                 return res
                     .status(500)
                     .json({ status: 'error', statusCode: 500, message: 'Internal server error' });
@@ -115,7 +115,7 @@ router.post('/login', async (req: Request, res: Response) => {
                 },
             });
         });
-    } catch (err) {
+    } catch (_err) {
         res.status(500).json({
             status: 'error',
             statusCode: 500,

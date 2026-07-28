@@ -41,7 +41,7 @@ router.get(
         /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
         try {
-            const technicianId = (req as any).user.id;
+            const technicianId = req.user!.id;
 
             const assignedRequests = await TechnicianService.getAssignedRequests(technicianId);
             return res
@@ -139,7 +139,7 @@ router.patch(
                     });
             }
 
-            const technicianId = (req as any).user.id;
+            const technicianId = req.user!.id;
             const { statusId } = req.body;
 
             if (!statusId) {
