@@ -3,6 +3,7 @@ import Services from '../components/Services';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from "react-router-dom";
 import Statistics from '../components/Statistics';
+import { useCustomerStatistics } from '../hooks/useCustomerStatistics';
 
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -15,6 +16,7 @@ import BuildIcon from '@mui/icons-material/Build';
 
 function Home() {
   const { role, isAuthenticated } = useAuth();
+  const { requests: statisticRequests, loading: statisticsLoading } = useCustomerStatistics();
 
   const dashboardRoute =
     role === 'Customer'
@@ -63,7 +65,7 @@ function Home() {
 
         {role === 'Customer' && (
           <section className="section">
-            <Statistics />
+            <Statistics requests={statisticRequests} loading={statisticsLoading} />
           </section>
         )}
 
