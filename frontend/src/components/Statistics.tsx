@@ -1,19 +1,23 @@
-import { useActiveRequests } from "../hooks/useActiveRequests";
-import './Statistics.css'
+import './Statistics.css';
+import type { ServiceRequest } from '../types/serviceRequest';
 
-export default function Statistics() {
-    const { requests, loading } = useActiveRequests();
+type StatisticsProps = {
+    requests: ServiceRequest[];
+    loading: boolean;
+};
+
+export default function Statistics({ requests, loading }: StatisticsProps) {
     const activeRequests = requests.length;
     const waiting = requests.filter(request => request.Status?.status === "Created").length;
     const completed = requests.filter(request => request.Status?.status === "Completed").length;
     const highPriority = requests.filter(request => request.priority === "High").length;
 
 
-     if (loading) {
+    if (loading) {
         return <p>Loading...</p>
     }
 
-    if (requests.length === 0 ) {
+    if (requests.length === 0) {
         return (
             <div className="statistics-empty">
                 <h3>No requests yet</h3>

@@ -10,12 +10,14 @@ import { useMemo } from 'react';
 import './CustomerDashboard.css';
 import type { LocationSearchResult } from '../types/location';
 import axios from 'axios';
+import { useCustomerStatistics } from '../hooks/useCustomerStatistics';
 
 
 function CustomerDashboard() {
   const { user } = useAuth();
 
   const { requests, loading: requestsLoading, refresh, view, setView } = useActiveRequests();
+  const { requests: statisticRequests, loading: statisticsLoading, refresh: refreshStatistics } = useCustomerStatistics();
 
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,6 +43,7 @@ function CustomerDashboard() {
       await createSmartServiceRequest(description, selectedAddress);
 
       await refresh();
+      await refreshStatistics();
 
       setSuccessMessage("Service request submitted successfully.");
       setDescription('');
@@ -95,7 +98,7 @@ function CustomerDashboard() {
 
         <p>Welcome, {user?.username}!</p>
 
-        <Statistics />
+        <Statistics requests={statisticRequests} loading={statisticsLoading} />
 
         <div className='dashboard-grid'>
 
