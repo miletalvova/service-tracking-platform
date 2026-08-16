@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { register as registerApi } from '../api/authApi';
 import { useNavigate, Link } from 'react-router-dom';
 import './RegisterPage.css';
+import axios from 'axios';
 
 import PersonIcon from '@mui/icons-material/Person';
 import EngineeringIcon from '@mui/icons-material/Engineering';
@@ -36,11 +37,15 @@ function RegisterPage() {
       setTimeout(() => {
         navigate('/login');
       }, 4000);
-    } catch (error: any) {
-      setErrorMessage(
-        error.response?.data?.message ??
-        'Registration failed. PLease try again.'
-      );
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(
+          error?.response?.data?.message ??
+          'Registration failed. Please try again.'
+        );
+      } else {
+        setErrorMessage('Registration failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
