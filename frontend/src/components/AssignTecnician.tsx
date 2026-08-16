@@ -1,6 +1,8 @@
 import './AssignTecnician.css';
 import { useState } from 'react';
-import { getRecommendedTechnician } from '../api/jobAssignmentApi'
+import { getRecommendedTechnician } from '../api/jobAssignmentApi';
+import type { JobAssignment } from '../types/jobAssignment';
+import axios from 'axios';
 
 type Props = {
     serviceRequestId: number;
@@ -9,7 +11,7 @@ type Props = {
 
 export default function AssignTechnician({ serviceRequestId, onAssigned }: Props) {
     const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState<any>(null);
+    const [result, setResult] = useState<JobAssignment | null>(null);
     const [error, setError] = useState('');
 
 
@@ -20,9 +22,13 @@ export default function AssignTechnician({ serviceRequestId, onAssigned }: Props
             const data = await getRecommendedTechnician(serviceRequestId);
             setResult(data);
             onAssigned();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error)
-            setError(error?.response?.data?.message ?? 'AI recommendation failed')
+            if (axios.isAxiosError(error)) {
+                setError(error?.response?.data?.message ?? 'AI recommendation failed')
+            } else {
+                setError('AI recommendation failed')
+            }
         } finally {
             setLoading(false)
         }

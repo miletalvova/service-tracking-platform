@@ -16,12 +16,12 @@ export async function getJobAssignment(id: string): Promise<JobAssignment> {
     return response.data.data;
 }
 
-export async function createJobAssignment(data: any): Promise<JobAssignment> {
+export async function createJobAssignment(data: JobAssignment): Promise<JobAssignment> {
     const response = await api.post("/api/assignments", data);
     return response.data.data;
 }
 
-export async function updateJobAssignment(id: string, data: any): Promise<JobAssignment> {
+export async function updateJobAssignment(id: string, data: JobAssignment): Promise<JobAssignment> {
     const response = await api.put(`/api/assignments/${id}`, data);
     return response.data.data;
 }

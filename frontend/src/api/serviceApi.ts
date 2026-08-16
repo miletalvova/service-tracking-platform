@@ -11,12 +11,12 @@ export async function getService(id: string): Promise<Service> {
     return response.data.data;
 }
 
-export async function createService(data: any): Promise<Service> {
+export async function createService(data: Service): Promise<Service> {
     const response = await api.post("/api/services", data);
     return response.data.data;
 }
 
-export async function updateService(id: string, data: any): Promise<Service> {
+export async function updateService(id: string, data: Service): Promise<Service> {
     const response = await api.put(`/api/services/${id}`, data);
     return response.data.data;
 }

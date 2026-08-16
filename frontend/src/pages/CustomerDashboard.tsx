@@ -7,7 +7,10 @@ import { createSmartServiceRequest } from '../api/serviceRequest';
 import { searchAddress } from '../api/locationApi';
 import { debounce } from 'lodash';
 import { useMemo } from 'react';
-import './CustomerDashboard.css'
+import './CustomerDashboard.css';
+import type { LocationSearchResult } from '../types/location';
+import axios from 'axios';
+
 
 function CustomerDashboard() {
   const { user } = useAuth();
@@ -19,24 +22,23 @@ function CustomerDashboard() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [address, setAddress] = useState('');
-  const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [selectedAddress, setSelectedAddress] = useState<any | null>(null);
+  const [suggestions, setSuggestions] = useState<LocationSearchResult[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<LocationSearchResult | null>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    if (!user) return;
-    setLoading(true);
-    setSuccessMessage('');
-    setErrorMessage('');
 
     if (!selectedAddress) {
       setErrorMessage("Please select an address from the suggestions");
       return;
     }
 
+    setLoading(true);
+    setSuccessMessage('');
+    setErrorMessage('');
+
     try {
-      await createSmartServiceRequest(user.id, description, selectedAddress);
+      await createSmartServiceRequest(description, selectedAddress);
 
       await refresh();
 
@@ -45,11 +47,15 @@ function CustomerDashboard() {
       setAddress('');
       setSelectedAddress(null);
 
-    } catch (error: any) {
-      setErrorMessage(
-        error?.response?.data?.message ||
-        "Failed to create request."
-      );
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(
+          error?.response?.data?.message ||
+          "Failed to create request."
+        );
+      } else {
+        setErrorMessage("Failed to create request.");
+      }
     } finally {
       setLoading(false);
     }

@@ -25,7 +25,6 @@ api.interceptors.response.use(response => response, error => {
 
         window.location.href = "/login";
     }
-    /* throw error; */
     return Promise.reject(error);
 });
 

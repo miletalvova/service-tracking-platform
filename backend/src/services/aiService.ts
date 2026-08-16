@@ -1,6 +1,8 @@
 import { createClient } from '../config/anthropicClient.js';
 import type { TextBlock, Tool, ToolUseBlock } from '@anthropic-ai/sdk/resources';
 import createError from 'http-errors';
+import type { ServiceRequest } from '../models/ServiceRequest.js';
+import type { TechnicianRecommendation } from '../types/technicians.types.js';
 
 const client = createClient();
 
@@ -126,7 +128,7 @@ class AIService {
         return { isUrgent: false, reason: 'No urgency detected' };
     }
 
-    async recommendTechnician(serviceRequest: any, technicians: any[]) {
+    async recommendTechnician(serviceRequest: ServiceRequest, technicians: TechnicianRecommendation[]) {
         const systemPrompt = `You are a technician recommender. 
         You ONLY output valid JSON. No markdown, no explanation, no backticks. Just raw JSON.`;
 

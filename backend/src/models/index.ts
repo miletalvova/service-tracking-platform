@@ -1,4 +1,3 @@
-/* import "dotenv/config"; */
 import { Sequelize } from 'sequelize';
 import type { Dialect } from "sequelize";
 import mysql2 from 'mysql2';

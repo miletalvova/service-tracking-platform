@@ -1,4 +1,5 @@
 import type { ServiceRequest } from "../types/serviceRequest";
+import type { LocationSearchResult } from "../types/location";
 import api from "./axios";
 
 export async function getServiceRequests(status: "all" | "created" | "assigned" | "inprogress" | "completed" | "cancelled"): Promise<ServiceRequest[]> {
@@ -16,17 +17,17 @@ export async function getCustomersRequests(status: 'active' | 'history' | 'all')
     return response.data.data;
 }
 
-export async function createServiceRequest(data: any): Promise<ServiceRequest> {
+export async function createServiceRequest(data: ServiceRequest): Promise<ServiceRequest> {
     const response = await api.post("/api/requests", data);
     return response.data.data;
 }
 
-export async function createSmartServiceRequest(customerId: number, description: string, location: any): Promise<ServiceRequest> {
-    const response = await api.post("/api/requests/smart", { customerId, description, location });
+export async function createSmartServiceRequest(description: string, location: LocationSearchResult): Promise<ServiceRequest> {
+    const response = await api.post("/api/requests/smart", { description, location });
     return response.data.data;
 }
 
-export async function updateServiceRequest(id: string, data: any): Promise<ServiceRequest> {
+export async function updateServiceRequest(id: string, data: ServiceRequest): Promise<ServiceRequest> {
     const response = await api.put(`/api/requests/${id}`, data);
     return response.data.data;
 }

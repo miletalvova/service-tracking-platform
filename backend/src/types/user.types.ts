@@ -6,6 +6,5 @@ export interface UserAttributes {
     Username: string;
     EncryptedPassword: string;
     RoleId: number;
-    /* Salt: Buffer; */
 }
 export type UserCreationAttributes = Omit<UserAttributes, 'id'>;
