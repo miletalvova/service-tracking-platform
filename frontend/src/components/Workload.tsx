@@ -56,7 +56,7 @@ export default function WorkloadOverview() {
     return (
         <section className='workload-overview'>
             <h2>Workload Overview</h2>
-            <section className='dashoard-section'>
+            <section className='dashboard-section'>
                 <h3>Service Requests</h3>
                 <div className='stats-row'>
                     <div className='stat-card created'>
@@ -82,7 +82,7 @@ export default function WorkloadOverview() {
                 </div>
             </section>
 
-            <section className='dashoard-section'>
+            <section className='dashboard-section'>
                 <h3>Technicians</h3>
                 <div className='stats-row'>
                     <div className='stat-card technicians'>
