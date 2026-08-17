@@ -93,7 +93,7 @@ router.post('/login', async (req: Request, res: Response) => {
                 token = jwt.sign(
                     { id: data.id, email: data.Email, role: data.Role?.name },
                     process.env.JWT_SECRET!,
-                    { expiresIn: '30min' }
+                    { expiresIn: '1h' }
                 );
             } catch (_err) {
                 return res

@@ -75,7 +75,7 @@ export default function WorkloadOverview() {
                         <h3>{stats.completed}</h3>
                         <p>Completed</p>
                     </div>
-                    <div className='stat-card completed'>
+                    <div className='stat-card cancelled'>
                         <h3>{stats.cancelled}</h3>
                         <p>Cancelled</p>
                     </div>

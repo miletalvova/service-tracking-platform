@@ -1,0 +1,167 @@
+.staff-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #eef0f2;
+}
+
+.card-header h2 {
+    margin: 0;
+    color: #163f3a;
+    font-size: 1.15rem;
+    font-weight: 650;
+}
+
+.card-header select {
+    min-width: 140px;
+    padding: 0.55rem 2rem 0.55rem 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #374151;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.requests-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.requests-table th {
+    padding: 0.8rem 1rem;
+    background: #f9fafb;
+    color: #6b7280;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.requests-table td {
+    padding: 0.9rem 1rem;
+    border-top: 1px solid #f0f1f2;
+    color: #374151;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.requests-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.requests-table tbody tr:hover {
+    background-color: #f8fafb;
+}
+
+.requests-table td:first-child {
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.request-priority,
+.status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 650;
+    gap: 0.35rem;
+}
+
+.request-priority.low {
+    background-color: #ecfdf5;
+    color: #047857;
+}
+.request-priority.medium {
+    background-color: #fffbeb;
+    color: #b45309;
+}
+.request-priority.high {
+    background-color: #fef2f2;
+    color: #b91c1c;
+}
+
+.status.created {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.status.assigned {
+    background: #f5f3ff;
+    color: #6d28d9;
+}
+
+.status.inprogress {
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.status.completed {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.status.cancelled {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.requests-table button {
+    padding: 0.45rem 0.8rem;
+    border: none;
+    border-radius: 7px;
+    background: #218073;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 650;
+    cursor: pointer;
+    transition: 
+        background 0.15s ease,
+        transform 0.15s ease;
+}
+
+.requests-table button:hover {
+    background: #196b61;
+    transform: translateY(-1px);
+}
+
+.requests-table button:active {
+    transform: translateY(0);
+}
+
+.requests-section {
+    min-width: 0;
+}
+
+.requests-table {
+    min-width: 850px;
+}
+
+.requests-section .staff-card {
+    overflow-x: auto;
+}
+
+@media (max-width: 640px) {
+    .card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .card-header select {
+        width: 100%;
+    }
+}

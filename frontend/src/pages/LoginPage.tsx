@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { login as loginApi } from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
+import axios from 'axios';
 
 function LoginPage() {
   const { login } = useAuth();
@@ -41,11 +42,15 @@ function LoginPage() {
             navigate('/');
         }
       }, 3000);
-    } catch (error: any) {
-      setErrorMessage(
-        error.response?.data?.message ??
-        'Login failed. Please try again.'
-      );
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(
+          error.response?.data?.message ??
+          'Login failed. Please try again.'
+        );
+      } else {
+        setErrorMessage('An unexpected error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

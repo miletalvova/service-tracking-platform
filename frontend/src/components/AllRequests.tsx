@@ -72,7 +72,7 @@ export default function AllRequests({ onSelectRequest, refreshKey }: Props) {
                                 ? `${technician.FirstName} ${technician.LastName}`
                                 : "Awaiting Assignment"}</td>
                             <td>{new Date(r.createdAt).toLocaleDateString()}</td>
-                            <td><span className={`priority ${r.priority.toLowerCase()}`}>{r.priority}</span></td>
+                            <td><span className={`request-priority ${r.priority.toLowerCase()}`}>{r.priority}</span></td>
                             <td><span className={`status ${r.Status?.status.replace(/\s+/g, "").toLowerCase()}`}>{r.Status?.status}</span></td>
                             <td>
                                 {r.Status?.status === 'Created' && (

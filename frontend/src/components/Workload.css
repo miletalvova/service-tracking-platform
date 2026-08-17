@@ -1,51 +1,98 @@
 .workload-overview {
+    padding: 1.5rem;
+}
 
+.workload-overview > h2 {
+    margin: 0 0 1.5rem;
+    color: #163f3a;
+    font-size: 1.5rem;
+    font-weight: 6500;
 }
 
 .dashoard-section {
+    margin-top: 1.5rem;
+}
 
+.dashboard-section:first-of-type {
+    margin-top: 0;
+}
+
+.dashboard-section > h3 {
+    margin: 0 0 0.75rem;
+    color: #6b7280;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
 }
 
 .stats-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
 
+.stat-card {
+    position: relative;
+    min-width: 0;
+    padding: 1rem;
+    background: #f8fafb;
+    border: 1px solid #edf0f2;
+    border-radius: 12px;
+    border-left: 3px solid #d1d5db;
+}
+
+.stat-card h3 {
+    margin: 0 ;
+    color: #6b7280;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
 .created {
-
+    border-left-color: #3b82f6;
 }
 
 .assigned {
-
+    border-left-color: #8b5cf6;
 }
 
 .inprogress {
-
+    border-left-color: #f59e0b;
 }
 
 .completed {
-
+    border-left-color: #22c55e;
 }
 
-.completed {
-
+.canceled {
+    border-left-color: #ef4444;
 }
 
 .technicians {
-
+    border-left-color: #3b82f6;
 }
 
 .available {
-    border-left: 4px solid #22c55e;
+    border-left-color: #22c55e;
 }
 
 .busy {
-    border-left: 4px solid #f59e0b;
+    border-left-color: #f59e0b;
 }
 
 .capacity {
-    border-left: 4px solid #ef4444;
+    border-left-color: #ef4444;
 }
 
-.technicians {
-    border-left: 4px solid #3b82f6;
+@media (max-width: 1100px) {
+    .stats-row {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .stats-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }

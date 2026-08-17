@@ -1,0 +1,109 @@
+.staff-page {
+    width: 100%;
+    max-width: 1500px;
+    padding: 2rem 2.5rem 4rem;
+    margin: 0 auto;
+    /* box-sizing: border-box; */
+    background: #f6f8f9;
+}
+
+.staff-header {
+    max-width: 1500px;
+    margin: 0 auto 1.75rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.staff-eyebrow {
+    margin: 0 0 0.35rem;
+    padding: 0;
+    color: #218073;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.staff-title {
+    margin: 0;
+    color: #172b2a;
+    font-size: 1.9rem;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.staff-subtitle {
+    margin: 0.45rem 0 0;
+    padding: 0;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.staff-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(360px, 1fr) minmax(0, 2fr);
+    grid-template-areas: "workload requests" "assignment assignment";
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.workload-section {
+    grid-area: workload;
+    min-width: 0;
+}
+
+.requests-section {
+    grid-area: requests;
+    min-width: 0;
+}
+
+.assignment-section {
+    grid-area: assignment;
+    min-width: 0;
+}
+
+.staff-card {
+    background: #ffffff;
+    border: 1px solid #e2e8e8;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+}
+
+@media (max-width: 900px) {
+    .staff-page {
+        padding: 1.75rem 1.5rem 3rem;
+    }
+
+    .staff-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "workload"
+            "requests"
+            "assignment";
+    }
+}
+
+@media (max-width: 640px) {
+    .staff-page {
+        padding: 1.25rem 1rem 2.5rem;
+    }
+
+    .staff-header {
+        margin-bottom: 1.25rem;
+    }
+
+    .staff-title {
+        font-size: 1.5rem;
+    }
+
+    .staff-subtitle {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+
+    .staff-grid {
+        gap: 1rem;
+    }
+}
