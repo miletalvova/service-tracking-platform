@@ -55,57 +55,115 @@ export default function WorkloadOverview() {
 
     return (
         <section className='workload-overview'>
-            <h2>Workload Overview</h2>
+
+
+            <div className='workload-header'>
+                <div>
+                    <h2>Workload Overview</h2>
+                    <p>Current operational status.</p>
+                </div>
+            </div>
+
             <section className='dashboard-section'>
+
                 <h3>Service Requests</h3>
-                <div className='stats-row'>
-                    <div className='stat-card created'>
-                        <h3>{stats.created}</h3>
-                        <p>New</p>
+
+                <div className='workload-list'>
+
+                    <div className='workload-row'>
+                        <div className="workload-label">
+                            <span className="workload-dot created-dot"></span>
+                            <span>New</span>
+                        </div>
+
+                        <strong>{stats.created}</strong>
                     </div>
-                    <div className='stat-card assigned'>
-                        <h3>{stats.assigned}</h3>
-                        <p>Assigned</p>
+
+                    <div className='workload-row'>
+                        <div className="workload-label">
+                            <span className="workload-dot assigned-dot"></span>
+                            <span>Assigned</span>
+                        </div>
+
+                        <strong>{stats.assigned}</strong>
                     </div>
-                    <div className='stat-card inprogress'>
-                        <h3>{stats.inprogress}</h3>
-                        <p>In Progress</p>
+
+                    <div className='workload-row'>
+                        <div className="workload-label">
+                            <span className="workload-dot inprogress-dot"></span>
+                            <span>In Progress</span>
+                        </div>
+
+                        <strong>{stats.inprogress}</strong>
                     </div>
-                    <div className='stat-card completed'>
-                        <h3>{stats.completed}</h3>
-                        <p>Completed</p>
+
+                    <div className='workload-row'>
+                        <div className="workload-label">
+                            <span className="workload-dot completed-dot"></span>
+                            <span>Completed</span>
+                        </div>
+
+                        <strong>{stats.completed}</strong>
                     </div>
-                    <div className='stat-card cancelled'>
-                        <h3>{stats.cancelled}</h3>
-                        <p>Cancelled</p>
+
+                    <div className='workload-row'>
+                        <div className="workload-label">
+                            <span className="workload-dot cancelled-dot"></span>
+                            <span>Cancelled</span>
+                        </div>
+                        <strong>{stats.cancelled}</strong>
                     </div>
+
                 </div>
+
             </section>
 
             <section className='dashboard-section'>
+
                 <h3>Technicians</h3>
-                <div className='stats-row'>
-                    <div className='stat-card technicians'>
-                        <h3>{tech.totalTechnicians}</h3>
-                        <p>Total</p>
+
+                <div className='workload-list'>
+
+                    <div className='workload-row'>
+                        <div className="workload-label">
+                            <span className="workload-dot total-dot"></span>
+                            <span>Total</span>
+                        </div>
+
+                        <strong>{tech.totalTechnicians}</strong>
                     </div>
-                    <div className='stat-card available'>
-                        <h3>{tech.available}</h3>
-                        <p>Available Technicians</p>
+
+                    <div className='workload-row'>
+                        <div className="workload-label">
+                            <span className="workload-dot available-dot"></span>
+                            <span>Available</span>
+                        </div>
+
+                        <strong>{tech.available}</strong>
                     </div>
-                    <div className='stat-card busy'>
-                        <h3>{tech.busy}</h3>
-                        <p>Busy</p>
+
+                    <div className='workload-row'>
+                        <div className="workload-label">
+                            <span className="workload-dot busy-dot"></span>
+                            <span>Busy</span>
+                        </div>
+
+                        <strong>{tech.busy}</strong>
                     </div>
-                    <div className='stat-card capacity'>
-                        <h3>{tech.atCapacity}</h3>
-                        <p>At Capacity</p>
+
+                    <div className='workload-row'>
+                        <div className="workload-label">
+                            <span className="workload-dot capacity-dot"></span>
+                            <span>At Capacity</span>
+                        </div>
+                        
+                        <strong>{tech.atCapacity}</strong>
                     </div>
 
                 </div>
 
             </section>
 
-        </section>
+        </section >
     )
 }

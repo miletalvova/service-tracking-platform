@@ -13,3 +13,11 @@ export interface WorkloadOverview {
   busy: number;
   atCapacity: number;
 }
+
+export interface DashboardStats {
+  created: number;
+  assigned: number;
+  inprogress: number;
+  completed: number;
+  cancelled: number;
+} 
