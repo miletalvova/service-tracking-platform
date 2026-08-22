@@ -1,33 +1,134 @@
-.assign-panel {
-  padding: 1.5rem;
-  border: 1px solid #cfe5e1;
-  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+.assignment-card {
+    background: #ffffff;
+    border: 1px solid #dce7e5;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+    overflow: hidden;
 }
 
-.assign-panel h2 {
-  margin: 0;
-  color: #163f3a;
-  font-size: 1.15rem;
+.assignment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.4rem;
+    border-bottom: 1px solid #edf0f2;
 }
 
-.assign-panel > p {
-  margin: 0.4rem 0 1.25rem;
-  padding: 0;
-  color: #6b7280;
-  font-size: 0.85rem;
+.assignment-eyebrow {
+    margin: 0 0 0.25rem;
+    color: #218073;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1rem;
+}
+
+.assignment-header h2 {
+    margin: 0;
+    color: #163f3a;
+    font-size: 1.15rem;
+    font-weight: 650;
+}
+
+.assignment-request-id {
+    margin: 0.3rem 0 0;
+    padding: 0;
+    color: #94a3b8;
+    font-size: 0.78rem;
+}
+
+.assignment-content {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 1.5rem;
+    padding: 1.4rem;
+}
+
+.assignmment-section-title {
+    margin-bottom: 1rem;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07rem;
+}
+
+.assignment-request {
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid #edf0f2;
+    border-radius: 10px;
+    background: #fafcfc;
+}
+
+.request-main-info {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.request-main-info > div {
+    min-width: 0;
+}
+
+.info-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: #94a3b8;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04rem;
+}
+
+.request-main-info strong {
+    display: block;
+    color: #334155;
+    font-size: 0.82rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.request-description {
+    margin-top: 1.1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e8eeee;
+}
+
+.request-description p {
+    margin: 0;
+    color: #475569;
+    font-size: 0.82rem;
+    line-height: 1.55rem;
+}
+
+.ai-assignment {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.2rem;
+    border: 1px solid #cfe5e1;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f8fcfb 0%, #f1f8f6 100%);
+}
+
+.ai-description {
+    margin: 0 0 1.25rem;
+    color: #64748b;
+    font-size: 0.8rem;
+    line-height: 1.5;
 }
 
 .ai-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 220px;
-    padding: 0.7rem 1.1rem;
+    width: 100%;
+    padding: 0.7rem 1rem;
     border: none;
-    border-radius: 9px;
+    border-radius: 8px;
     background: #218073;
     color: #ffffff;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 650;
     cursor: pointer;
     transition: 
@@ -39,7 +140,7 @@
 .ai-button:hover:not(:disabled) {
     background-color: #196b61;
     transform: translateY(-1px);
-    box-shadow: 0 5px 12px rgba(33, 128, 115, 0.2);
+    box-shadow: 0 4px 10px rgba(33, 128, 115, 0.2);
 }
 
 .ai-button:disabled {
@@ -47,27 +148,46 @@
     cursor: not-allowed;
 }
 
-.success {
+.assignment-success {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
     margin-top: 1rem;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem;
     border: 1px solid #bbf7d0;
     border-radius: 8px;
     background: #f0fdd4;
     color: #166534;
+    font-size: 0.78rem;
 }
 
-.success p {
-    margin: 0;
-    padding: 0;
+.assignment-success span {
+    color: #4d7c5c;
     font-size: 0.85rem;
 }
 
-.error {
+.assignment-error {
     margin-top: 1rem;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem;
     border: 1px solid #fecaca;
     border-radius: 8px;
     background: #fef2f2;
     color: #991b1b;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
+}
+
+@media (max-width: 900px) {
+    .assignment-content {
+        grid-template-columns: 1fr;
+    }
+
+    .request-main-info {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 500px) {
+    .request-main-info {
+        grid-template-columns: 1fr;
+    }
 }

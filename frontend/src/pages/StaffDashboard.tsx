@@ -10,7 +10,7 @@ import type { DashboardStats } from '../types/technician';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
 export default function StaffDashboard() {
-  const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
    const [stats, setStats] = useState<DashboardStats>({
@@ -87,15 +87,15 @@ export default function StaffDashboard() {
           <section className='requests-section'>
             <AllRequests
               refreshKey={refreshKey}
-              onSelectRequest={setSelectedRequestId} />
+              onSelectRequest={setSelectedRequest} />
           </section>
 
-          {selectedRequestId && (
+          {selectedRequest && (
             <section className='assignment-section'>
               <AssignTechnician
-                serviceRequestId={selectedRequestId}
+                request={selectedRequest}
                 onAssigned={() => {
-                  setSelectedRequestId(null);
+                  setSelectedRequest(null);
                   setRefreshKey(prev => prev + 1)
                 }} />
             </section>
