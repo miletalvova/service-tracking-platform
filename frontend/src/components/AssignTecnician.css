@@ -150,10 +150,11 @@
 
 .assignment-success {
     display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
     margin-top: 1rem;
-    padding: 0.75rem;
+    padding: 0.85rem 1rem;
     border: 1px solid #bbf7d0;
     border-radius: 8px;
     background: #f0fdd4;
@@ -161,9 +162,46 @@
     font-size: 0.78rem;
 }
 
+.success-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.success-left strong {
+    font-size: 0.8rem;
+    color: #166534;
+}
+
+.success-left span {
+    color: #4d7c5c;
+    font-size: 0.78rem;
+}
+
 .assignment-success span {
     color: #4d7c5c;
     font-size: 0.85rem;
+}
+
+.done-button {
+    flex-shrink: 0;
+    padding: 0.4rem 0.85rem;    
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #163f3a;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.done-button:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
 }
 
 .assignment-error {

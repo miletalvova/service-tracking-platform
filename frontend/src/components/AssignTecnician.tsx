@@ -7,10 +7,11 @@ import axios from 'axios';
 
 type Props = {
     request: ServiceRequest;
-    onAssigned: () => void
+    onAssigned: () => void;
+    onClose: () => void;
 }
 
-export default function AssignTechnician({ request, onAssigned }: Props) {
+export default function AssignTechnician({ request, onAssigned, onClose }: Props) {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<JobAssignment | null>(null);
     const [error, setError] = useState('');
@@ -94,7 +95,7 @@ export default function AssignTechnician({ request, onAssigned }: Props) {
                             <span className={`request-priority ${request.priority.toLocaleLowerCase()}`}
                             >
                                 <span className='priority-dot' />
-                                    {request.priority}
+                                {request.priority}
                             </span>
                         </div>
 
@@ -146,9 +147,16 @@ export default function AssignTechnician({ request, onAssigned }: Props) {
 
                     {result && (
                         <div className='assignment-success'>
-                            <strong>Technician assigned successfully</strong>
-
-                            <span>Assignment #{result.id}</span>
+                            <div className='success-left'>
+                                <strong >Technician assigned successfully</strong>
+                                <span>Assignment #{result.id}</span>
+                            </div>
+                            <button
+                                type='button'
+                                onClick={onClose}
+                                className='done-button'>
+                                Done
+                            </button>
                         </div>
                     )}
 

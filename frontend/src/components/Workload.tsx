@@ -13,7 +13,11 @@ type Stats = {
     cancelled: number,
 }
 
-export default function WorkloadOverview() {
+type Props = {
+    refreshKey: number;
+}
+
+export default function WorkloadOverview({refreshKey}: Props) {
     const [stats, setStats] = useState<Stats>({
         created: 0,
         assigned: 0,
@@ -51,7 +55,7 @@ export default function WorkloadOverview() {
             }
         }
         fetchRequests()
-    }, []);
+    }, [refreshKey]);
 
     return (
         <section className='workload-overview'>

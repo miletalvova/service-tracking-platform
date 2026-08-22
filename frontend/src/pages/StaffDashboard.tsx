@@ -12,6 +12,16 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 export default function StaffDashboard() {
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  function handleRefresh() {
+    setIsRefreshing(true);
+    setRefreshKey(prev => prev + 1);
+
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 700)
+  }
 
    const [stats, setStats] = useState<DashboardStats>({
           created: 0,
@@ -50,9 +60,9 @@ export default function StaffDashboard() {
             <p className="staff-subtitle">Monitor incoming requests, technician workload, and active assignments.</p>
           </div>
 
-          <button className="staff-refresh-button" onClick={() => setRefreshKey(prev => prev + 1)}>
-            <RefreshIcon className="staff-refresh-icon" />
-            Refresh
+          <button className="staff-refresh-button" onClick={handleRefresh} disabled={isRefreshing}>
+            <RefreshIcon className={`staff-refresh-icon ${isRefreshing ? 'refreshing' : ''}`} />
+            {isRefreshing ? 'Refreshing...' : 'Refresh'}
           </button>
         </header>
 
@@ -81,7 +91,7 @@ export default function StaffDashboard() {
 
         <div className='staff-grid'>
           <section className='workload-section'>
-            <WorkloadOverview />
+            <WorkloadOverview refreshKey={refreshKey} />
           </section>
 
           <section className='requests-section'>
@@ -95,8 +105,10 @@ export default function StaffDashboard() {
               <AssignTechnician
                 request={selectedRequest}
                 onAssigned={() => {
-                  setSelectedRequest(null);
                   setRefreshKey(prev => prev + 1)
+                }}
+                onClose={() => {
+                  setSelectedRequest(null)
                 }} />
             </section>
           )}
