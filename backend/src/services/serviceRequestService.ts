@@ -1,7 +1,4 @@
 import db from '../models/index.js';
-import type { Sequelize } from 'sequelize';
-import type { ServiceRequest } from '../models/ServiceRequest.js';
-import type { User } from '../models/user.js';
 import type { Models } from '../types/model.types.js';
 import {
     type ServiceRequestCreationAttributes,
@@ -9,7 +6,6 @@ import {
     type ServiceRequestAttributes,
     StatusEnum,
 } from '../types/serviceRequest.types.js';
-import type { StatusHistory } from '../models/StatusHistory.js';
 import jobAssignmentService from './jobAssignmentService.js';
 import AIService from './aiService.js';
 import createError from 'http-errors';

@@ -44,8 +44,9 @@ export default function CustomerRequests({ requests, loading, view, setView }: P
             <div className='customer-card'> {header}
                 <p className='empty-state'>
                     {view === "active"
-                        ? "You don't have any active requests."
-                        : "You don't have any completed requests yet."}
+                        ? "You don't have any active requests. Submit a request to get started."
+                        : "You don't have any completed requests yet."
+                    }
                 </p>
             </div>
 

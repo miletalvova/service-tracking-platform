@@ -7,6 +7,7 @@
 .customer-title {
     color: #218073;
     margin-bottom: 1rem;
+    font-size: 1.9rem;
 }
 
 .customer-page p {
@@ -28,6 +29,13 @@
     border-radius: 1rem;
     padding: 1.5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+}
+
+.dashboard-card h2 {
+    margin: 0;
+    color: #163f3a;
+    font-size: 1.15rem;
+    font-weight: 650;
 }
 
 .request-form {
@@ -62,6 +70,7 @@
     background: #218073;
     color: #ffffff;
     cursor: pointer;
+    font-size: 0.85rem;
 }
 
 .request-button:hover {
@@ -73,7 +82,8 @@
     padding: 0.75rem;
     border-radius: 0.5rem;
     background-color: #dcfce7;
-    color: #166534
+    color: #166534;
+    font-size: 0.78rem;
 }
 
 .error-message {
@@ -81,7 +91,8 @@
     padding: 0.75rem;
     border-radius: 0.5rem;
     background-color: #fee2e2;
-    color: #991b1b
+    color: #991b1b;
+    font-size: 0.78rem;
 
 }
 

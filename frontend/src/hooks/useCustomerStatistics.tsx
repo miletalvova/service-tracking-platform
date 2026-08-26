@@ -11,6 +11,8 @@ export function useCustomerStatistics() {
 
         try {
             const data = await getCustomersRequests('all');
+
+            await new Promise(resolve => setTimeout(resolve, 1500));
             setRequests(data);
         } finally {
             setLoading(false)

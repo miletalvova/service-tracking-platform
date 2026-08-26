@@ -7,50 +7,66 @@ type StatisticsProps = {
 };
 
 export default function Statistics({ requests, loading }: StatisticsProps) {
-    const activeRequests = requests.length;
+    const activeRequests = requests.filter(
+        request =>
+            request.Status?.status !== 'Completed' &&
+            request.Status?.status !== 'Cancelled'
+    ).length;
     const waiting = requests.filter(request => request.Status?.status === "Created").length;
     const completed = requests.filter(request => request.Status?.status === "Completed").length;
     const highPriority = requests.filter(request => request.priority === "High").length;
 
 
     if (loading) {
-        return <p>Loading...</p>
-    }
-
-    if (requests.length === 0) {
         return (
-            <div className="statistics-empty">
-                <h3>No requests yet</h3>
-                <p>Submit your first request to start tracking repairs, technician assignments, and request progress.</p>
-            </div>
+            <section className='statistics-grid'>
+                <div className="stat-card stat-active">
+                    <div className='skeleton skeleton-label' />
+                    <div className='skeleton skeleton-value' />
+                </div>
+
+                <div className="stat-card stat-waiting">
+                    <div className='skeleton skeleton-label' />
+                    <div className='skeleton skeleton-value' />
+                </div>
+
+                <div className="stat-card stat-completed">
+                    <div className='skeleton skeleton-label' />
+                    <div className='skeleton skeleton-value' />
+                </div>
+
+                <div className="stat-card stat-priority">
+                    <div className='skeleton skeleton-label' />
+                    <div className='skeleton skeleton-value' />
+                </div>
+            </section>
         )
     }
 
     return (
-        <div className="statistics-card">
+        <section className='statistics-grid'>
 
-            <div className="stat-card">
-                <h3>{activeRequests}</h3>
-                <p>Active Requests</p>
+            <div className="stat-card stat-active">
+                <div className='stat-label'>Active Requests</div>
+                <div className='stat-value'>{activeRequests}</div>
             </div>
 
-            <div className="stat-card">
-                <h3>{waiting}</h3>
-                <p>Waiting</p>
+            <div className="stat-card stat-waiting">
+                <div className='stat-label'>Waiting</div>
+                <div className='stat-value'>{waiting}</div>
             </div>
 
-            <div className="stat-card">
-                <h3>{completed}</h3>
-                <p>Completed</p>
+            <div className="stat-card stat-completed">
+                <div className='stat-label'>Completed</div>
+                <div className='stat-value'>{completed}</div>
             </div>
 
-            <div className="stat-card">
-                <h3>{highPriority}</h3>
-                <p>High Priority</p>
+            <div className="stat-card stat-priority">
+                <div className='stat-label'>High Priority</div>
+                <div className='stat-value'>{highPriority}</div>
             </div>
 
-
-        </div>
+        </section>
     )
 
 }

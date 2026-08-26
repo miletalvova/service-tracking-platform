@@ -98,7 +98,9 @@ function CustomerDashboard() {
 
         <p>Welcome, {user?.username}!</p>
 
-        <Statistics requests={statisticRequests} loading={statisticsLoading} />
+        <Statistics
+          requests={statisticRequests}
+          loading={statisticsLoading} />
 
         <div className='dashboard-grid'>
 
@@ -154,7 +156,12 @@ function CustomerDashboard() {
 
           </div>
 
-          <CustomerRequests requests={requests} loading={requestsLoading} view={view} setView={setView}/>
+          <CustomerRequests
+            requests={requests}
+            loading={requestsLoading}
+            view={view}
+            setView={setView} />
+
         </div>
       </div>
     </>
