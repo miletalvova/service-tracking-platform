@@ -366,9 +366,9 @@ router.put(
                         message: 'Service request ID must be a number',
                     });
             }
-            const { customerId, serviceId, statusId, locationId } = req.body;
+            const { customerId, serviceId, statusId, locationId, description, priority } = req.body;
 
-            if (customerId == null && serviceId == null && statusId == null && locationId == null) {
+            if (customerId == null && serviceId == null && statusId == null && locationId == null && description == null && priority == null) {
                 return res
                     .status(400)
                     .json({
@@ -383,6 +383,8 @@ router.put(
                 serviceId,
                 statusId,
                 locationId,
+                description,
+                priority
             });
             return res
                 .status(200)

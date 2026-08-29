@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import CustomerRequests from '../components/CustomerRequests';
 import Statistics from '../components/Statistics';
 import { useAuth } from '../hooks/useAuth';
@@ -6,7 +6,6 @@ import { useActiveRequests } from "../hooks/useActiveRequests";
 import { createSmartServiceRequest } from '../api/serviceRequest';
 import { searchAddress } from '../api/locationApi';
 import { debounce } from 'lodash';
-import { useMemo } from 'react';
 import './CustomerDashboard.css';
 import type { LocationSearchResult } from '../types/location';
 import axios from 'axios';

@@ -108,7 +108,6 @@ export default function StaffDashboard() {
               <AssignTechnician
                 request={requestToAssign}
                 onAssigned={() => {
-                  setRequestToAssign(null);
                   setRefreshKey(prev => prev + 1)
                 }}
                 onClose={() => {
@@ -122,7 +121,14 @@ export default function StaffDashboard() {
           <section>
             <RequestDetails
               request={selectedRequest}
-              onClose={() => setSelectedRequest(null)} />
+              onClose={() => setSelectedRequest(null)}
+              onUpdated={() => {
+                setRefreshKey(prev => prev + 1)
+              }}
+              onDeleted={() => {
+                setRefreshKey(prev => prev + 1)
+              }}
+              />
           </section>
         )}
 

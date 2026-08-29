@@ -1,4 +1,4 @@
-import type { ServiceRequest } from "../types/serviceRequest";
+import type { ServiceRequest, UpdateServiceRequest } from "../types/serviceRequest";
 import type { LocationSearchResult } from "../types/location";
 import api from "./axios";
 
@@ -27,12 +27,12 @@ export async function createSmartServiceRequest(description: string, location: L
     return response.data.data;
 }
 
-export async function updateServiceRequest(id: string, data: ServiceRequest): Promise<ServiceRequest> {
+export async function updateServiceRequest(id: number, data: UpdateServiceRequest): Promise<ServiceRequest> {
     const response = await api.put(`/api/requests/${id}`, data);
     return response.data.data;
 }
 
-export async function deleteServiceRequest(id: string): Promise<ServiceRequest> {
+export async function deleteServiceRequest(id: number): Promise<ServiceRequest> {
     const response = await api.delete(`/api/requests/${id}`);
     return response.data.data;
 }

@@ -39,3 +39,15 @@ export enum StatusEnum {
     Completed = 4,
     Cancelled = 5,
 }
+
+export interface UpdateServiceRequestAttributes {
+    customerId: number;
+    serviceId: number;
+    statusId: number;
+    locationId?: number;
+    location?: LocationSuggestion;
+    description: string;
+    priority: 'Low' | 'Medium' | 'High';
+}
+
+

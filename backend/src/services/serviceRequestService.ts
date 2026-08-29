@@ -3,7 +3,7 @@ import type { Models } from '../types/model.types.js';
 import {
     type ServiceRequestCreationAttributes,
     type SmartServiceRequestCreationAttributes,
-    type ServiceRequestAttributes,
+    type UpdateServiceRequestAttributes,
     StatusEnum,
 } from '../types/serviceRequest.types.js';
 import jobAssignmentService from './jobAssignmentService.js';
@@ -174,6 +174,20 @@ class ServiceRequestService {
                         },
                     ],
                 },
+                {
+                    model: this.db.StatusHistory,
+                    as: 'StatusHistory',
+                    include: [
+                        {
+                            model: this.db.Status,
+                            as: 'OldStatus',
+                        },
+                        {
+                            model: this.db.Status,
+                            as: 'NewStatus',
+                        },
+                    ],
+                },
             ],
         });
     }
@@ -262,11 +276,34 @@ class ServiceRequestService {
         });
     }
 
-    async update(id: number, data: Partial<ServiceRequestAttributes>) {
-        const serviceRequest = await this.db.ServiceRequest.findByPk(id);
+    async update(id: number, data: UpdateServiceRequestAttributes) {
+        const transaction = await this.db.sequelize.transaction();
+
+        try {
+            const serviceRequest = await this.db.ServiceRequest.findByPk(id);
 
         if (!serviceRequest) {
             throw createError(404, 'Service request not found');
+        }
+
+        if (data.location) {
+            const locationRecord = await db.Location.create(
+                {
+                    address: data.location.display_name,
+                    city:
+                        data.location.address.city ??
+                        data.location.address.town ??
+                        data.location.address.village ??
+                        '',
+                    state: data.location.address.state ?? '',
+                    zipCode: data.location.address.postcode ?? '',
+                },
+                {
+                    transaction,
+                }
+            );
+
+            data.locationId = locationRecord.id;
         }
 
         const oldStatusId = serviceRequest.statusId;
@@ -284,8 +321,14 @@ class ServiceRequestService {
         if (data.statusId === StatusEnum.Completed || data.statusId === StatusEnum.Cancelled) {
             await jobAssignmentService.unassign(id);
         }
+        await transaction.commit();
 
         return serviceRequest;
+
+        } catch (err) {
+            await transaction.rollback();
+            throw err;
+        }
     }
 
     async delete(id: number) {
