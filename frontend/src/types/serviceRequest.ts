@@ -23,3 +23,12 @@ export interface ServiceRequest {
   StatusHistory?: StatusHistory[];
   Customer?: User;
 }
+
+export interface UpdateServiceRequest {
+    customerId: number;
+    serviceId: number;
+    statusId: number;
+    locationId: number;
+    description: string;
+    priority: 'Low' | 'Medium' | 'High';
+};

@@ -13,6 +13,8 @@ import serviceRequestRouter from './routes/serviceRequests.js';
 import assignmentRouter from './routes/jobAssignments.js';
 import technicianRouter from './routes/technicians.js';
 import locationRouter from './routes/locations.js';
+import usersRouter from './routes/users.js';
+import statusesRouter from './routes/statuses.js';
 import { errorHandler } from './middleware/error.js';
 
 const app = express();
@@ -39,6 +41,8 @@ app.use('/api/requests', serviceRequestRouter);
 app.use('/api/assignments', assignmentRouter);
 app.use('/api/technicians', technicianRouter);
 app.use('/api/locations', locationRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/statuses', statusesRouter);
 
 // catch 404 and forward to error handler
 app.use((_req: Request, _res: Response, next: NextFunction) => {

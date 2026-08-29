@@ -1,42 +1,41 @@
 import db from '../models/index.js';
-import type { Sequelize } from 'sequelize';
-import type { User } from '../models/user.js';
-import type { Role } from '../models/role.js';
-import type { TechnicianProfile } from '../models/TechnicianProfile.js';
 import type { UserCreationAttributes } from '../types/user.types.js';
 import type { Models } from '../types/model.types.js';
 
 class UserService {
-    client: Sequelize;
-    User: typeof User;
-    Role: typeof Role;
-    TechnicianProfile: typeof TechnicianProfile;
-    constructor(db: Models) {
-        this.client = db.sequelize;
-        this.User = db.User;
-        this.Role = db.Role;
-        this.TechnicianProfile = db.TechnicianProfile;
+    constructor(private readonly db: Models) {
+    }
+    
+    async getCustomers() {
+        return this.db.User.findAll({
+            include: [{
+                model: this.db.Role,
+                as: 'Role',
+                where: { name: 'Customer'}
+            }],
+            attributes: ['id', 'FirstName', 'LastName']
+        });
     }
 
     async getOne(email: string) {
-        return this.User.findOne({
+        return this.db.User.findOne({
             where: { Email: email },
-            include: [{ model: this.Role, as: 'Role' }],
+            include: [{ model: this.db.Role, as: 'Role' }],
         });
     }
 
     async create(data: UserCreationAttributes) {
-        const transaction = await this.client.transaction();
+        const transaction = await this.db.sequelize.transaction();
         try {
-            const user = await this.User.create(data, { transaction });
+            const user = await this.db.User.create(data, { transaction });
 
-            const technicianRole = await this.Role.findOne({
+            const technicianRole = await this.db.Role.findOne({
                 where: { name: 'Technician' },
                 transaction,
             });
 
             if (technicianRole && user.RoleId === technicianRole.id) {
-                await this.TechnicianProfile.create(
+                await this.db.TechnicianProfile.create(
                     {
                         userId: user.id,
                         skills: '',

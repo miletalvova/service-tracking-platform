@@ -1,6 +1,7 @@
 import db from '../models/index.js';
 import { StatusEnum } from '../types/serviceRequest.types.js';
 import createError from 'http-errors';
+import type { Models } from '../types/model.types.js';
 import type { Transaction } from "sequelize";
 
 const validTransitions: Record<number, number[]> = {
@@ -12,8 +13,10 @@ const validTransitions: Record<number, number[]> = {
 };
 
 class StatusService {
+    constructor(private readonly db: Models) {}
+
     async updateStatus(serviceRequestId: number, newStatusId: number, transaction: Transaction) {
-        const serviceRequest = await db.ServiceRequest.findByPk(serviceRequestId, { transaction });
+        const serviceRequest = await this.db.ServiceRequest.findByPk(serviceRequestId, { transaction });
         if (!serviceRequest) {
             throw createError(404, 'Service request not found');
         }
@@ -28,7 +31,7 @@ class StatusService {
         }
         await serviceRequest.update({ statusId: newStatusId }, { transaction });
 
-        await db.StatusHistory.create(
+        await this.db.StatusHistory.create(
             {
                 serviceRequestId,
                 oldStatusId: currentStatusId,
@@ -38,7 +41,7 @@ class StatusService {
         );
 
         if (newStatusId === StatusEnum.Cancelled || newStatusId === StatusEnum.Completed) {
-            const activeAssignment = await db.JobAssignment.findOne({
+            const activeAssignment = await this.db.JobAssignment.findOne({
                 where: {
                     serviceRequestId,
                     unassignedAt: null,
@@ -47,7 +50,7 @@ class StatusService {
             });
 
             if (activeAssignment) {
-                await db.TechnicianProfile.update(
+                await this.db.TechnicianProfile.update(
                     { isAvailable: true },
                     { where: { userId: activeAssignment.technicianId }, transaction }
                 );
@@ -55,6 +58,11 @@ class StatusService {
         }
         return serviceRequest;
     }
+
+    async getAllStatuses (){
+        return this.db.Status.findAll();
+    }
+    
 }
 
-export default new StatusService();
+export default new StatusService(db);

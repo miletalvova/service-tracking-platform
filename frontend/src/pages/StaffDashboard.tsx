@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import AllRequests from '../components/AllRequests';
 import AssignTechnician from '../components/AssignTecnician';
 import WorkloadOverview from '../components/Workload';
+import RequestDetails from '../components/RequestDetails';
 import { getServiceRequests } from '../api/serviceRequest';
 import type { ServiceRequest } from '../types/serviceRequest';
 import type { DashboardStats } from '../types/technician';
@@ -11,6 +12,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 
 export default function StaffDashboard() {
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
+  const [requestToAssign, setRequestToAssign] = useState<ServiceRequest | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -23,32 +25,32 @@ export default function StaffDashboard() {
     }, 700)
   }
 
-   const [stats, setStats] = useState<DashboardStats>({
-          created: 0,
-          assigned: 0,
-          inprogress: 0,
-          completed: 0,
-          cancelled: 0
-      })
+  const [stats, setStats] = useState<DashboardStats>({
+    created: 0,
+    assigned: 0,
+    inprogress: 0,
+    completed: 0,
+    cancelled: 0
+  })
 
-      useEffect(() => {
-          async function fetchDashboardStats() {
-              try {
-                const requests = await getServiceRequests("all");
-                setStats({
-                    created: requests.filter((r: ServiceRequest) => r.Status?.status === 'Created').length,
-                    assigned: requests.filter((r: ServiceRequest) => r.Status?.status === 'Assigned').length,
-                    inprogress: requests.filter((r: ServiceRequest) => r.Status?.status === 'In Progress').length,
-                    completed: requests.filter((r: ServiceRequest) => r.Status?.status === 'Completed').length,
-                    cancelled: requests.filter((r: ServiceRequest) => r.Status?.status === 'Cancelled').length
-                });
-              } catch (error) {
-                console.error('Error fetching dashboard stats:', error);
-              }
-            }
+  useEffect(() => {
+    async function fetchDashboardStats() {
+      try {
+        const requests = await getServiceRequests("all");
+        setStats({
+          created: requests.filter((r: ServiceRequest) => r.Status?.status === 'Created').length,
+          assigned: requests.filter((r: ServiceRequest) => r.Status?.status === 'Assigned').length,
+          inprogress: requests.filter((r: ServiceRequest) => r.Status?.status === 'In Progress').length,
+          completed: requests.filter((r: ServiceRequest) => r.Status?.status === 'Completed').length,
+          cancelled: requests.filter((r: ServiceRequest) => r.Status?.status === 'Cancelled').length
+        });
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      }
+    }
 
-            fetchDashboardStats();
-      }, [refreshKey]);
+    fetchDashboardStats();
+  }, [refreshKey]);
 
   return (
     <>
@@ -97,22 +99,33 @@ export default function StaffDashboard() {
           <section className='requests-section'>
             <AllRequests
               refreshKey={refreshKey}
-              onSelectRequest={setSelectedRequest} />
+              onSelectRequest={setSelectedRequest}
+              onAssignRequest={setRequestToAssign} />
           </section>
 
-          {selectedRequest && (
+          {requestToAssign && (
             <section className='assignment-section'>
               <AssignTechnician
-                request={selectedRequest}
+                request={requestToAssign}
                 onAssigned={() => {
+                  setRequestToAssign(null);
                   setRefreshKey(prev => prev + 1)
                 }}
                 onClose={() => {
-                  setSelectedRequest(null)
+                  setRequestToAssign(null);
                 }} />
             </section>
           )}
         </div>
+
+        {selectedRequest && (
+          <section>
+            <RequestDetails
+              request={selectedRequest}
+              onClose={() => setSelectedRequest(null)} />
+          </section>
+        )}
+
       </div>
     </>
   );

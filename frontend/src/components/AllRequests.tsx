@@ -5,10 +5,11 @@ import type { ServiceRequest } from '../types/serviceRequest';
 
 type Props = {
     onSelectRequest: (request: ServiceRequest) => void;
+    onAssignRequest: (request: ServiceRequest) => void;
     refreshKey: number
 }
 
-export default function AllRequests({ onSelectRequest, refreshKey }: Props) {
+export default function AllRequests({ onSelectRequest, onAssignRequest, refreshKey }: Props) {
     const [requests, setRequests] = useState<ServiceRequest[]>([]);
     const [statusFilter, setStatusFilter] = useState<
         "all" |
@@ -97,7 +98,7 @@ export default function AllRequests({ onSelectRequest, refreshKey }: Props) {
                                 const status = request.Status?.status;
 
                                 return (
-                                    <tr key={request.id}>
+                                    <tr key={request.id} onClick={() => onSelectRequest(request)}>
 
                                         <td className='request-id'>#{request.id}</td>
                                         <td className='service-cell'>{request.Service?.specialization}</td>
@@ -133,7 +134,10 @@ export default function AllRequests({ onSelectRequest, refreshKey }: Props) {
                                                 <button
                                                     type='button'
                                                     className='assign-button'
-                                                    onClick={() => onSelectRequest(request)}
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        onAssignRequest(request)
+                                                    }}
                                                 >
                                                     Assign
                                                 </button>
