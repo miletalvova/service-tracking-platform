@@ -192,6 +192,22 @@
     font-size: 0.78rem;
 }
 
+.request-details-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: rgba(15, 23, 42, 0.35);
+}
+
+.request-details-overlay > div {
+    width: min(900px, 100%);
+}
+
 @media (max-width: 900px) {
     .kpi-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));

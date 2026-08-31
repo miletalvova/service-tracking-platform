@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+/* import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 interface Props {
@@ -13,4 +13,4 @@ export default function ProtectedRoute({ children }: Props) {
     }
 
     return children;
-}
+} */

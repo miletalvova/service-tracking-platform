@@ -13,8 +13,8 @@ export default function RoleRoute({ children, allowedRoles }: Props) {
     return <Navigate to="/login" />;
   }
 
-  if(!role || !allowedRoles.includes(role)) {
+  if (!role || !allowedRoles.includes(role)) {
     return <Navigate to="/unauthorized" />;
   }
-    return children;
+  return children;
 }

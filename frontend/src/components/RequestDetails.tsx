@@ -42,7 +42,7 @@ export default function RequestDetails({ request, onClose, onUpdated, onDeleted 
     const [address, setAddress] = useState(request.Location?.address ?? '');
     const [suggestions, setSuggestions] = useState<LocationSearchResult[]>([]);
     const [selectedAddress, setSelectedAddress] = useState<LocationSearchResult | null>(null);
-    
+
     useEffect(() => {
         async function fetchFormData() {
             setLoadingFormData(true);
@@ -159,131 +159,157 @@ export default function RequestDetails({ request, onClose, onUpdated, onDeleted 
 
 
     return (
-        <section className='request-details'>
+        <section className='service-request-details'>
 
-            <header className='request-details-header'>
+            <header className='service-request-details-header'>
                 <div>
-                    <h2>Request details</h2>
+                    <p className='request-details-eyebrow'>SERVICE REQUEST</p>
+                    <h2>Request #{request.id}</h2>
+                    <p className='request-details-subtitle'>View and manage service request details</p>
                 </div>
 
                 <button
                     type='button'
                     onClick={onClose}
-                    className='done-button'>
+                    className='close-button'>
                     Close
                 </button>
             </header>
 
-            <section className='details-section'>
-                <ul>
-                    <li>
-                        <strong> Service: </strong> {request.Service?.specialization}
-                    </li>
-                    <li>
-                        <strong> Customer: </strong> {request.Customer?.FirstName} { } {request.Customer?.LastName}
-                    </li>
-                    <li>
-                        <strong> Priority: </strong> {request.priority}
-                    </li>
-                </ul>
+            <section className='service-details-section'>
+
+                <div className='section-heading'>
+                    <h3>Request Information</h3>
+                </div>
+
+                <div className='request-info-grid'>
+
+                    <div className='request-info-item'>
+                        <span>Service</span>
+                        <strong> {request.Service?.specialization ?? '—'}</strong>
+                    </div>
+
+                    <div className='request-info-item'>
+                        <span>Customer</span>
+                        <strong> {request.Customer?.FirstName} {request.Customer?.LastName}</strong>
+                    </div>
+
+                    <div className='request-info-item'>
+                        <span>Priority</span>
+                        <strong> {request.priority}</strong>
+                    </div>
+
+                    <div className='request-info-item'>
+                        <span>Status</span>
+                        <strong> {request.Status?.status ?? '—'}</strong>
+                    </div>
+
+                </div>
+
 
                 <div className='status-history'>
                     <h3>Status History</h3>
+
                     {request.StatusHistory?.map(history => (
-                        <div key={history.id}>
-                            <span>
-                                {history.OldStatus?.status ?? 'Created'}
-                            </span>
+                        <div className='status-history-item' key={history.id}>
 
-                            <span> → </span>
+                            <div className='status-history-dot' />
 
-                            <span>
-                                {history.NewStatus?.status ?? 'Created'}
-                            </span>
+                            <div className='status-history-content'>
 
+                                <span className='status-history-transition'>
+                                    {history.OldStatus?.status ?? 'Created'}
+                                    {' → '}
+                                    {history.NewStatus?.status ?? 'Created'}
+                                </span>
+
+                                <span className='status-history-date'>
+                                    {new Date(history.changedAt).toLocaleString()}
+                                </span>
+
+                            </div>
                         </div>
                     ))}
                 </div>
 
             </section>
 
-            <div className='request-details-wrapper'>
-
-                <div className='request-details'>
-                    <p></p>
-
-                </div>
-
-            </div>
-
             <div className='edit-interface'>
                 <form className='request-form' onSubmit={editRequest}>
-                    <div className='form-group'>
-                        <label htmlFor='customer'>Choose customer</label>
-                        <select
-                            id='customer'
-                            value={editedRequest.customerId}
-                            onChange={(e) =>
-                                setEditedRequest({
-                                    ...editedRequest,
-                                    customerId: Number(e.target.value)
-                                })
-                            }
-                        >
-                            {loadingFormData ? (
-                                <option>Loading customers...</option>
-                            ) : (
-                                customers.map(customer => (
-                                    <option key={customer.id} value={customer.id}>
-                                        {customer.FirstName} {customer.LastName}</option>
-                                ))
-                            )}
+                    <div className='details-form-group'>
 
-                        </select>
+                        <div className='details-form-field'>
+                            <label htmlFor='customer'>Customer</label>
+                            <select
+                                id='customer'
+                                value={editedRequest.customerId}
+                                onChange={(e) =>
+                                    setEditedRequest({
+                                        ...editedRequest,
+                                        customerId: Number(e.target.value)
+                                    })
+                                }
+                            >
+                                {loadingFormData ? (
+                                    <option>Loading customers...</option>
+                                ) : (
+                                    customers.map(customer => (
+                                        <option key={customer.id} value={customer.id}>
+                                            {customer.FirstName} {customer.LastName}</option>
+                                    ))
+                                )}
 
-                        <label htmlFor='customer'>Choose service</label>
-                        <select
-                            id='service'
-                            value={editedRequest.serviceId}
-                            onChange={(e) =>
-                                setEditedRequest({
-                                    ...editedRequest,
-                                    serviceId: Number(e.target.value)
-                                })
-                            }
-                        >
-                            {loadingFormData ? (
-                                <option>Loading services...</option>
-                            ) : (
-                                services.map(service => (
-                                    <option key={service.id} value={service.id}>
-                                        {service.specialization} {service.description}</option>
-                                ))
-                            )}
+                            </select>
+                        </div>
 
-                        </select>
+                        <div className='details-form-field'>
+                            <label htmlFor='customer'>Choose service</label>
+                            <select
+                                id='service'
+                                value={editedRequest.serviceId}
+                                onChange={(e) =>
+                                    setEditedRequest({
+                                        ...editedRequest,
+                                        serviceId: Number(e.target.value)
+                                    })
+                                }
+                            >
+                                {loadingFormData ? (
+                                    <option>Loading services...</option>
+                                ) : (
+                                    services.map(service => (
+                                        <option key={service.id} value={service.id}>
+                                            {service.specialization} {service.description}</option>
+                                    ))
+                                )}
 
-                        <label htmlFor='customer'>Choose status</label>
-                        <select
-                            id='status'
-                            value={editedRequest.statusId}
-                            onChange={(e) =>
-                                setEditedRequest({
-                                    ...editedRequest,
-                                    statusId: Number(e.target.value)
-                                })
-                            }
-                        >
-                            {loadingFormData ? (
-                                <option>Loading statuses...</option>
-                            ) : (
-                                statuses.map(status => (
-                                    <option key={status.id} value={status.id}>
-                                        {status.status}</option>
-                                ))
-                            )}
+                            </select>
+                        </div>
 
-                        </select>
+                        <div className='details-form-field'>
+                            <label htmlFor='customer'>Choose status</label>
+                            <select
+                                id='status'
+                                value={editedRequest.statusId}
+                                onChange={(e) =>
+                                    setEditedRequest({
+                                        ...editedRequest,
+                                        statusId: Number(e.target.value)
+                                    })
+                                }
+                            >
+                                {loadingFormData ? (
+                                    <option>Loading statuses...</option>
+                                ) : (
+                                    statuses.map(status => (
+                                        <option key={status.id} value={status.id}>
+                                            {status.status}</option>
+                                    ))
+                                )}
+
+                            </select>
+                        </div>
+
                     </div>
 
                     <label htmlFor="description">
@@ -356,10 +382,10 @@ export default function RequestDetails({ request, onClose, onUpdated, onDeleted 
                         </button>
 
                         <button
-                            type='submit'
+                            type='button'
                             disabled={saving || deleting}
                             onClick={deleteRequest}
-                            className='edit-button'
+                            className='delete-button'
                         >
 
                             {deleting

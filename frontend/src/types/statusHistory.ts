@@ -5,7 +5,7 @@ export interface StatusHistory {
     serviceRequestId: number;
     oldStatusId: number;
     newStatusId: number;
-    changedAt: Date;
+    changedAt: string;
 
     OldStatus?: Status;
     NewStatus?: Status;

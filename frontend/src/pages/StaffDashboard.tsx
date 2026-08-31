@@ -118,17 +118,22 @@ export default function StaffDashboard() {
         </div>
 
         {selectedRequest && (
-          <section>
-            <RequestDetails
-              request={selectedRequest}
-              onClose={() => setSelectedRequest(null)}
-              onUpdated={() => {
-                setRefreshKey(prev => prev + 1)
-              }}
-              onDeleted={() => {
-                setRefreshKey(prev => prev + 1)
-              }}
+          <section
+            className='request-details-overlay'
+            onClick={() => setSelectedRequest(null)}
+          >
+            <div onClick={(e) => e.stopPropagation()}>
+              <RequestDetails
+                request={selectedRequest}
+                onClose={() => setSelectedRequest(null)}
+                onUpdated={() => {
+                  setRefreshKey(prev => prev + 1)
+                }}
+                onDeleted={() => {
+                  setRefreshKey(prev => prev + 1)
+                }}
               />
+            </div>
           </section>
         )}
 
