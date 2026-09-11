@@ -88,7 +88,7 @@ jobs:
           ADMIN_PASSWORD: ${{ secrets.AIVEN_DATABASE_PASSWORD }}
           DATABASE_PORT: ${{ secrets.AIVEN_DATABASE_PORT }}
           DIALECT: mysql
-        run: npx sequelize-cli db:migrate:status --env production     
+        run: npx sequelize-cli db:migrate --env production   
 
       - name: Trigger Render Deploy
         run: |
