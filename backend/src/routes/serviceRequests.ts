@@ -37,14 +37,12 @@ router.get('/', isAuth, async (req: Request, res: Response, next: NextFunction) 
 
     try {
         const services = await ServiceRequestService.getAll(status);
-        return res
-            .status(200)
-            .json({
-                status: 'success',
-                statusCode: 200,
-                message: 'List of service requests',
-                data: services,
-            });
+        return res.status(200).json({
+            status: 'success',
+            statusCode: 200,
+            message: 'List of service requests',
+            data: services,
+        });
     } catch (err) {
         return next(err);
     }
@@ -86,24 +84,20 @@ router.get('/customer', isAuth, async (req: Request, res: Response, next: NextFu
         const requests = await ServiceRequestService.getCustomerRequests(customerId, status);
 
         if (requests.length === 0) {
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'No active service requetsts',
-                    data: [],
-                });
-        }
-
-        return res
-            .status(200)
-            .json({
+            return res.status(200).json({
                 status: 'success',
                 statusCode: 200,
-                message: "Customer's service requests details",
-                data: requests,
+                message: 'No active service requetsts',
+                data: [],
             });
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            statusCode: 200,
+            message: "Customer's service requests details",
+            data: requests,
+        });
     } catch (err) {
         return next(err);
     }
@@ -150,33 +144,27 @@ router.get(
             const idNum = Number(req.params.id);
 
             if (Number.isNaN(idNum)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Service request ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Service request ID must be a number',
+                });
             }
 
             const service = await ServiceRequestService.getOneById(idNum);
             if (!service) {
-                return res
-                    .status(404)
-                    .json({
-                        status: 'error',
-                        statusCode: 404,
-                        message: 'Service request not found',
-                    });
-            }
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Service request details',
-                    data: service,
+                return res.status(404).json({
+                    status: 'error',
+                    statusCode: 404,
+                    message: 'Service request not found',
                 });
+            }
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Service request details',
+                data: service,
+            });
         } catch (err) {
             return next(err);
         }
@@ -232,14 +220,12 @@ router.post('/', isAuth, async (req: Request, res: Response, next: NextFunction)
             locationId,
             description,
         });
-        return res
-            .status(201)
-            .json({
-                status: 'success',
-                statusCode: 201,
-                message: 'Service request created successfully',
-                data: service,
-            });
+        return res.status(201).json({
+            status: 'success',
+            statusCode: 201,
+            message: 'Service request created successfully',
+            data: service,
+        });
     } catch (err) {
         return next(err);
     }
@@ -358,24 +344,27 @@ router.put(
             const idNum = Number(req.params.id);
 
             if (Number.isNaN(idNum)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Service request ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Service request ID must be a number',
+                });
             }
             const { customerId, serviceId, statusId, locationId, description, priority } = req.body;
 
-            if (customerId == null && serviceId == null && statusId == null && locationId == null && description == null && priority == null) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'At least one field must be provided',
-                    });
+            if (
+                customerId == null &&
+                serviceId == null &&
+                statusId == null &&
+                locationId == null &&
+                description == null &&
+                priority == null
+            ) {
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'At least one field must be provided',
+                });
             }
 
             const updatedService = await ServiceRequestService.update(idNum, {
@@ -384,16 +373,14 @@ router.put(
                 statusId,
                 locationId,
                 description,
-                priority
+                priority,
             });
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Service request updated successfully',
-                    data: updatedService,
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Service request updated successfully',
+                data: updatedService,
+            });
         } catch (err) {
             return next(err);
         }
@@ -441,24 +428,20 @@ router.delete(
             const idNum = Number(req.params.id);
 
             if (Number.isNaN(idNum)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Service request ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Service request ID must be a number',
+                });
             }
 
             await ServiceRequestService.delete(idNum);
 
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Service request deleted successfully',
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Service request deleted successfully',
+            });
         } catch (err) {
             return next(err);
         }

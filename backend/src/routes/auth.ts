@@ -80,13 +80,11 @@ router.post('/login', async (req: Request, res: Response) => {
                     .json({ status: 'error', statusCode: 500, message: 'Internal server error' });
             }
             if (!result) {
-                return res
-                    .status(401)
-                    .json({
-                        status: 'error',
-                        statusCode: 401,
-                        message: 'Invalid username or password',
-                    });
+                return res.status(401).json({
+                    status: 'error',
+                    statusCode: 401,
+                    message: 'Invalid username or password',
+                });
             }
             let token;
             try {

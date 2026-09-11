@@ -12,5 +12,4 @@ export async function seedServices() {
             where: { specialization: service.specialization, description: service.description },
         });
     }
-    console.log('Services seeded successfully');
 }

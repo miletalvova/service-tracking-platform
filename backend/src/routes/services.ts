@@ -35,14 +35,12 @@ router.get('/', isAuth, async (req: Request, res: Response, next: NextFunction) 
 
     try {
         const services = await ServiceService.getAll();
-        return res
-            .status(200)
-            .json({
-                status: 'success',
-                statusCode: 200,
-                message: 'List of services',
-                data: services,
-            });
+        return res.status(200).json({
+            status: 'success',
+            statusCode: 200,
+            message: 'List of services',
+            data: services,
+        });
     } catch (err) {
         return next(err);
     }
@@ -89,13 +87,11 @@ router.get(
             const idNum = Number(req.params.id);
 
             if (Number.isNaN(idNum)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Service ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Service ID must be a number',
+                });
             }
 
             const service = await ServiceService.getOneById(idNum);
@@ -104,14 +100,12 @@ router.get(
                     .status(404)
                     .json({ status: 'error', statusCode: 404, message: 'Service not found' });
             }
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Service details',
-                    data: service,
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Service details',
+                data: service,
+            });
         } catch (err) {
             return next(err);
         }
@@ -156,24 +150,20 @@ router.post('/', isAuth, async (req: Request, res: Response, next: NextFunction)
         const { specialization, description } = req.body;
 
         if (!specialization || !description) {
-            return res
-                .status(400)
-                .json({
-                    status: 'error',
-                    statusCode: 400,
-                    message: 'Missing required fields: specialization, description',
-                });
+            return res.status(400).json({
+                status: 'error',
+                statusCode: 400,
+                message: 'Missing required fields: specialization, description',
+            });
         }
         const newService = await ServiceService.create({ specialization, description });
 
-        return res
-            .status(201)
-            .json({
-                status: 'success',
-                statusCode: 201,
-                message: 'Service created',
-                data: newService,
-            });
+        return res.status(201).json({
+            status: 'success',
+            statusCode: 201,
+            message: 'Service created',
+            data: newService,
+        });
     } catch (err) {
         return next(err);
     }
@@ -230,40 +220,34 @@ router.put(
             const idNum = Number(req.params.id);
 
             if (Number.isNaN(idNum)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Service ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Service ID must be a number',
+                });
             }
 
             const { specialization, description } = req.body;
 
             if (specialization == null && description == null) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message:
-                            'At least one field (specialization or description) must be provided for update',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message:
+                        'At least one field (specialization or description) must be provided for update',
+                });
             }
 
             const updatedService = await ServiceService.update(idNum, {
                 specialization,
                 description,
             });
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Service updated',
-                    data: updatedService,
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Service updated',
+                data: updatedService,
+            });
         } catch (err) {
             return next(err);
         }
@@ -311,13 +295,11 @@ router.delete(
             const idNum = Number(req.params.id);
 
             if (Number.isNaN(idNum)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Service ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Service ID must be a number',
+                });
             }
 
             await ServiceService.delete(idNum);

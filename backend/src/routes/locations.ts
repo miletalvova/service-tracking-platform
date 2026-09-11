@@ -34,14 +34,12 @@ router.get('/', isAuth, async (req: Request, res: Response, next: NextFunction) 
     /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
     try {
         const locations = await locationService.getAll();
-        return res
-            .status(200)
-            .json({
-                status: 'success',
-                statusCode: 200,
-                message: 'List of locations',
-                data: locations,
-            });
+        return res.status(200).json({
+            status: 'success',
+            statusCode: 200,
+            message: 'List of locations',
+            data: locations,
+        });
     } catch (err) {
         return next(err);
     }
@@ -124,13 +122,11 @@ router.get(
             const idNum = Number(req.params.id);
 
             if (Number.isNaN(idNum)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Location ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Location ID must be a number',
+                });
             }
 
             const location = await locationService.getOneById(idNum);
@@ -139,14 +135,12 @@ router.get(
                     .status(404)
                     .json({ status: 'error', statusCode: 404, message: 'Location not found' });
             }
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Location details',
-                    data: location,
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Location details',
+                data: location,
+            });
         } catch (err) {
             return next(err);
         }
@@ -191,25 +185,21 @@ router.post('/', isAuth, isStaff, async (req: Request, res: Response, next: Next
         const { address, city, state, zipCode } = req.body;
 
         if (!address?.trim() || !city?.trim() || !state?.trim() || !zipCode?.trim()) {
-            return res
-                .status(400)
-                .json({
-                    status: 'error',
-                    statusCode: 400,
-                    message: 'Missing required fields: address, city, state, zipCode',
-                });
+            return res.status(400).json({
+                status: 'error',
+                statusCode: 400,
+                message: 'Missing required fields: address, city, state, zipCode',
+            });
         }
 
         const newLocation = await locationService.create({ address, city, state, zipCode });
 
-        return res
-            .status(201)
-            .json({
-                status: 'success',
-                statusCode: 201,
-                message: 'Location created',
-                data: newLocation,
-            });
+        return res.status(201).json({
+            status: 'success',
+            statusCode: 201,
+            message: 'Location created',
+            data: newLocation,
+        });
     } catch (err) {
         return next(err);
     }
@@ -266,26 +256,22 @@ router.put(
             const idNum = Number(req.params.id);
 
             if (Number.isNaN(idNum)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Location ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Location ID must be a number',
+                });
             }
 
             const { address, city, state, zipCode } = req.body;
 
             if (!address && !city && !state && !zipCode) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message:
-                            'At least one field (address, city, state, zipCode) must be provided for update',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message:
+                        'At least one field (address, city, state, zipCode) must be provided for update',
+                });
             }
 
             const updatedLocation = await locationService.update(idNum, {
@@ -295,14 +281,12 @@ router.put(
                 zipCode,
             });
 
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Location updated',
-                    data: updatedLocation,
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Location updated',
+                data: updatedLocation,
+            });
         } catch (err) {
             return next(err);
         }
@@ -350,13 +334,11 @@ router.delete(
             const idNum = Number(req.params.id);
 
             if (Number.isNaN(idNum)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Location ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Location ID must be a number',
+                });
             }
 
             await locationService.delete(idNum);

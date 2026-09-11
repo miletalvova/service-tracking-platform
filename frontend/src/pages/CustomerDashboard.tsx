@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import CustomerRequests from '../components/CustomerRequests';
 import Statistics from '../components/Statistics';
-import { useAuth } from '../hooks/useAuth';
 import { useActiveRequests } from "../hooks/useActiveRequests";
 import { createSmartServiceRequest } from '../api/serviceRequest';
 import { searchAddress } from '../api/locationApi';
@@ -13,8 +12,6 @@ import { useCustomerStatistics } from '../hooks/useCustomerStatistics';
 
 
 function CustomerDashboard() {
-  const { user } = useAuth();
-
   const { requests, loading: requestsLoading, refresh, view, setView } = useActiveRequests();
   const { requests: statisticRequests, loading: statisticsLoading, refresh: refreshStatistics } = useCustomerStatistics();
 
@@ -94,8 +91,6 @@ function CustomerDashboard() {
       <div className='customer-page'>
 
         <h1 className='customer-title'>Customer Dashboard</h1>
-
-        <p>Welcome, {user?.username}!</p>
 
         <Statistics
           requests={statisticRequests}

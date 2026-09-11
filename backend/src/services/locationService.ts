@@ -4,8 +4,7 @@ import type { Models } from '../types/model.types.js';
 import createError from 'http-errors';
 
 class LocationService {
-    constructor(private readonly db: Models) {
-    }
+    constructor(private readonly db: Models) {}
     async create(data: LocationCreationAttributes) {
         return this.db.Location.create(data);
     }

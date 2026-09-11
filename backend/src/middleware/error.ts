@@ -17,7 +17,7 @@ export const errorHandler = (
 
     console.error('FULL ERROR:', err);
     console.error('MESSAGE:', err.message);
-    
+
     const dbError = err as DatabaseError;
     console.error(dbError.parent?.sqlMessage);
 

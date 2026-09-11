@@ -2,7 +2,7 @@ import db from '../models/index.js';
 import { StatusEnum } from '../types/serviceRequest.types.js';
 import createError from 'http-errors';
 import type { Models } from '../types/model.types.js';
-import type { Transaction } from "sequelize";
+import type { Transaction } from 'sequelize';
 
 const validTransitions: Record<number, number[]> = {
     [StatusEnum.Created]: [StatusEnum.Assigned, StatusEnum.Cancelled],
@@ -16,7 +16,9 @@ class StatusService {
     constructor(private readonly db: Models) {}
 
     async updateStatus(serviceRequestId: number, newStatusId: number, transaction: Transaction) {
-        const serviceRequest = await this.db.ServiceRequest.findByPk(serviceRequestId, { transaction });
+        const serviceRequest = await this.db.ServiceRequest.findByPk(serviceRequestId, {
+            transaction,
+        });
         if (!serviceRequest) {
             throw createError(404, 'Service request not found');
         }
@@ -59,10 +61,9 @@ class StatusService {
         return serviceRequest;
     }
 
-    async getAllStatuses (){
+    async getAllStatuses() {
         return this.db.Status.findAll();
     }
-    
 }
 
 export default new StatusService(db);

@@ -23,7 +23,7 @@ export interface Models {
     TechnicianProfile: typeof TechnicianProfile;
 }
 
-type AssociatedModels = Omit<Models, "sequelize">;
+type AssociatedModels = Omit<Models, 'sequelize'>;
 
 export type SequelizeModel = ModelStatic<Model> & {
     associate?: (models: AssociatedModels) => void;

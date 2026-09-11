@@ -7,5 +7,4 @@ export async function seedRoles() {
             where: { name: roleName },
         });
     }
-    console.log('Roles seeded successfully.');
 }

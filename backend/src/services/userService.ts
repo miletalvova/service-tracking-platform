@@ -3,17 +3,18 @@ import type { UserCreationAttributes } from '../types/user.types.js';
 import type { Models } from '../types/model.types.js';
 
 class UserService {
-    constructor(private readonly db: Models) {
-    }
-    
+    constructor(private readonly db: Models) {}
+
     async getCustomers() {
         return this.db.User.findAll({
-            include: [{
-                model: this.db.Role,
-                as: 'Role',
-                where: { name: 'Customer'}
-            }],
-            attributes: ['id', 'FirstName', 'LastName']
+            include: [
+                {
+                    model: this.db.Role,
+                    as: 'Role',
+                    where: { name: 'Customer' },
+                },
+            ],
+            attributes: ['id', 'FirstName', 'LastName'],
         });
     }
 

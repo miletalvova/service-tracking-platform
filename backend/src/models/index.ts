@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize';
-import type { Dialect } from "sequelize";
+import type { Dialect } from 'sequelize';
 import mysql2 from 'mysql2';
 import { initUserModel, User } from './user.js';
 import { initRoleModel, Role } from './role.js';
@@ -72,10 +72,10 @@ export const db: Models = {
 (async () => {
     try {
         await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
+        /* console.log('Connection has been established successfully.');
 
         await sequelize.sync({ force: false });
-        console.log('All models were synchronized successfully.');
+        console.log('All models were synchronized successfully.'); */
         await seedRoles();
         await seedStatuses();
         await seedServices();

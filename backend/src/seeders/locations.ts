@@ -31,5 +31,4 @@ export async function seedLocations() {
             },
         });
     }
-    console.log('Locations seeded successfully.');
 }

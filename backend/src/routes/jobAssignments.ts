@@ -35,14 +35,12 @@ router.get('/', isAuth, async (req: Request, res: Response, next: NextFunction) 
 
     try {
         const assignments = await jobAssignmentService.getAll();
-        return res
-            .status(200)
-            .json({
-                status: 'success',
-                statusCode: 200,
-                message: 'List of assignments',
-                data: assignments,
-            });
+        return res.status(200).json({
+            status: 'success',
+            statusCode: 200,
+            message: 'List of assignments',
+            data: assignments,
+        });
     } catch (err) {
         return next(err);
     }
@@ -89,36 +87,30 @@ router.get(
             const serviceRequestId = Number(req.params.serviceRequestId);
 
             if (Number.isNaN(serviceRequestId)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'serviceRequestId must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'serviceRequestId must be a number',
+                });
             }
 
             const recommendedAssignment =
                 await jobAssignmentService.recommendTechnician(serviceRequestId);
 
             if (!recommendedAssignment) {
-                return res
-                    .status(404)
-                    .json({
-                        status: 'error',
-                        statusCode: 404,
-                        message: 'No techinician recommended found',
-                    });
+                return res.status(404).json({
+                    status: 'error',
+                    statusCode: 404,
+                    message: 'No techinician recommended found',
+                });
             }
 
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Recommended assignment',
-                    data: recommendedAssignment,
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Recommended assignment',
+                data: recommendedAssignment,
+            });
         } catch (err) {
             return next(err);
         }
@@ -166,35 +158,29 @@ router.get(
             const idNum = Number(req.params.id);
 
             if (Number.isNaN(idNum)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Job Assignment ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Job Assignment ID must be a number',
+                });
             }
 
             const jobAssignment = await jobAssignmentService.getOneById(idNum);
 
             if (!jobAssignment) {
-                return res
-                    .status(404)
-                    .json({
-                        status: 'error',
-                        statusCode: 404,
-                        message: 'Job Assignment not found',
-                    });
+                return res.status(404).json({
+                    status: 'error',
+                    statusCode: 404,
+                    message: 'Job Assignment not found',
+                });
             }
 
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Job Assignment details',
-                    data: jobAssignment,
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Job Assignment details',
+                data: jobAssignment,
+            });
         } catch (err) {
             return next(err);
         }
@@ -239,25 +225,21 @@ router.post('/', isAuth, async (req: Request, res: Response, next: NextFunction)
         const { serviceRequestId, technicianId } = req.body;
 
         if (serviceRequestId == null || technicianId == null) {
-            return res
-                .status(400)
-                .json({
-                    status: 'error',
-                    statusCode: 400,
-                    message: 'serviceRequestId and technicianId are required',
-                });
+            return res.status(400).json({
+                status: 'error',
+                statusCode: 400,
+                message: 'serviceRequestId and technicianId are required',
+            });
         }
 
         const newAssignment = await jobAssignmentService.create({ serviceRequestId, technicianId });
 
-        return res
-            .status(201)
-            .json({
-                status: 'success',
-                statusCode: 201,
-                message: 'Job Assignment created',
-                data: newAssignment,
-            });
+        return res.status(201).json({
+            status: 'success',
+            statusCode: 201,
+            message: 'Job Assignment created',
+            data: newAssignment,
+        });
     } catch (err) {
         return next(err);
     }
@@ -314,26 +296,22 @@ router.put(
             const idNum = Number(req.params.id);
 
             if (Number.isNaN(idNum)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Job Assignment ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Job Assignment ID must be a number',
+                });
             }
 
             const { serviceRequestId, technicianId } = req.body;
 
             if (serviceRequestId == null && technicianId == null) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message:
-                            'At least one field (serviceRequestId or technicianId) must be provided for update',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message:
+                        'At least one field (serviceRequestId or technicianId) must be provided for update',
+                });
             }
 
             const updatedAssignment = await jobAssignmentService.update(idNum, {
@@ -341,14 +319,12 @@ router.put(
                 technicianId,
             });
 
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Job Assignment updated',
-                    data: updatedAssignment,
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Job Assignment updated',
+                data: updatedAssignment,
+            });
         } catch (err) {
             return next(err);
         }
@@ -396,13 +372,11 @@ router.delete(
             const idNum = Number(req.params.id);
 
             if (Number.isNaN(idNum)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Job Assignment ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Job Assignment ID must be a number',
+                });
             }
 
             await jobAssignmentService.delete(idNum);

@@ -128,7 +128,10 @@ class AIService {
         return { isUrgent: false, reason: 'No urgency detected' };
     }
 
-    async recommendTechnician(serviceRequest: ServiceRequest, technicians: TechnicianRecommendation[]) {
+    async recommendTechnician(
+        serviceRequest: ServiceRequest,
+        technicians: TechnicianRecommendation[]
+    ) {
         const systemPrompt = `You are a technician recommender. 
         You ONLY output valid JSON. No markdown, no explanation, no backticks. Just raw JSON.`;
 

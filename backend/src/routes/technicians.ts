@@ -44,14 +44,12 @@ router.get(
             const technicianId = req.user!.id;
 
             const assignedRequests = await TechnicianService.getAssignedRequests(technicianId);
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'List of assigned requests',
-                    data: assignedRequests,
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'List of assigned requests',
+                data: assignedRequests,
+            });
         } catch (err) {
             return next(err);
         }
@@ -65,14 +63,12 @@ router.get(
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const techWorkload = await TechnicianService.getWorkloadOverview();
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Technician workload overview',
-                    data: techWorkload,
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Technician workload overview',
+                data: techWorkload,
+            });
         } catch (err) {
             return next(err);
         }
@@ -130,13 +126,11 @@ router.patch(
             const serviceRequestId = Number(req.params.id);
 
             if (Number.isNaN(serviceRequestId)) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'Service Request ID must be a number',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'Service Request ID must be a number',
+                });
             }
 
             const technicianId = req.user!.id;
@@ -158,14 +152,12 @@ router.patch(
                 await jobAssignmentService.unassign(serviceRequestId);
             }
 
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Status updated successfully',
-                    data: updatedRequest,
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Status updated successfully',
+                data: updatedRequest,
+            });
         } catch (err) {
             return next(err);
         }
@@ -223,25 +215,21 @@ router.patch(
                 currentLocationId === undefined &&
                 maxActiveJobs === undefined
             ) {
-                return res
-                    .status(400)
-                    .json({
-                        status: 'error',
-                        statusCode: 400,
-                        message: 'At least one field must be provided',
-                    });
+                return res.status(400).json({
+                    status: 'error',
+                    statusCode: 400,
+                    message: 'At least one field must be provided',
+                });
             }
 
             const profile = await TechnicianService.getOneByUserId(userId);
 
             if (!profile) {
-                return res
-                    .status(404)
-                    .json({
-                        status: 'error',
-                        statusCode: 404,
-                        message: 'Technician profile not found',
-                    });
+                return res.status(404).json({
+                    status: 'error',
+                    statusCode: 404,
+                    message: 'Technician profile not found',
+                });
             }
             await profile.update({
                 ...(skills !== undefined && { skills }),
@@ -250,14 +238,12 @@ router.patch(
                 ...(maxActiveJobs !== undefined && { maxActiveJobs }),
             });
 
-            return res
-                .status(200)
-                .json({
-                    status: 'success',
-                    statusCode: 200,
-                    message: 'Profile updated successfully',
-                    data: profile,
-                });
+            return res.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Profile updated successfully',
+                data: profile,
+            });
         } catch (err) {
             return next(err);
         }

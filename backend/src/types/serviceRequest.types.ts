@@ -49,5 +49,3 @@ export interface UpdateServiceRequestAttributes {
     description: string;
     priority: 'Low' | 'Medium' | 'High';
 }
-
-

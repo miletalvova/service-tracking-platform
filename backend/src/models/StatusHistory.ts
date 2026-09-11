@@ -13,7 +13,7 @@ export class StatusHistory extends Model<
 > {
     declare id: number;
     declare serviceRequestId: number;
-    declare oldStatusId: number | null;
+    declare oldStatusId: number;
     declare newStatusId: number;
     declare changedAt: Date;
 

@@ -282,49 +282,48 @@ class ServiceRequestService {
         try {
             const serviceRequest = await this.db.ServiceRequest.findByPk(id);
 
-        if (!serviceRequest) {
-            throw createError(404, 'Service request not found');
-        }
+            if (!serviceRequest) {
+                throw createError(404, 'Service request not found');
+            }
 
-        if (data.location) {
-            const locationRecord = await db.Location.create(
-                {
-                    address: data.location.display_name,
-                    city:
-                        data.location.address.city ??
-                        data.location.address.town ??
-                        data.location.address.village ??
-                        '',
-                    state: data.location.address.state ?? '',
-                    zipCode: data.location.address.postcode ?? '',
-                },
-                {
-                    transaction,
-                }
-            );
+            if (data.location) {
+                const locationRecord = await db.Location.create(
+                    {
+                        address: data.location.display_name,
+                        city:
+                            data.location.address.city ??
+                            data.location.address.town ??
+                            data.location.address.village ??
+                            '',
+                        state: data.location.address.state ?? '',
+                        zipCode: data.location.address.postcode ?? '',
+                    },
+                    {
+                        transaction,
+                    }
+                );
 
-            data.locationId = locationRecord.id;
-        }
+                data.locationId = locationRecord.id;
+            }
 
-        const oldStatusId = serviceRequest.statusId;
+            const oldStatusId = serviceRequest.statusId;
 
-        await serviceRequest.update(data);
+            await serviceRequest.update(data);
 
-        if (data.statusId && data.statusId !== oldStatusId) {
-            await this.db.StatusHistory.create({
-                serviceRequestId: id,
-                oldStatusId,
-                newStatusId: data.statusId,
-            });
-        }
+            if (data.statusId && data.statusId !== oldStatusId) {
+                await this.db.StatusHistory.create({
+                    serviceRequestId: id,
+                    oldStatusId,
+                    newStatusId: data.statusId,
+                });
+            }
 
-        if (data.statusId === StatusEnum.Completed || data.statusId === StatusEnum.Cancelled) {
-            await jobAssignmentService.unassign(id);
-        }
-        await transaction.commit();
+            if (data.statusId === StatusEnum.Completed || data.statusId === StatusEnum.Cancelled) {
+                await jobAssignmentService.unassign(id);
+            }
+            await transaction.commit();
 
-        return serviceRequest;
-
+            return serviceRequest;
         } catch (err) {
             await transaction.rollback();
             throw err;

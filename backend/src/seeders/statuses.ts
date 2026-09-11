@@ -8,5 +8,4 @@ export async function seedStatuses() {
             where: { status: statusName },
         });
     }
-    console.log('Statuses seeded successfully.');
 }
