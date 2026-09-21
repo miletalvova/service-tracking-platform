@@ -206,7 +206,7 @@ router.patch(
         /* #swagger.responses[500] = { $ref: '#/components/responses/InternalServerError' } */
 
         try {
-            const userId = (req as any).user.id;
+            const userId = req.user!.id;
             const { skills, isAvailable, currentLocationId, maxActiveJobs } = req.body;
 
             if (

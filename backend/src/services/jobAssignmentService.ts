@@ -25,14 +25,14 @@ class JobAssignmentService {
                 serviceRequest.statusId === StatusEnum.Cancelled
             ) {
                 throw createError(
-                    400,
+                    401,
                     'Cannot assign technician to a completed or cancelled service request'
                 );
             }
 
             if (serviceRequest.statusId !== StatusEnum.Created) {
                 throw createError(
-                    400,
+                    401,
                     "Technician can only be assigned when request is in 'Created' state"
                 );
             }
