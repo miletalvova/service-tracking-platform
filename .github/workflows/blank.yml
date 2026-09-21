@@ -22,11 +22,6 @@ jobs:
           cache: "npm"
           cache-dependency-path: backend/package-lock.json
 
-      - name: Show Node and npm versions
-        run: |
-          node --version
-          npm --version
-
       - name: Install dependencies
         working-directory: backend
         run: npm ci
@@ -82,6 +77,24 @@ jobs:
       - name: Install dependencies
         working-directory: backend
         run: npm ci
+
+      - name: Check database host
+        env:
+          DATABASE_HOST: ${{ secrets.AIVEN_DATABASE_HOST }}
+        run: |
+          if [ -z "$DATABASE_HOST" ]; then
+            echo "DATABASE_HOST is empty"
+            exit 1
+          fi
+
+          echo "DATABASE_HOST is set"
+
+          if getent hosts "$DATABASE_HOST" > /dev/null; then
+            echo "DATABASE_HOST resolves successfully"
+          else
+            echo "DATABASE_HOST does not resolve"
+            exit 1
+          fi  
       
       - name: Run database migrations
         working-directory: backend          
