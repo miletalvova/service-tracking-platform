@@ -72,10 +72,10 @@ export const db: Models = {
 (async () => {
     try {
         await sequelize.authenticate();
-        /* console.log('Connection has been established successfully.');
+        /* console.log('Connection has been established successfully.'); */
 
-        await sequelize.sync({ force: false });
-        console.log('All models were synchronized successfully.'); */
+        /* await sequelize.sync({ force: false }); */
+        
         await seedRoles();
         await seedStatuses();
         await seedServices();

@@ -113,7 +113,7 @@ Docker Hub: [hub.docker.com/r/leta373/service-tracking-backend](https://hub.dock
  
 ## Deployment
  
-The backend is containerized and ready to deploy to any container-friendly platform such as Render, Railway, or a VPS. Frontend deployment via Vercel is planned.
+The backend is containerized and deployed to Render, and the database to Aiven. Frontend deployed via Vercel.
  
 ---
  

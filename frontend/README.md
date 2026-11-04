@@ -172,7 +172,7 @@ The production application communicates with:
 - **Backend:** Render
 - **Database:** Aiven MySQL
 
-Deployment is fully automated thriugh GitHub.
+Deployment is fully automated through GitHub.
 
 ---
 
