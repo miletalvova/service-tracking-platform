@@ -16,7 +16,7 @@ Customers submit service requests using natural language. The AI classifies the 
 | Database | MySQL, Sequelize ORM |
 | Authentication | JWT, Role-Based Access Control |
 | AI | Anthropic Claude API |
-| Frontend | Next.js (in progress) |
+| Frontend | React 19 |
 | Real-Time | WebSockets (planned) |
 | Containerization | Docker, Docker Compose |
 | CI/CD | GitHub Actions |
@@ -51,7 +51,7 @@ Claude analyzes available technicians and recommends the best match based on ski
 ```
 service-tracking-platform/
 ├── backend/          # Node.js + Express REST API
-├── frontend/         # Next.js frontend (in progress)
+├── frontend/         # React frontend (in progress)
 ├── .github/
 │   └── workflows/    # GitHub Actions CI/CD
 └── README.md
